@@ -1,0 +1,37 @@
+{
+  "name": "ts-decorators",
+  "version": "0.0.0",
+  "description": "ts-decorators for reducing repetative code",
+  "main": "dist/src/index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-decorators": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.12.1",
+    "babel-jest": "^24.5.0",
+    "jest": "^24.5.0",
+    "typescript": "^3.3.4000"
+  },
+  "scripts": {
+    "test": "jest --coverage && tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vlio20/ts-decorators.git"
+  },
+  "keywords": [
+    "typescript",
+    "decorator",
+    "annotation"
+  ],
+  "author": "Vlad Ioffe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vlio20/ts-decorators/issues"
+  },
+  "homepage": "https://github.com/vlio20/ts-decorators#readme"
+}
