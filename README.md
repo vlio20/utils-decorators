@@ -21,8 +21,7 @@ only one invocation of the decorated method will be invoked.
   
 Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.   
 You can supply your own key resolver.
-Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using  
-a simple `Map<string, Promise<D>>`.    
+Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.    
 You can see find details in the API below.   
   
 **API**
