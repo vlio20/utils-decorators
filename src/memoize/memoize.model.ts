@@ -16,4 +16,4 @@ export interface MemoizeAsyncConfig<D> {
 
 export type Memoizable<D> = (target: any,
                              propertyName: string,
-                             descriptor: TypedPropertyDescriptor<AsyncMethod<D>>) => TypedPropertyDescriptor<AsyncMethod<D>>
+                             descriptor: TypedPropertyDescriptor<AsyncMethod<D>>) => TypedPropertyDescriptor<AsyncMethod<D>>;

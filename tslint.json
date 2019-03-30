@@ -1,0 +1,102 @@
+{
+  "rules": {
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
+    "class-name": true,
+    "no-consecutive-blank-lines": true,
+    "semicolon": [
+      true,
+      "always"
+    ],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type",
+      "check-preblock"
+    ],
+    "no-var-keyword": true,
+    "adjacent-overload-signatures": true,
+    "use-isnan": true,
+    "one-variable-per-declaration": true,
+    "no-console": [
+      true,
+      "log"
+    ],
+    "no-debugger": true,
+    "no-duplicate-variable": true,
+    "no-duplicate-super": true,
+    "no-misused-new": true,
+    "no-shadowed-variable": true,
+    "no-unsafe-finally": true,
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "never",
+        "singleline": "never",
+        "esSpecCompliant": true
+      }
+    ],
+    "newline-before-return": true,
+    "no-irregular-whitespace": true,
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "public-static-field",
+          "private-static-field",
+          "public-instance-field",
+          "private-instance-field",
+          "public-constructor",
+          "public-instance-method",
+          "protected-instance-method",
+          "private-instance-method"
+        ]
+      }
+    ],
+    "typedef": [
+      true,
+      "call-signature"
+    ],
+    "ban": [
+      true,
+      [
+        "fit"
+      ],
+      [
+        "fdescribe"
+      ],
+      [
+        "_",
+        "forEach",
+        "Use the native JavaScript 'myArray.forEach' instead."
+      ],
+      [
+        "_",
+        "filter",
+        "Use the native JavaScript 'myArray.filter' instead."
+      ],
+      [
+        "console",
+        "log"
+      ],
+      [
+        "browser.pause()"
+      ]
+    ],
+    "max-line-length": [
+      true,
+      0
+    ],
+    "prefer-const": true
+  }
+}

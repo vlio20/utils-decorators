@@ -43,7 +43,7 @@ describe('memozie-async', () => {
       }
 
       goo(x: string, y: string): Promise<string> {
-        return Promise.resolve(x + y)
+        return Promise.resolve(x + y);
       }
     }
 
