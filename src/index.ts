@@ -1,1 +1,1 @@
-export * from './memoize/memozie-async';
+export * from './memoize/memoize.index';
