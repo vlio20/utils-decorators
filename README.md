@@ -16,8 +16,8 @@
 ## @memoizeAsync  
 Creates a function that memoizes the promise that being returned by the decorated method.  
 If the promise would be rejected, the promise won't be memoized.   
-Another great feature of this decorator is that it delegates requests, for example if the same method has been called more than one time  
-before the promise was resolved, only one invocation of the decorated method would be invoked.  
+Another great feature of this decorator is that it delegates requests, for example if the same method has been called more than one time before the promise was resolved, 
+only one invocation of the decorated method will be invoked.  
   
 Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.   
 You can supply your own key resolver.
