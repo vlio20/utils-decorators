@@ -1,22 +1,26 @@
-import {Delayable} from './delay.model';
 import {Method} from '..';
+import {Debouncable} from './debounce.model';
 
-export function delay(delayMs: number): Delayable {
+export function debounce(delayMs: number): Debouncable {
   return (target: any,
           propertyName: string,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
     if (descriptor.value != null) {
       const originalMethod = descriptor.value;
+      let handler: any;
+
       descriptor.value = function (...args: any[]): any {
-        setTimeout(() => {
+        clearTimeout(handler);
+
+        handler = setTimeout(() => {
           originalMethod.apply(this, args);
         }, delayMs);
       };
 
       return descriptor;
     } else {
-      throw Error('@delay is applicable only on a methods.');
+      throw Error('@debounce is applicable only on a methods.');
     }
   };
 }
