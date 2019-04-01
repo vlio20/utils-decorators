@@ -1,20 +1,24 @@
 import {memoize} from './memoize';
-import {memoizeAsync} from '..';
 
 describe('memozie', () => {
   it('should verify memoize caching original method', (done) => {
     class T {
+      prop: 3;
+
       @memoize<string>(10)
       foo(): string {
         return this.goo();
       }
 
       goo(): string {
+        expect(this.prop).toBe(3);
+
         return 'yey';
       }
     }
 
     const t = new T();
+    t.prop = 3;
     const spy = jest.spyOn(T.prototype, 'goo');
     const resp1 = t.foo();
     const resp2 = t.foo();
