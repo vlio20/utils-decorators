@@ -1,5 +1,6 @@
+import {Method} from '../common/model/common.model';
+
 export type KeyResolver = (...args: any[]) => string;
-export type Method<D> = (...args: any[]) => D;
 
 export interface Cache<D> {
   set: (key: string, value: D) => void;

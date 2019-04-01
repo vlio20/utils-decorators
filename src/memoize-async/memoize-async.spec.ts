@@ -3,17 +3,22 @@ import {memoizeAsync} from './memoize-async';
 describe('memozie-async', () => {
   it('should verify memoize async caching original method', async (done) => {
     class T {
+      prop: number;
+
       @memoizeAsync<string>(10)
       foo(): Promise<string> {
         return this.goo();
       }
 
       goo(): Promise<string> {
+        expect(this.prop).toBe(3);
+
         return Promise.resolve('yey');
       }
     }
 
     const t = new T();
+    t.prop = 3;
     const spy = jest.spyOn(T.prototype, 'goo');
     const resp1 = t.foo();
     const resp2 = t.foo();

@@ -1,4 +1,5 @@
-import {Memoizable, MemoizeConfig, Method} from './memoize.model';
+import {Memoizable, MemoizeConfig} from './memoize.model';
+import {Method} from '../common/model/common.model';
 
 export function memoize<D>(config: MemoizeConfig<D>): Memoizable<D>;
 export function memoize<D>(expirationTimeMs: number): Memoizable<D>;
