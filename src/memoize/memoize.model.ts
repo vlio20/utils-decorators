@@ -1,19 +1,23 @@
 export type KeyResolver = (...args: any[]) => string;
-export type AsyncMethod<D> = (...args: any[]) => Promise<D>;
+export type Method<D> = (...args: any[]) => D;
 
-export interface GetterSetter<D> {
-  set: (key: string, value: Promise<D>) => void;
-  get: (key: string) => Promise<D> | null;
+export interface Cache<D> {
+  set: (key: string, value: D) => void;
+  get: (key: string) => D | null;
   delete: (key: string) => void;
   has: (key: string) => boolean;
 }
 
-export interface MemoizeAsyncConfig<D> {
-  cache?: GetterSetter<D>;
+export interface MemoizeConfig<D> {
+  cache?: Cache<D>;
   keyResolver?: KeyResolver;
   expirationTimeMs: number;
 }
 
 export type Memoizable<D> = (target: any,
                              propertyName: string,
-                             descriptor: TypedPropertyDescriptor<AsyncMethod<D>>) => TypedPropertyDescriptor<AsyncMethod<D>>;
+                             descriptor: TypedPropertyDescriptor<Method<D>>) => TypedPropertyDescriptor<Method<D>>;
+
+export type AsyncMethod<D> = Method<Promise<D>>;
+export type MemoizeAsyncConfig<D> = MemoizeConfig<Promise<D>>;
+export type AsyncMemoizable<D> = Memoizable<Promise<D>>;

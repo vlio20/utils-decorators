@@ -21,6 +21,7 @@
   "scripts": {
     "test": "tsc --noEmit && npm run lint && jest --coverage",
     "lint": "tslint './src/**/*.ts'",
+    "lint:fix": "tslint './src/**/*.ts' --fix",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "repository": {

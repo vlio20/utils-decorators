@@ -1,2 +1,2 @@
 export * from '../memoize/memoize.model';
-export * from './memoize';
+export * from './memoize-async';

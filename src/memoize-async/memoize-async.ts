@@ -1,8 +1,8 @@
-import {AsyncMethod, Memoizable, MemoizeAsyncConfig} from './memoize.model';
+import {AsyncMemoizable, AsyncMethod, MemoizeAsyncConfig} from '..';
 
-export function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): Memoizable<D>;
-export function memoizeAsync<D>(expirationTimeMs: number): Memoizable<D>;
-export function memoizeAsync<D>(input: MemoizeAsyncConfig<D> | number): Memoizable<D> {
+export function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<D>;
+export function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>;
+export function memoizeAsync<D>(input: MemoizeAsyncConfig<D> | number): AsyncMemoizable<D> {
   const defaultConfig: MemoizeAsyncConfig<D> = {
     cache: new Map<string, Promise<D>>(),
     expirationTimeMs: 1000 * 60
