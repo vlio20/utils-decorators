@@ -19,11 +19,11 @@ describe('delay', () => {
       prop: number;
 
       @delay(5)
-      foo(): void {
-        return this.goo();
+      foo(x: number): void {
+        return this.goo(x);
       }
 
-      goo(): void {
+      goo(x: number): void {
         expect(this.prop).toBe(3);
 
         return;
@@ -33,11 +33,12 @@ describe('delay', () => {
     const t = new T();
     t.prop = 3;
     const spy = jest.spyOn(T.prototype, 'goo');
-    t.foo();
+    t.foo(1);
 
     setTimeout(() => {
-      t.foo();
+      t.foo(2);
       expect(spy).toBeCalledTimes(1);
+      expect(spy).lastCalledWith(1);
     }, 10);
 
     expect(spy).not.toBeCalled();

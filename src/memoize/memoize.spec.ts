@@ -5,33 +5,39 @@ describe('memozie', () => {
     class T {
       prop: 3;
 
-      @memoize<string>(10)
-      foo(): string {
-        return this.goo();
+      @memoize<number>(10)
+      foo(x: number, y: number): number {
+        return this.goo(x, y);
       }
 
-      goo(): string {
+      goo(x: number, y: number): number {
         expect(this.prop).toBe(3);
 
-        return 'yey';
+        return x + y;
       }
     }
 
     const t = new T();
     t.prop = 3;
     const spy = jest.spyOn(T.prototype, 'goo');
-    const resp1 = t.foo();
-    const resp2 = t.foo();
+    const resp1 = t.foo(1, 2);
+    const resp2 = t.foo(1, 2);
+    const resp_1 = t.foo(1, 3);
 
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalledTimes(2);
+    expect(spy.mock.calls[0][0]).toBe(1);
+    expect(spy.mock.calls[0][1]).toBe(2);
+    expect(spy.mock.calls[1][0]).toBe(1);
+    expect(spy.mock.calls[1][1]).toBe(3);
 
     setTimeout(async () => {
-      const resp3 = t.foo();
+      const resp3 = t.foo(1, 2);
 
-      expect(spy).toBeCalledTimes(2);
-      expect(resp1).toBe('yey');
-      expect(resp2).toBe('yey');
-      expect(resp3).toBe('yey');
+      expect(spy).toBeCalledTimes(3);
+      expect(resp1).toBe(3);
+      expect(resp2).toBe(3);
+      expect(resp3).toBe(3);
+      expect(resp_1).toBe(4);
       done();
     }, 20);
   });

@@ -5,33 +5,40 @@ describe('memozie-async', () => {
     class T {
       prop: number;
 
-      @memoizeAsync<string>(10)
-      foo(): Promise<string> {
-        return this.goo();
+      @memoizeAsync<number>(10)
+      foo(x: number, y: number): Promise<number> {
+        return this.goo(x, y);
       }
 
-      goo(): Promise<string> {
+      goo(x: number, y: number): Promise<number> {
         expect(this.prop).toBe(3);
 
-        return Promise.resolve('yey');
+        return Promise.resolve(x + y);
       }
     }
 
     const t = new T();
     t.prop = 3;
     const spy = jest.spyOn(T.prototype, 'goo');
-    const resp1 = t.foo();
-    const resp2 = t.foo();
+    const resp1 = t.foo(1, 2);
+    const resp2 = t.foo(1, 2);
 
+    expect(spy).toHaveBeenCalledWith(1, 2);
     expect(spy).toBeCalledTimes(1);
 
-    setTimeout(async () => {
-      const resp3 = t.foo();
+    const resp_1 = t.foo(1, 3);
+    expect(spy).toHaveBeenCalledWith(1, 3);
+    expect(spy).toBeCalledTimes(2);
 
-      expect(spy).toBeCalledTimes(2);
-      expect(await resp1).toBe('yey');
-      expect(await resp2).toBe('yey');
-      expect(await resp3).toBe('yey');
+    setTimeout(async () => {
+      const resp3 = t.foo(1, 2);
+      expect(spy).toHaveBeenCalledWith(1, 2);
+
+      expect(spy).toBeCalledTimes(3);
+      expect(await resp1).toBe(3);
+      expect(await resp2).toBe(3);
+      expect(await resp3).toBe(3);
+      expect(await resp_1).toBe(4);
       done();
     }, 20);
   });
