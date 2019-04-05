@@ -4,12 +4,13 @@ export function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<
 export function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>;
 export function memoizeAsync<D>(input: MemoizeAsyncConfig<D> | number): AsyncMemoizable<D> {
   const defaultConfig: MemoizeAsyncConfig<D> = {
-    cache: new Map<string, Promise<D>>(),
+    cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
   };
 
-  return (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
+  const promCache = new Map<string, Promise<D>>();
 
+  return (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
     let config = <MemoizeAsyncConfig<D>>{
       ...defaultConfig
     };
@@ -25,7 +26,7 @@ export function memoizeAsync<D>(input: MemoizeAsyncConfig<D> | number): AsyncMem
 
     if (descriptor.value != null) {
       const originalMethod = descriptor.value;
-      descriptor.value = function (...args: any[]): Promise<D> {
+      descriptor.value = async function (...args: any[]): Promise<D> {
         let key;
 
         if (config.keyResolver) {
@@ -34,27 +35,59 @@ export function memoizeAsync<D>(input: MemoizeAsyncConfig<D> | number): AsyncMem
           key = JSON.stringify(args);
         }
 
-        if (!config.cache.has(key)) {
-          const promise = originalMethod.apply(this, args)
-            .then((resp) => {
-              setTimeout(() => {
-                  config.cache.delete(key);
-                },
-                config.expirationTimeMs
-              );
-
-              return resp;
-            })
-            .catch((e) => {
-              config.cache.delete(key);
-
-              return Promise.reject(e);
-            });
-
-          config.cache.set(key, promise);
+        if (promCache.has(key)) {
+          return promCache.get(key);
         }
 
-        return config.cache.get(key);
+        const prom = new Promise<D>(async (resolve, reject) => {
+          if (await config.cache.has(key)) {
+            resolve(await config.cache.get(key));
+          } else {
+            try {
+              const data = await originalMethod.apply(this, args);
+              config.cache.set(key, data);
+
+              setTimeout(() => {
+                config.cache.delete(key);
+              }, config.expirationTimeMs);
+
+              resolve(data);
+            } catch (e) {
+              reject(e);
+            }
+          }
+
+          promCache.delete(key);
+        });
+
+        promCache.set(key, prom);
+
+        return prom;
+
+        // if (!promCache.has(key)) {
+        //   const promise = originalMethod.apply(this, args)
+        //     .then((resp) => {
+        //       setTimeout(() => {
+        //           promCache.delete(key);
+        //           config.cache.delete(key);
+        //         },
+        //         config.expirationTimeMs
+        //       );
+        //
+        //       config.cache.set(key, resp);
+        //
+        //       return resp;
+        //     })
+        //     .catch((e) => {
+        //       promCache.delete(key);
+        //
+        //       return Promise.reject(e);
+        //     });
+        //
+        //   promCache.set(key, promise);
+        // }
+
+        // return promCache.get(key);
       };
 
       return descriptor;

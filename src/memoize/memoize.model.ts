@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import {Method} from '..';
 
 export type KeyResolver = (...args: any[]) => string;
 
@@ -18,7 +18,3 @@ export interface MemoizeConfig<D> {
 export type Memoizable<D> = (target: any,
                              propertyName: string,
                              descriptor: TypedPropertyDescriptor<Method<D>>) => TypedPropertyDescriptor<Method<D>>;
-
-export type AsyncMethod<D> = Method<Promise<D>>;
-export type MemoizeAsyncConfig<D> = MemoizeConfig<Promise<D>>;
-export type AsyncMemoizable<D> = Memoizable<Promise<D>>;

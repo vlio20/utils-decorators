@@ -23,27 +23,36 @@ describe('memozie-async', () => {
     const resp1 = t.foo(1, 2);
     const resp2 = t.foo(1, 2);
 
-    expect(spy).toHaveBeenCalledWith(1, 2);
-    expect(spy).toBeCalledTimes(1);
-
-    const resp_1 = t.foo(1, 3);
-    expect(spy).toHaveBeenCalledWith(1, 3);
-    expect(spy).toBeCalledTimes(2);
-
-    setTimeout(async () => {
-      const resp3 = t.foo(1, 2);
+    setTimeout(() => {
       expect(spy).toHaveBeenCalledWith(1, 2);
+      expect(spy).toBeCalledTimes(1);
 
-      expect(spy).toBeCalledTimes(3);
-      expect(await resp1).toBe(3);
-      expect(await resp2).toBe(3);
-      expect(await resp3).toBe(3);
-      expect(await resp_1).toBe(4);
-      done();
-    }, 20);
+      const resp_1 = t.foo(1, 3);
+
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledWith(1, 3);
+        expect(spy).toBeCalledTimes(2);
+      }, 0);
+
+      setTimeout(async () => {
+        const resp3 = t.foo(1, 2);
+
+        setTimeout(async () => {
+          expect(spy).toHaveBeenCalledWith(1, 2);
+
+          expect(spy).toBeCalledTimes(3);
+
+          expect(await resp1).toBe(3);
+          expect(await resp2).toBe(3);
+          expect(await resp3).toBe(3);
+          expect(await resp_1).toBe(4);
+          done();
+        }, 0);
+      }, 20);
+    }, 0);
   });
 
-  it('should verify memoize key mapper', async () => {
+  it('should verify memoize key mapper', async (done) => {
     const mapper = jest.fn((x: string, y: string) => {
       return `${x}_${y}`;
     });
@@ -65,9 +74,12 @@ describe('memozie-async', () => {
     t.fooWithMapper('x', 'y');
     t.fooWithMapper('x', 'y');
 
-    expect(mapper.mock.calls.length).toBe(2);
-    expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
-    expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
+    setTimeout(() => {
+      expect(mapper.mock.calls.length).toBe(2);
+      expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
+      expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
+      done();
+    }, 0);
   });
 
   it('should make sure error thrown when decorator not set on method', () => {
@@ -108,13 +120,15 @@ describe('memozie-async', () => {
         expect(e).toBe('rejected');
       });
 
-      expect(spy).toHaveBeenCalledTimes(2);
-      done();
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledTimes(2);
+        done();
+      }, 0);
     }, 20);
   });
 
   it('should use provided cache', (done) => {
-    const cache = new Map<string, Promise<number>>();
+    const cache = new Map<string, number>();
 
     class T {
       @memoizeAsync<number>({expirationTimeMs: 30, cache})
@@ -134,12 +148,17 @@ describe('memozie-async', () => {
 
     setTimeout(() => {
       t.foo();
-      expect(spy).toHaveBeenCalledTimes(1);
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledTimes(1);
 
-      cache.delete('[]');
-      t.foo();
-      expect(spy).toHaveBeenCalledTimes(2);
-      done();
+        cache.delete('[]');
+        t.foo();
+
+        setTimeout(() => {
+          expect(spy).toHaveBeenCalledTimes(2);
+          done();
+        }, 0);
+      }, 0);
     }, 10);
   });
 
