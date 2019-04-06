@@ -24,7 +24,8 @@
     "lint": "tslint './src/**/*.ts'",
     "lint:fix": "tslint './src/**/*.ts' --fix",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "build": "tsc"
+    "build": "tsc",
+    "release": "npm run test && npm run build && npm publish dist"
   },
   "repository": {
     "type": "git",
