@@ -38,22 +38,30 @@ function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>;
 ## @delay (method)  
 Causes a delay in the invocation of the decorated method by given time (in ms).  
   
-```typescript function delay(delayMs: number): Delayable; ```  
+```typescript 
+function delay(delayMs: number): Delayable; 
+```  
   
 ## @debounce (method)  
 Causes a delay in the invocation of the decorated method by given time (in ms), if during the delay another invocation will happen, the delay will be restarted.  
   
-```typescript function debounce(delayMs: number): Debouncable; ```  
+```typescript 
+function debounce(delayMs: number): Debouncable; 
+```  
   
 ## @throttle (method)  
 Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
   
-```typescript function throttle(delayMs: number): Throttable; ```  
+```typescript 
+function throttle(delayMs: number): Throttable; 
+```  
   
 ## @refreshable (property)  
 This decorator provides an ability to access a property which value is being updated over and over in a given interval (in ms) by the returned value of the provided method. Note that the method can also return a promise which will be resolved and be after each interval.  
   
-```typescript function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; ```  
+```typescript 
+function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; 
+```  
   
 
 # Feedback
