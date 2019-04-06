@@ -15,7 +15,11 @@ Be default the key of the cached value will be the serialized (`JSON.stringify`)
 You can supply your own key resolver.    
 Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.        
       
-**API** ```typescript function memoize<D>(config: MemoizeConfig<D>): Memoizable<D>; function memoize<D>(expirationTimeMs: number): Memoizable<D>; ```   
+```typescript 
+function memoize<D>(config: MemoizeConfig<D>): Memoizable<D>; 
+function memoize<D>(expirationTimeMs: number): Memoizable<D>; 
+```   
+
 ## @memoizeAsync  (method)  
 Memoizes the promise that being returned by the decorated method.      
 If the promise would be rejected, the promise won't be memoized.       
@@ -26,7 +30,10 @@ Be default the key of the cached value will be the serialized (`JSON.stringify`)
 You can supply your own key resolver.    
 Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.        
       
-```typescript function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<D>; function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>; ```  
+```typescript 
+function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<D>; 
+function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>; 
+```  
   
 ## @delay (method)  
 Causes a delay in the invocation of the decorated method by given time (in ms).  
