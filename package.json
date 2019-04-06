@@ -20,9 +20,11 @@
   },
   "scripts": {
     "test": "tsc --noEmit && npm run lint && jest --coverage",
+    "jest": "jest",
     "lint": "tslint './src/**/*.ts'",
     "lint:fix": "tslint './src/**/*.ts' --fix",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
