@@ -11,6 +11,19 @@ The lib can be used both in node and in web application, it is built to be tree 
 ```bash
 npm i decorators-ts
 ```   
+
+# v1.1 release
+
+*decorators*
+[] before (method)
+[] after (method)
+[] readonly (property)
+[] onError (method)
+
+*info*
+[] contribution guide
+[] blog post
+
      
 ## @memoize (method)  
 Memoizes the response that is being returned by the decorated method.      
