@@ -6,7 +6,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/vlio20/ts-decorators/badge.svg?branch=master)](https://coveralls.io/repos/github/vlio20/ts-decorators/)      
   
 This library was highly inspired by lodash but uses decorators to implement it's util methods.   
-The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator.   
+The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator.
+
+```bash
+npm i decorators-ts
+```   
      
 ## @memoize (method)  
 Memoizes the response that is being returned by the decorated method.      
