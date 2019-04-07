@@ -14,15 +14,15 @@ npm i decorators-ts
 
 # v1.1 release
 
-*decorators*
-[] before (method)
-[] after (method)
-[] readonly (property)
-[] onError (method)
+**decorators**  
+- [ ] before (method)  
+- [ ] after (method)  
+- [ ] readonly (property)  
+- [ ] onError (method)  
 
-*info*
-[] contribution guide
-[] blog post
+**info**  
+- [ ] contribution guide  
+- [ ] blog post  
 
      
 ## @memoize (method)  
