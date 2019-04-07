@@ -1,5 +1,5 @@
 {
-  "name": "ts-decorators",
+  "name": "decorators-ts",
   "version": "1.0.0-alpha",
   "description": "ts-decorators for reducing repetative code",
   "main": "dist/src/index.js",
@@ -26,8 +26,11 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "release": "npm run clean && npm run test && npm run build && npm publish dist"
+    "release": "npm run clean && npm run test && npm run build && npm publish"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vlio20/ts-decorators.git"
