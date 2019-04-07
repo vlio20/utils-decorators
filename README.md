@@ -12,7 +12,7 @@ The lib can be used both in node and in web application, it is built to be tree 
 npm i decorators-ts
 ```   
 
-# v1.1 release
+# v1.1 release plan
 
 **decorators**  
 - [ ] before (method)  
@@ -23,6 +23,9 @@ npm i decorators-ts
 **info**  
 - [ ] contribution guide  
 - [ ] blog post  
+
+[![Build Status](https://travis-ci.org/vlio20/ts-decorators.svg?branch=v1.1)](https://travis-ci.org/vlio20/ts-decorators)      
+[![Coverage Status](https://coveralls.io/repos/github/vlio20/ts-decorators/badge.svg?branch=v1.1)](https://coveralls.io/repos/github/vlio20/ts-decorators/) 
 
      
 ## @memoize (method)  
