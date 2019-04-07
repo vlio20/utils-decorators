@@ -1,8 +1,9 @@
 {
   "name": "decorators-ts",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-alpha.1",
   "description": "ts-decorators for reducing repetitive code",
   "main": "dist/src/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.4.0",
