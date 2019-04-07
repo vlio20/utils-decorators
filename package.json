@@ -1,7 +1,7 @@
 {
   "name": "decorators-ts",
   "version": "1.0.0-alpha",
-  "description": "ts-decorators for reducing repetative code",
+  "description": "ts-decorators for reducing repetitive code",
   "main": "dist/src/index.js",
   "dependencies": {},
   "devDependencies": {
