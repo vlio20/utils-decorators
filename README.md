@@ -83,11 +83,11 @@ This decorator provides an ability to access a property which value is being upd
 function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; 
 ```  
   
-## @after (method)  
-Invocation of the decorated method will cause execution of the provided method to this decorator after the invocation of the decorated method.    
+## @before (method)  
+Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
   
 ```typescript 
-function after(config: BeforeConfig): Beforable; 
+function before(config: BeforeConfig): Beforable; 
 
 interface BeforeConfig {
   func: Function | string;
@@ -96,7 +96,22 @@ interface BeforeConfig {
 ```  
 
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
-- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.
+- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
+
+## @after (method)  
+Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
+  
+```typescript 
+function after(config: AfterConfig): Afterable; 
+
+interface AfterConfig {
+  func: Function | string;
+  wait?: boolean;
+}
+```  
+
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+- `wait`: should the invocation of the `func` method be delayed to the point when the decorated method will be resolved.  
 
 ----
 
