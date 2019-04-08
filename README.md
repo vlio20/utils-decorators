@@ -69,11 +69,11 @@ Causes a delay in the invocation of the decorated method by given time (in ms), 
 function debounce(delayMs: number): Debouncable; 
 ```  
   
-## @throttle (method)  
+## @before (method)  
 Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
   
 ```typescript 
-function throttle(delayMs: number): Throttable; 
+function before(delayMs: number): Throttable; 
 ```  
   
 ## @refreshable (property)  
