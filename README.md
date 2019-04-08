@@ -116,8 +116,8 @@ interface AfterConfig {
 ----
 
 ## Notes:  
-**Class methods:** some decorators expect you to provide a function as one of their attributes or arguments, for example in the `@after`.  
-Because of the way decorators currently work in JavaScript, there is no way to provide a class method from the same context. We will continue withe the `@after` example, the following code won't work:  
+**Class methods:** some decorators expect you to provide a function as one of their attributes or arguments, for example in the `@before`.  
+Because of the way decorators currently work in JavaScript, there is no way to provide a class method from the same context. We will continue withe the `@before` example, the following code won't work:  
 
 ```typescript
 class Worker {
@@ -125,7 +125,7 @@ class Worker {
     ...
   }
   
-  @after({
+  @before({
     func: this.fetchTasks.bind(this),
     wait: true
   })
