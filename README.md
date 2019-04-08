@@ -15,7 +15,7 @@ npm i decorators-ts
 # v1.1 release plan
 
 **decorators**  
-- [x] before (method)  
+- [x] after (method)  
 - [ ] after (method)  
 - [ ] readonly (property)  
 - [ ] onError (method)  
@@ -43,7 +43,7 @@ function memoize<D>(expirationTimeMs: number): Memoizable<D>;
 ## @memoizeAsync  (method)  
 Memoizes the promise that being returned by the decorated method.      
 If the promise would be rejected, the promise won't be memoized.       
-Another great feature of this decorator is that it delegates requests, for example if the same method has been called more than one time before the promise was resolved,     
+Another great feature of this decorator is that it delegates requests, for example if the same method has been called more than one time after the promise was resolved,     
 only one invocation of the decorated method will be invoked.      
       
 Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.       
@@ -69,11 +69,11 @@ Causes a delay in the invocation of the decorated method by given time (in ms), 
 function debounce(delayMs: number): Debouncable; 
 ```  
   
-## @before (method)  
+## @after (method)  
 Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
   
 ```typescript 
-function before(delayMs: number): Throttable; 
+function after(delayMs: number): Throttable; 
 ```  
   
 ## @refreshable (property)  
@@ -84,7 +84,7 @@ function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs
 ```  
   
 ## @before (method)  
-Invocation of the decorated method will cause execution of the provided method to this decorator before the invocation of the decorated method.    
+Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
   
 ```typescript 
 function before(config: BeforeConfig): Beforable; 
@@ -95,14 +95,29 @@ interface BeforeConfig {
 }
 ```  
 
-- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked before the decorated method.
-- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
+
+## @after (method)  
+Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
+  
+```typescript 
+function after(config: AfterConfig): Afterable; 
+
+interface AfterConfig {
+  func: Function | string;
+  wait?: boolean;
+}
+```  
+
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+- `wait`: should the invocation of the `func` method be delayed to the point when the decorated method will be resolved.  
 
 ----
 
 ## Notes:  
-**Class methods:** some decorators expect you to provide a function as one of their attributes or arguments, for example in the `@before`.  
-Because of the way decorators currently work in JavaScript, there is no way to provide a class method from the same context. We will continue withe the `@before` example, the following code won't work:  
+**Class methods:** some decorators expect you to provide a function as one of their attributes or arguments, for example in the `@after`.  
+Because of the way decorators currently work in JavaScript, there is no way to provide a class method from the same context. We will continue withe the `@after` example, the following code won't work:  
 
 ```typescript
 class Worker {
@@ -110,7 +125,7 @@ class Worker {
     ...
   }
   
-  @before({
+  @after({
     func: this.fetchTasks.bind(this),
     wait: true
   })
@@ -120,7 +135,7 @@ class Worker {
 }
 ```
 
-When the `@before` decorator code will be executed the instance of the class still won't exist, and this will cause `this` to be undefined.  
+When the `@after` decorator code will be executed the instance of the class still won't exist, and this will cause `this` to be undefined.  
 To overcome this issue, instead of providing a reference to the method you can provide the method name:
 
 ```typescript
@@ -129,7 +144,7 @@ class Worker {
     ...
   }
   
-  @before({
+  @after({
     func: 'fetchTasks',
     wait: true
   })
