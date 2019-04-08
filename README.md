@@ -15,8 +15,8 @@ npm i decorators-ts
 # v1.1 release plan
 
 **decorators**  
+- [x] before (method)  
 - [x] after (method)  
-- [ ] after (method)  
 - [ ] readonly (property)  
 - [ ] onError (method)  
 
@@ -69,11 +69,11 @@ Causes a delay in the invocation of the decorated method by given time (in ms), 
 function debounce(delayMs: number): Debouncable; 
 ```  
   
-## @after (method)  
+## @throttle (method)  
 Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
   
 ```typescript 
-function after(delayMs: number): Throttable; 
+function throttle(delayMs: number): Throttable; 
 ```  
   
 ## @refreshable (property)  
@@ -135,7 +135,7 @@ class Worker {
 }
 ```
 
-When the `@after` decorator code will be executed the instance of the class still won't exist, and this will cause `this` to be undefined.  
+When the `@before` decorator code will be executed the instance of the class still won't exist, and this will cause `this` to be `undefined`.  
 To overcome this issue, instead of providing a reference to the method you can provide the method name:
 
 ```typescript
@@ -144,7 +144,7 @@ class Worker {
     ...
   }
   
-  @after({
+  @before({
     func: 'fetchTasks',
     wait: true
   })
