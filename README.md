@@ -15,7 +15,7 @@ npm i decorators-ts
 # v1.1 release plan
 
 **decorators**  
-- [ ] before (method)  
+- [x] before (method)  
 - [ ] after (method)  
 - [ ] readonly (property)  
 - [ ] onError (method)  
@@ -69,11 +69,11 @@ Causes a delay in the invocation of the decorated method by given time (in ms), 
 function debounce(delayMs: number): Debouncable; 
 ```  
   
-## @throttle (method)  
+## @before (method)  
 Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
   
 ```typescript 
-function throttle(delayMs: number): Throttable; 
+function before(delayMs: number): Throttable; 
 ```  
   
 ## @refreshable (property)  
@@ -83,9 +83,64 @@ This decorator provides an ability to access a property which value is being upd
 function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; 
 ```  
   
+## @before (method)  
+Invocation of the decorated method will cause execution of the provided method to this decorator before the invocation of the decorated method.    
+  
+```typescript 
+function before(config: BeforeConfig): Beforable; 
+
+interface BeforeConfig {
+  func: Function | string;
+  wait?: boolean;
+}
+```  
+
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked before the decorated method.
+- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.
+
+----
+
+## Notes:  
+**Class methods:** some decorators expect you to provide a function as one of their attributes or arguments, for example in the `@before`.  
+Because of the way decorators currently work in JavaScript, there is no way to provide a class method from the same context. We will continue withe the `@before` example, the following code won't work:  
+
+```typescript
+class Worker {
+  fetchTasks(): Promise<void> {
+    ...
+  }
+  
+  @before({
+    func: this.fetchTasks.bind(this),
+    wait: true
+  })
+  doWork(workId: number): Promise<void> {
+    ...
+  }
+}
+```
+
+When the `@before` decorator code will be executed the instance of the class still won't exist, and this will cause `this` to be undefined.  
+To overcome this issue, instead of providing a reference to the method you can provide the method name:
+
+```typescript
+class Worker {
+  fetchTasks(): Promise<void> {
+    ...
+  }
+  
+  @before({
+    func: 'fetchTasks',
+    wait: true
+  })
+  doWork(workId: number): Promise<void> {
+    ...
+  }
+}
+```
+
+This way, during runtime, we can trigger the provided method by it's name with the `this` (class) context.
 
 # Feedback
 I will be more than happy to hear your feedback, don't hesitate to ask any question or open an issue. PRs are always welcomed :)  
-Also, I will be happy to hear about new ideas for new decorators, if you have such, please open an issue and describe the requirements and features of your decorator.
-
-  
+Also, I will be happy to hear about new ideas for new decorators, if you have such, please open an issue and describe the requirements and features of your decorator. 

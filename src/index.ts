@@ -5,3 +5,4 @@ export * from './delay/delay.index';
 export * from './debounce/debounce.index';
 export * from './throttle/throttle.index';
 export * from './refreshable/refreshable.index';
+export * from './before/before.index';

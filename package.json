@@ -20,7 +20,7 @@
     "typescript": "^3.3.4000"
   },
   "scripts": {
-    "test": "tsc --noEmit && npm run lint && jest --coverage",
+    "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage",
     "jest": "jest",
     "lint": "tslint './src/**/*.ts'",
     "lint:fix": "tslint './src/**/*.ts' --fix",
