@@ -98,13 +98,6 @@ interface BeforeConfig {
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
 
-## @readonly (property)  
-This decorator prevents setting new values to decorated property.  
-  
-```typescript 
-function readonly<T>(target: T, key: keyof T): void; 
-``` 
-
 ## @after (method)  
 Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
   
@@ -119,6 +112,14 @@ interface AfterConfig {
 
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
 - `wait`: should the invocation of the `func` method be delayed to the point when the decorated method will be resolved.  
+
+
+## @readonly (property)  
+This decorator prevents setting new values to decorated property.  
+  
+```typescript 
+function readonly<T>(target: T, key: keyof T): void; 
+``` 
 
 ----
 
