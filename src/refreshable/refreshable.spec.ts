@@ -7,7 +7,7 @@ describe('refreshable', () => {
       return counter++ % 2;
     };
 
-    const dec = refreshable<number>(foo, 10);
+    const dec = refreshable<any, number>(foo, 10);
     const t = <{prop: number}>{prop: 9};
     dec(t, 'prop');
 

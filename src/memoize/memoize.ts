@@ -1,16 +1,16 @@
 import {Memoizable, MemoizeConfig} from './memoize.model';
-import {Method} from '../common/model/common.model';
+import {Method} from '..';
 
-export function memoize<D>(config: MemoizeConfig<D>): Memoizable<D>;
-export function memoize<D>(expirationTimeMs: number): Memoizable<D>;
-export function memoize<D>(input: MemoizeConfig<D> | number): Memoizable<D> {
+export function memoize<T, D>(config: MemoizeConfig<D>): Memoizable<T, D>;
+export function memoize<T, D>(expirationTimeMs: number): Memoizable<T, D>;
+export function memoize<T, D>(input: MemoizeConfig<D> | number): Memoizable<T, D> {
   const defaultConfig: MemoizeConfig<D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
   };
 
-  return (target: any,
-          propertyName: string,
+  return (target: T,
+          propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<D>>): TypedPropertyDescriptor<Method<D>> => {
     let config = <MemoizeConfig<D>>{
       ...defaultConfig

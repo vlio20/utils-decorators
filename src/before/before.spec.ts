@@ -25,7 +25,7 @@ describe('before', () => {
         expect(counter++).toBe(0);
       }
 
-      @before({
+      @before<T>({
         func: 'before'
       })
       foo(x: number): void {
@@ -60,7 +60,7 @@ describe('before', () => {
 
     class T {
 
-      @before({
+      @before<T>({
         func: beforeFunc
       })
       foo(x: number): void {
@@ -98,7 +98,7 @@ describe('before', () => {
 
     class T {
 
-      @before({
+      @before<T>({
         func: beforeFunc
       })
       foo(x: number): void {
@@ -131,7 +131,7 @@ describe('before', () => {
 
     class T {
 
-      @before({
+      @before<T>({
         func: beforeFunc,
         wait: true
       })

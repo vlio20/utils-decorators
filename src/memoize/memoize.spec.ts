@@ -5,7 +5,7 @@ describe('memozie', () => {
     class T {
       prop: 3;
 
-      @memoize<number>(10)
+      @memoize<T, number>(10)
       foo(x: number, y: number): number {
         return this.goo(x, y);
       }
@@ -44,7 +44,7 @@ describe('memozie', () => {
 
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidMemoize: any = memoize<string>(50);
+      const nonValidMemoize: any = memoize<T, string>(50);
 
       class T {
         @nonValidMemoize
@@ -59,7 +59,7 @@ describe('memozie', () => {
     const cache = new Map<string, number>();
 
     class T {
-      @memoize<number>({expirationTimeMs: 30, cache})
+      @memoize<T, number>({expirationTimeMs: 30, cache})
       foo(): number {
         return this.goo();
       }
@@ -91,7 +91,7 @@ describe('memozie', () => {
     });
 
     class T {
-      @memoize<string>({expirationTimeMs: 10, keyResolver: mapper})
+      @memoize<T, string>({expirationTimeMs: 10, keyResolver: mapper})
       fooWithMapper(x: string, y: string): string {
         return this.goo(x, y);
       }

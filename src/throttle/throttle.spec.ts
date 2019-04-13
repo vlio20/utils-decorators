@@ -3,7 +3,7 @@ import {throttle} from './throttle';
 describe('throttle', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidThrottle: any = throttle(50);
+      const nonValidThrottle: any = throttle<T>(50);
 
       class T {
         @nonValidThrottle
@@ -18,7 +18,7 @@ describe('throttle', () => {
     class T {
       prop: number;
 
-      @throttle(15)
+      @throttle<T>(15)
       foo(x: number): void {
         return this.goo(x);
       }

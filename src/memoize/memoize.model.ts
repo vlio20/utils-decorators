@@ -15,6 +15,6 @@ export interface MemoizeConfig<D> {
   expirationTimeMs: number;
 }
 
-export type Memoizable<D> = (target: any,
-                             propertyName: string,
+export type Memoizable<T, D> = (target: T,
+                             propertyName: keyof T,
                              descriptor: TypedPropertyDescriptor<Method<D>>) => TypedPropertyDescriptor<Method<D>>;

@@ -1,9 +1,9 @@
-import {Delayable} from './delay.model';
 import {Method} from '..';
+import {Decorator} from '../common/model/common.model';
 
-export function delay(delayMs: number): Delayable {
-  return (target: any,
-          propertyName: string,
+export function delay<T>(delayMs: number): Decorator<T> {
+  return (target: T,
+          propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
     if (descriptor.value != null) {

@@ -1,10 +1,4 @@
-import {Method} from '..';
-
-export type Afterable = (target: any,
-                         propertyName: string,
-                         descriptor: TypedPropertyDescriptor<Method<any>>) => TypedPropertyDescriptor<Method<any>>;
-
-export interface AfterConfig {
-  func: Function | string;
+export interface AfterConfig<T> {
+  func: Function | keyof T;
   wait?: boolean;
 }

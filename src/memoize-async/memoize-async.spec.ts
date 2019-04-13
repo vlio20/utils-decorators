@@ -5,7 +5,7 @@ describe('memozie-async', () => {
     class T {
       prop: number;
 
-      @memoizeAsync<number>(10)
+      @memoizeAsync<T, number>(10)
       foo(x: number, y: number): Promise<number> {
         return this.goo(x, y);
       }
@@ -58,7 +58,7 @@ describe('memozie-async', () => {
     });
 
     class T {
-      @memoizeAsync<string>({expirationTimeMs: 10, keyResolver: mapper})
+      @memoizeAsync<T, string>({expirationTimeMs: 10, keyResolver: mapper})
       fooWithMapper(x: string, y: string): Promise<string> {
         return this.goo(x, y);
       }
@@ -84,7 +84,7 @@ describe('memozie-async', () => {
 
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidMemoizeAsync: any = memoizeAsync<string>(50);
+      const nonValidMemoizeAsync: any = memoizeAsync<T, string>(50);
 
       class T {
         @nonValidMemoizeAsync
@@ -97,7 +97,7 @@ describe('memozie-async', () => {
 
   it('should make sure that when promise rejected it is removed from cache', (done) => {
     class T {
-      @memoizeAsync<string>(20)
+      @memoizeAsync<T, string>(20)
       foo(): Promise<string> {
         return this.goo();
       }
@@ -131,7 +131,7 @@ describe('memozie-async', () => {
     const cache = new Map<string, number>();
 
     class T {
-      @memoizeAsync<number>({expirationTimeMs: 30, cache})
+      @memoizeAsync<T, number>({expirationTimeMs: 30, cache})
       foo(): Promise<number> {
         return this.goo();
       }
@@ -164,12 +164,12 @@ describe('memozie-async', () => {
 
   it('should use different scope to different usages', async () => {
     class T {
-      @memoizeAsync<number>(20)
+      @memoizeAsync<T, number>(20)
       one(): Promise<number> {
         return Promise.resolve(1);
       }
 
-      @memoizeAsync<number>(20)
+      @memoizeAsync<T, number>(20)
       two(): Promise<number> {
         return Promise.resolve(2);
       }

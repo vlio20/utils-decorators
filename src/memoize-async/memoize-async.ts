@@ -1,8 +1,8 @@
 import {AsyncMemoizable, AsyncMethod, MemoizeAsyncConfig} from '..';
 
-export function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<D>;
-export function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>;
-export function memoizeAsync<D>(input: MemoizeAsyncConfig<D> | number): AsyncMemoizable<D> {
+export function memoizeAsync<T, D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<T, D>;
+export function memoizeAsync<T, D>(expirationTimeMs: number): AsyncMemoizable<T, D>;
+export function memoizeAsync<T, D>(input: MemoizeAsyncConfig<D> | number): AsyncMemoizable<T, D> {
   const defaultConfig: MemoizeAsyncConfig<D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
@@ -10,7 +10,9 @@ export function memoizeAsync<D>(input: MemoizeAsyncConfig<D> | number): AsyncMem
 
   const promCache = new Map<string, Promise<D>>();
 
-  return (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
+  return (target: T,
+          propertyName: keyof T,
+          descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
     let config = <MemoizeAsyncConfig<D>>{
       ...defaultConfig
     };
