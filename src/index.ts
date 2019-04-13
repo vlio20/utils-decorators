@@ -8,3 +8,4 @@ export * from './refreshable/refreshable.index';
 export * from './before/before.index';
 export * from './after/after.index';
 export * from './readonly/readonly.index';
+export * from './on-error/on-error.index';
