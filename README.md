@@ -113,13 +113,27 @@ interface AfterConfig {
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
 - `wait`: should the invocation of the `func` method be delayed to the point when the decorated method will be resolved.  
 
-
 ## @readonly (property)  
 This decorator prevents setting new values to decorated property.  
   
 ```typescript 
 function readonly<T>(target: T, key: keyof T): void; 
 ``` 
+
+## @onError (method)  
+This decorator will catch errors thrown from the decorated method and invoke the provided `func` function. 
+The decorator will provide `func` the error that it cached and the arguments provided to the decorated method.   
+Please note that that it won't catch async errors.
+
+```typescript 
+function onError(config: OnErrorConfig): OnErrorable; 
+
+interface OnErrorConfig {
+  func: (e: error, args: any[]) => any | string;
+}
+```  
+
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
 
 ----
 
