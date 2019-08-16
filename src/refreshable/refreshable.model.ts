@@ -1,2 +1,2 @@
 export type Refreshable<T> = (target: T,
-                           propertyName: keyof T) => void;
+                              propertyName: keyof T) => void;

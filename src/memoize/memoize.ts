@@ -1,10 +1,10 @@
 import {Memoizable, MemoizeConfig} from './memoize.model';
 import {Method} from '..';
 
-export function memoize<T, D>(config: MemoizeConfig<D>): Memoizable<T, D>;
+export function memoize<T, D>(config: MemoizeConfig<T, D>): Memoizable<T, D>;
 export function memoize<T, D>(expirationTimeMs: number): Memoizable<T, D>;
-export function memoize<T, D>(input: MemoizeConfig<D> | number): Memoizable<T, D> {
-  const defaultConfig: MemoizeConfig<D> = {
+export function memoize<T, D>(input: MemoizeConfig<T, D> | number): Memoizable<T, D> {
+  const defaultConfig: MemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
   };
@@ -12,15 +12,15 @@ export function memoize<T, D>(input: MemoizeConfig<D> | number): Memoizable<T, D
   return (target: T,
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<D>>): TypedPropertyDescriptor<Method<D>> => {
-    let config = <MemoizeConfig<D>>{
+    let resolvedConfig = <MemoizeConfig<T, D>>{
       ...defaultConfig
     };
 
     if (typeof input === 'number') {
-      config.expirationTimeMs = input;
+      resolvedConfig.expirationTimeMs = input;
     } else {
-      config = {
-        ...config,
+      resolvedConfig = {
+        ...resolvedConfig,
         ...input
       };
     }
@@ -29,25 +29,29 @@ export function memoize<T, D>(input: MemoizeConfig<D> | number): Memoizable<T, D
       const originalMethod = descriptor.value;
       descriptor.value = function (...args: any[]): D {
         let key;
+        const keyResolver = typeof resolvedConfig.keyResolver === 'string' ?
+          this[resolvedConfig.keyResolver].bind(this) :
+          resolvedConfig.keyResolver;
 
-        if (config.keyResolver) {
-          key = config.keyResolver(...args);
+        if (keyResolver) {
+          key = keyResolver(...args);
         } else {
           key = JSON.stringify(args);
         }
 
-        if (!config.cache.has(key)) {
+        if (!resolvedConfig.cache.has(key)) {
           const response = originalMethod.apply(this, args);
+
           setTimeout(() => {
-              config.cache.delete(key);
+              resolvedConfig.cache.delete(key);
             },
-            config.expirationTimeMs
+            resolvedConfig.expirationTimeMs
           );
 
-          config.cache.set(key, response);
+          resolvedConfig.cache.set(key, response);
         }
 
-        return config.cache.get(key);
+        return resolvedConfig.cache.get(key);
       };
 
       return descriptor;

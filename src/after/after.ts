@@ -19,8 +19,7 @@ export function after<T>(config: AfterConfig<T>): Decorator<T> {
     if (descriptor.value != null) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<void> {
-        const afterFunc = typeof resolvedConfig.func === 'string' ?
-          this[resolvedConfig.func].bind(this) :
+        const afterFunc = typeof resolvedConfig.func === 'string' ? this[resolvedConfig.func].bind(this) :
           resolvedConfig.func;
 
         if (resolvedConfig.wait) {

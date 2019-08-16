@@ -12,91 +12,6 @@ The lib can be used both in node and in web application, it is built to be tree 
 npm i decorators-ts
 ```   
 
-# v1.1 release plan
-
-**decorators**  
-- [x] before (method)  
-- [x] after (method)  
-- [ ] readonly (property)  
-- [ ] onError (method)  
-
-**info**  
-- [ ] contribution guide  
-- [ ] blog post  
-
-[![Build Status](https://travis-ci.org/vlio20/ts-decorators.svg?branch=v1.1)](https://travis-ci.org/vlio20/ts-decorators)      
-[![Coverage Status](https://coveralls.io/repos/github/vlio20/ts-decorators/badge.svg?branch=v1.1)](https://coveralls.io/repos/github/vlio20/ts-decorators/) 
-
-     
-## @memoize (method)  
-Memoizes the response that is being returned by the decorated method.      
-    
-Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.       
-You can supply your own key resolver.    
-Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.        
-      
-```typescript 
-function memoize<D>(config: MemoizeConfig<D>): Memoizable<D>; 
-function memoize<D>(expirationTimeMs: number): Memoizable<D>; 
-```   
-
-## @memoizeAsync  (method)  
-Memoizes the promise that being returned by the decorated method.      
-If the promise would be rejected, the promise won't be memoized.       
-Another great feature of this decorator is that it delegates requests, for example if the same method has been called more than one time after the promise was resolved,     
-only one invocation of the decorated method will be invoked.      
-      
-Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.       
-You can supply your own key resolver.    
-Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.        
-      
-```typescript 
-function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<D>; 
-function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>; 
-```  
-  
-## @delay (method)  
-Causes a delay in the invocation of the decorated method by given time (in ms).  
-  
-```typescript 
-function delay(delayMs: number): Delayable; 
-```  
-  
-## @debounce (method)  
-Causes a delay in the invocation of the decorated method by given time (in ms), if during the delay another invocation will happen, the delay will be restarted.  
-  
-```typescript 
-function debounce(delayMs: number): Debouncable; 
-```  
-  
-## @throttle (method)  
-Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
-  
-```typescript 
-function throttle(delayMs: number): Throttable; 
-```  
-  
-## @refreshable (property)  
-This decorator provides an ability to access a property which value is being updated over and over in a given interval (in ms) by the returned value of the provided method. Note that the method can also return a promise which will be resolved and be after each interval.  
-  
-```typescript 
-function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; 
-```  
-  
-## @before (method)  
-Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
-  
-```typescript 
-function before(config: BeforeConfig): Beforable; 
-
-interface BeforeConfig {
-  func: Function | string;
-  wait?: boolean;
-}
-```  
-
-- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
-- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
 
 ## @after (method)  
 Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
@@ -113,12 +28,79 @@ interface AfterConfig {
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
 - `wait`: should the invocation of the `func` method be delayed to the point when the decorated method will be resolved.  
 
-## @readonly (property)  
-This decorator prevents setting new values to decorated property.  
+  
+## @before (method)  
+Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
   
 ```typescript 
-function readonly<T>(target: T, key: keyof T): void; 
-``` 
+function before(config: BeforeConfig): Beforable; 
+
+interface BeforeConfig {
+  func: Function | string;
+  wait?: boolean;
+}
+```  
+
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
+  
+## @debounce (method)  
+Causes a delay in the invocation of the decorated method by given time (in ms), if during the delay another invocation will happen, the delay will be restarted.  
+  
+```typescript 
+function debounce(delayMs: number): Debouncable; 
+```  
+
+  
+## @delay (method)  
+Causes a delay in the invocation of the decorated method by given time (in ms).  
+  
+```typescript 
+function delay(delayMs: number): Delayable; 
+```  
+     
+## @memoize (method)  
+Memoizes the response that is being returned by the decorated method.      
+    
+Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.       
+You can supply your own key resolver.    
+Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.        
+      
+```typescript 
+function memoize<D>(config: MemoizeConfig<D>): Memoizable<D>; 
+function memoize<D>(expirationTimeMs: number): Memoizable<D>; 
+
+interface MemoizeConfig<T, D> {
+  cache?: Cache<D>;
+  keyResolver?: KeyResolver | keyof T;
+  expirationTimeMs?: number;
+}
+```   
+
+- `cache`: A cache object the previous values would be stored, needs to implement the `Cahce<D> interface`.
+- `keyResolver`: A custom resolver for the cache key.
+- `expirationTimeMs`: A TTL (time to leave) the cache.  
+
+
+## @memoizeAsync  (method)  
+Memoizes the promise that being returned by the decorated method.      
+If the promise would be rejected, the promise won't be memoized.       
+Another great feature of this decorator is that it delegates requests, for example if the same method has been called more than one time after the promise was resolved,     
+only one invocation of the decorated method will be invoked.      
+      
+Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.       
+You can supply your own key resolver.    
+Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.        
+      
+```typescript 
+function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<D>; 
+function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>; 
+
+type MemoizeAsyncConfig<T, D> = MemoizeConfig<T, D>
+```  
+
+See `MemoizeConfig<T, D>` above.
+
 
 ## @onError (method)  
 This decorator will catch errors thrown from the decorated method and invoke the provided `func` function. 
@@ -133,7 +115,30 @@ interface OnErrorConfig {
 }
 ```  
 
-- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+`func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+
+
+## @readonly (property)  
+This decorator prevents setting new values to decorated property.  
+  
+```typescript 
+function readonly<T>(target: T, key: keyof T): void; 
+``` 
+
+  
+## @refreshable (property)  
+This decorator provides an ability to access a property which value is being updated over and over in a given interval (in ms) by the returned value of the provided method. Note that the method can also return a promise which will be resolved and be after each interval.  
+  
+```typescript 
+function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; 
+```  
+
+## @throttle (method)  
+Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
+  
+```typescript 
+function throttle(delayMs: number): Throttable; 
+```  
 
 ----
 

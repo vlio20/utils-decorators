@@ -82,6 +82,38 @@ describe('memozie-async', () => {
     }, 0);
   });
 
+  it('should verify memoize key mapper as string - target method', async (done) => {
+    class T {
+      mapper(x: string, y: string): string {
+        return `${x}_${y}`;
+      }
+
+      @memoizeAsync<T, string>({expirationTimeMs: 10, keyResolver: 'mapper'})
+      fooWithMapper(x: string, y: string): Promise<string> {
+        return this.goo(x, y);
+      }
+
+      goo(x: string, y: string): Promise<string> {
+        return Promise.resolve(x + y);
+      }
+    }
+
+    const t = new T();
+    const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
+    const mapper = jest.spyOn(T.prototype, 'mapper');
+
+    t.fooWithMapper('x', 'y');
+    t.fooWithMapper('x', 'y');
+
+    setTimeout(() => {
+      expect(mapper).toHaveBeenCalledTimes(2);
+      expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
+      expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
+      expect(mapper).toHaveBeenCalledWith('x', 'y');
+      done();
+    }, 0);
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidMemoizeAsync: any = memoizeAsync<T, string>(50);

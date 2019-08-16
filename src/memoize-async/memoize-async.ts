@@ -1,9 +1,9 @@
 import {AsyncMemoizable, AsyncMethod, MemoizeAsyncConfig} from '..';
 
-export function memoizeAsync<T, D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<T, D>;
+export function memoizeAsync<T, D>(config: MemoizeAsyncConfig<T, D>): AsyncMemoizable<T, D>;
 export function memoizeAsync<T, D>(expirationTimeMs: number): AsyncMemoizable<T, D>;
-export function memoizeAsync<T, D>(input: MemoizeAsyncConfig<D> | number): AsyncMemoizable<T, D> {
-  const defaultConfig: MemoizeAsyncConfig<D> = {
+export function memoizeAsync<T, D>(input: MemoizeAsyncConfig<T, D> | number): AsyncMemoizable<T, D> {
+  const defaultConfig: MemoizeAsyncConfig<any, D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
   };
@@ -13,15 +13,15 @@ export function memoizeAsync<T, D>(input: MemoizeAsyncConfig<D> | number): Async
   return (target: T,
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
-    let config = <MemoizeAsyncConfig<D>>{
+    let resolvedConfig = <MemoizeAsyncConfig<T, D>>{
       ...defaultConfig
     };
 
     if (typeof input === 'number') {
-      config.expirationTimeMs = input;
+      resolvedConfig.expirationTimeMs = input;
     } else {
-      config = {
-        ...config,
+      resolvedConfig = {
+        ...resolvedConfig,
         ...input
       };
     }
@@ -29,10 +29,14 @@ export function memoizeAsync<T, D>(input: MemoizeAsyncConfig<D> | number): Async
     if (descriptor.value != null) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<D> {
+        const keyResolver = typeof resolvedConfig.keyResolver === 'string' ?
+          this[resolvedConfig.keyResolver].bind(this) :
+          resolvedConfig.keyResolver;
+
         let key;
 
-        if (config.keyResolver) {
-          key = config.keyResolver(...args);
+        if (keyResolver) {
+          key = keyResolver(...args);
         } else {
           key = JSON.stringify(args);
         }
@@ -42,16 +46,16 @@ export function memoizeAsync<T, D>(input: MemoizeAsyncConfig<D> | number): Async
         }
 
         const prom = new Promise<D>(async (resolve, reject) => {
-          if (await config.cache.has(key)) {
-            resolve(await config.cache.get(key));
+          if (await resolvedConfig.cache.has(key)) {
+            resolve(await resolvedConfig.cache.get(key));
           } else {
             try {
               const data = await originalMethod.apply(this, args);
-              config.cache.set(key, data);
+              resolvedConfig.cache.set(key, data);
 
               setTimeout(() => {
-                config.cache.delete(key);
-              }, config.expirationTimeMs);
+                resolvedConfig.cache.delete(key);
+              }, resolvedConfig.expirationTimeMs);
 
               resolve(data);
             } catch (e) {
