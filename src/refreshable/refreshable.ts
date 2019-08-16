@@ -1,8 +1,8 @@
 import {Method} from '..';
 import {Refreshable} from './refreshable.model';
 
-export function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable {
-  return function (target: Object, key: string): void {
+export function refreshable<T, D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable<T> {
+  return function (target: T, key: keyof T): void {
     let data: D;
 
     setInterval(async () => {

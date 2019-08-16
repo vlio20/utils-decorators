@@ -5,6 +5,8 @@ node_js:
 branches:
   only:
     - master
+    - v1.1
+    - next
 cache:
   directories:
     - node_modules

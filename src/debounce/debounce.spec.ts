@@ -18,7 +18,7 @@ describe('debounce', () => {
     class T {
       prop: number;
 
-      @debounce(15)
+      @debounce<T>(15)
       foo(): void {
         return this.goo();
       }
@@ -54,7 +54,7 @@ describe('debounce', () => {
 
   it('should verify method params are passed', (done) => {
     class T {
-      @debounce(5)
+      @debounce<T>(5)
       foo(x: number, y: number): void {
         return this.goo(x, y);
       }
