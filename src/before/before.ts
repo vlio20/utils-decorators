@@ -1,18 +1,19 @@
 import {Method} from '..';
-import {Beforable, BeforeConfig} from './before.model';
+import {BeforeConfig} from './before.model';
+import {Decorator} from '../common/model/common.model';
 
-const defaultConfig: Partial<BeforeConfig> = {
+const defaultConfig: Partial<BeforeConfig<any>> = {
   wait: false
 };
 
-export function before(config: BeforeConfig): Beforable {
-  const resolvedConfig = {
+export function before<T>(config: BeforeConfig<T>): Decorator<T> {
+  const resolvedConfig: BeforeConfig<T> = {
     ...defaultConfig,
     ...config
   };
 
-  return (target: any,
-          propertyName: string,
+  return (target: T,
+          propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
     if (descriptor.value != null) {

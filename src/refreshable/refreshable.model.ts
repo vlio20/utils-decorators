@@ -1,2 +1,2 @@
-export type Refreshable = (target: Object,
-                           propertyName: string) => void;
+export type Refreshable<T> = (target: T,
+                              propertyName: keyof T) => void;

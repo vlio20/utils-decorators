@@ -5,7 +5,7 @@ describe('memozie', () => {
     class T {
       prop: 3;
 
-      @memoize<number>(10)
+      @memoize<T, number>(10)
       foo(x: number, y: number): number {
         return this.goo(x, y);
       }
@@ -44,7 +44,7 @@ describe('memozie', () => {
 
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidMemoize: any = memoize<string>(50);
+      const nonValidMemoize: any = memoize<T, string>(50);
 
       class T {
         @nonValidMemoize
@@ -59,7 +59,7 @@ describe('memozie', () => {
     const cache = new Map<string, number>();
 
     class T {
-      @memoize<number>({expirationTimeMs: 30, cache})
+      @memoize<T, number>({expirationTimeMs: 30, cache})
       foo(): number {
         return this.goo();
       }
@@ -85,13 +85,13 @@ describe('memozie', () => {
     }, 10);
   });
 
-  it('should verify memoize key mapper', async () => {
+  it('should verify memoize key mapper as function', async () => {
     const mapper = jest.fn((x: string, y: string) => {
       return `${x}_${y}`;
     });
 
     class T {
-      @memoize<string>({expirationTimeMs: 10, keyResolver: mapper})
+      @memoize<T, string>({expirationTimeMs: 10, keyResolver: mapper})
       fooWithMapper(x: string, y: string): string {
         return this.goo(x, y);
       }
@@ -108,6 +108,34 @@ describe('memozie', () => {
     t.fooWithMapper('x', 'y');
 
     expect(mapper.mock.calls.length).toBe(2);
+    expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
+    expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
+  });
+
+  it('should verify memoize key mapper as string - method name', async () => {
+    class T {
+      mapper(x: string, y: string): string {
+        return `${x}_${y}`;
+      }
+
+      @memoize<T, string>({expirationTimeMs: 10, keyResolver: 'mapper'})
+      fooWithInnerMapper(x: string, y: string): string {
+        return this.goo(x, y);
+      }
+
+      goo(x: string, y: string): string {
+        return x + y;
+      }
+    }
+
+    const t = new T();
+    const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
+    const spyMapper = jest.spyOn(T.prototype, 'mapper');
+
+    t.fooWithInnerMapper('x', 'y');
+    t.fooWithInnerMapper('x', 'y');
+
+    expect(spyMapper).toHaveBeenCalledTimes(2);
     expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
     expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
   });

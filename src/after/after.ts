@@ -1,25 +1,25 @@
 import {Method} from '..';
-import {Afterable, AfterConfig} from './after.model';
+import {AfterConfig} from './after.model';
+import {Decorator} from '../common/model/common.model';
 
-const defaultConfig: Partial<AfterConfig> = {
+const defaultConfig: Partial<AfterConfig<any>> = {
   wait: false
 };
 
-export function after(config: AfterConfig): Afterable {
-  const resolvedConfig = {
+export function after<T>(config: AfterConfig<T>): Decorator<T> {
+  const resolvedConfig: AfterConfig<T> = {
     ...defaultConfig,
     ...config
   };
 
-  return (target: any,
-          propertyName: string,
+  return (target: T,
+          propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
     if (descriptor.value != null) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<void> {
-        const afterFunc = typeof resolvedConfig.func === 'string' ?
-          this[resolvedConfig.func].bind(this) :
+        const afterFunc = typeof resolvedConfig.func === 'string' ? this[resolvedConfig.func].bind(this) :
           resolvedConfig.func;
 
         if (resolvedConfig.wait) {

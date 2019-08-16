@@ -18,7 +18,7 @@ describe('delay', () => {
     class T {
       prop: number;
 
-      @delay(5)
+      @delay<T>(5)
       foo(x: number): void {
         return this.goo(x);
       }

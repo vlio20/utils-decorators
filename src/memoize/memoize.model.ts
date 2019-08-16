@@ -9,12 +9,12 @@ export interface Cache<D> {
   has: (key: string) => boolean;
 }
 
-export interface MemoizeConfig<D> {
+export interface MemoizeConfig<T, D> {
   cache?: Cache<D>;
-  keyResolver?: KeyResolver;
-  expirationTimeMs: number;
+  keyResolver?: KeyResolver | keyof T;
+  expirationTimeMs?: number;
 }
 
-export type Memoizable<D> = (target: any,
-                             propertyName: string,
-                             descriptor: TypedPropertyDescriptor<Method<D>>) => TypedPropertyDescriptor<Method<D>>;
+export type Memoizable<T, D> = (target: T,
+                                propertyName: keyof T,
+                                descriptor: TypedPropertyDescriptor<Method<D>>) => TypedPropertyDescriptor<Method<D>>;

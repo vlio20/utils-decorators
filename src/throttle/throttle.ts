@@ -1,9 +1,9 @@
 import {Method} from '..';
-import {Throttable} from './throttle.model';
+import {Decorator} from '../common/model/common.model';
 
-export function throttle(delayMs: number): Throttable {
-  return (target: any,
-          propertyName: string,
+export function throttle<T>(delayMs: number): Decorator<T> {
+  return (target: T,
+          propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
     if (descriptor.value != null) {
