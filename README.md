@@ -61,6 +61,15 @@ interface BeforeConfig {
 
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked before the decorated method.
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
+    
+    
+## @cancel-previous (method)  
+Invocation of the decorated method will cause the a rejection of the previous invocation with an error of `CancelPromise` type.    
+  
+```typescript 
+function cancelPrevious(): CancelPreviousable<T, D>; 
+```    
+  
   
 ## @debounce (method)  
 Causes a delay in the invocation of the decorated method by given time (in ms), if during the delay another invocation will happen, the delay will be restarted.  
@@ -76,6 +85,7 @@ Causes a delay in the invocation of the decorated method by given time (in ms).
 ```typescript 
 function delay(delayMs: number): Delayable; 
 ```  
+     
      
 ## @memoize (method)  
 Memoizes the response that is being returned by the decorated method.      
@@ -159,6 +169,7 @@ interface RefreshableConfig<D> {
 
 - `dataProvider`: the function that will provide the data to the decorated attribute.
 - `intervalMs`: the time interval (in milliseconds) in which the data will be refreshed .
+
 
 ## @throttle (method)  
 Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
