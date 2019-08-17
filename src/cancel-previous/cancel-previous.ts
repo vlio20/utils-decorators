@@ -20,13 +20,13 @@ export function cancelPrevious<T, D>(): CancelPreviousable<T, D> {
             .then((data: D) => resolve(data))
             .catch((err) => reject(err));
         });
-      }
+      };
 
       return descriptor;
     } else {
       throw Error('@cancelPrevious is applicable only on a methods.');
     }
-  }
+  };
 }
 
 export class CanceledPromise extends Error {

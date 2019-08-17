@@ -40,12 +40,13 @@ describe('cancelPrevious', () => {
         .catch((e) => {
           if (e instanceof CanceledPromise) {
             cancelHappened++;
+
             return;
           } else {
             throw new Error(`should't get here`);
           }
         });
-    }
+    };
 
     func(10);
 
@@ -87,12 +88,13 @@ describe('cancelPrevious', () => {
         .catch((e) => {
           if (e instanceof CanceledPromise) {
             cancelHappened++;
+
             return;
           } else {
             throw new Error(`should't get here`);
           }
         });
-    }
+    };
 
     func(10);
 
@@ -129,7 +131,7 @@ describe('cancelPrevious', () => {
             done();
           }
         });
-    }
+    };
 
     func(10);
   });
