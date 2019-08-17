@@ -146,7 +146,7 @@ function readonly<T>(target: T, key: keyof T): void;
   
 ## @refreshable (property)  
 This decorator provides an ability to access a property which value is being updated over and over in a given interval (in ms) by the returned value of the provided method. Note that the method can also return a promise which will be resolved and be after each interval.  
-In order to cancel the refreshment of the data you need to set the decorated value to null (this is very important note to prevent memory leaks).  
+In order to cancel the refreshment of the data you need to set the decorated value to null (this is very important note to prevent memory leaks). Setting any other value will be ignored.  
   
 ```typescript 
 function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; 

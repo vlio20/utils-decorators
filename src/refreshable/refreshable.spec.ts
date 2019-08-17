@@ -13,7 +13,7 @@ describe('refreshable', () => {
       return gooCtr++;
     };
 
-    let fooDec = refreshable<any, number>({
+    const fooDec = refreshable<any, number>({
       dataProvider: foo,
       intervalMs: 10
     });
@@ -36,13 +36,14 @@ describe('refreshable', () => {
       expect(t.prop).toBe(1);
       expect(t.proop).toBe(1);
       t.prop = null;
+      t.proop = 100;
 
       setTimeout(() => {
         expect(t.prop).toBe(1);
         expect(t.proop).toBe(2);
 
         done();
-      }, 10)
+      }, 10);
     }, 15);
   });
 });
