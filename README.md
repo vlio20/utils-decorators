@@ -41,7 +41,7 @@ interface BeforeConfig {
 }
 ```  
 
-- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked before the decorated method.
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
   
 ## @debounce (method)  
@@ -115,7 +115,7 @@ interface OnErrorConfig {
 }
 ```  
 
-`func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked after the decorated method.
+`func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked on an error of the decorated method.
 
 
 ## @readonly (property)  
