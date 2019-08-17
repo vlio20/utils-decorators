@@ -133,7 +133,7 @@ interface OnErrorConfig {
 }
 ```  
 
-`func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked on an error of the decorated method.
+- `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked on an error of the decorated method.
 
 
 ## @readonly (property)  
@@ -146,10 +146,19 @@ function readonly<T>(target: T, key: keyof T): void;
   
 ## @refreshable (property)  
 This decorator provides an ability to access a property which value is being updated over and over in a given interval (in ms) by the returned value of the provided method. Note that the method can also return a promise which will be resolved and be after each interval.  
+In order to cancel the refreshment of the data you need to set the decorated value to null (this is very important note to prevent memory leaks).  
   
 ```typescript 
 function refreshable<D>(dataProvider: Method<D> | Method<Promise<D>>, intervalMs: number): Refreshable; 
+
+interface RefreshableConfig<D> {
+  dataProvider: Method<D> | Method<Promise<D>>;
+  intervalMs: number;
+}
 ```  
+
+- `dataProvider`: the function that will provide the data to the decorated attribute.
+- `intervalMs`: the time interval (in milliseconds) in which the data will be refreshed .
 
 ## @throttle (method)  
 Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
