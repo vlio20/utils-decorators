@@ -1,4 +1,5 @@
 import {after} from './after';
+import {AfterFunc, AfterParams} from './after.model';
 
 describe('after', () => {
   it('should make sure error thrown when decorator not set on method', () => {
@@ -25,7 +26,7 @@ describe('after', () => {
         expect(counter).toBe(1);
       }
 
-      @after<T>({
+      @after<T, void>({
         func: 'after'
       })
       foo(x: number): void {
@@ -60,7 +61,7 @@ describe('after', () => {
 
     class T {
 
-      @after<T>({
+      @after<T, void>({
         func: afterFunc
       })
       foo(x: number): void {
@@ -92,7 +93,7 @@ describe('after', () => {
 
     class T {
 
-      @after<T>({
+      @after<T, void>({
         func: afterFunc
       })
       foo(x: number): Promise<void> {
@@ -122,11 +123,11 @@ describe('after', () => {
 
     class T {
 
-      @after<T>({
+      @after<T, void>({
         func: afterFunc,
         wait: true
       })
-      foo(x: number): Promise<void> {
+      foo(): Promise<void> {
         expect(counter++).toBe(0);
 
         return new Promise((resolve) => {
@@ -139,6 +140,56 @@ describe('after', () => {
     }
 
     const t = new T();
-    t.foo(1);
+    t.foo();
+  });
+
+  it('should provide args and response to after method - sync', (done) => {
+    const testable1 = 5;
+    const testable2 = 6;
+
+    const afterFunc: AfterFunc<number> = (x: AfterParams<number>): void => {
+      expect(x.args.length).toBe(2);
+      expect(x.args[0]).toBe(testable1);
+      expect(x.args[1]).toBe(testable2);
+      expect(x.response).toBe(testable1 + testable2);
+      done();
+    };
+
+    class T {
+      @after<T, number>({
+        func: afterFunc
+      })
+      foo(x: number, y: number): number {
+        return x + y;
+      }
+    }
+
+    const t = new T();
+    t.foo(testable1, testable2);
+  });
+
+  it('should provide args and response to after method - async', async () => {
+    const testable1 = 5;
+    const testable2 = 6;
+
+    const afterFunc: AfterFunc<number> = (x: AfterParams<number>): void => {
+      expect(x.args.length).toBe(2);
+      expect(x.args[0]).toBe(testable1);
+      expect(x.args[1]).toBe(testable2);
+      expect(x.response).toBe(testable1 + testable2);
+    };
+
+    class T {
+      @after<T, number>({
+        func: afterFunc,
+        wait: true
+      })
+      foo(x: number, y: number): Promise<number> {
+        return Promise.resolve(x + y);
+      }
+    }
+
+    const t = new T();
+    await t.foo(testable1, testable2);
   });
 });
