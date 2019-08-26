@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # utils-decorators 
+=======
+# ts-decorators 
+>>>>>>> master
 [![Build Status](https://travis-ci.org/vlio20/ts-decorators.svg?branch=master)](https://travis-ci.org/vlio20/ts-decorators)      
 [![Coverage Status](https://coveralls.io/repos/github/vlio20/ts-decorators/badge.svg?branch=master)](https://coveralls.io/repos/github/vlio20/ts-decorators/)      
   
@@ -144,7 +148,10 @@ interface OnErrorConfig {
 ```  
 
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked on an error of the decorated method.
+<<<<<<< HEAD
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved/rejected.  
+=======
+>>>>>>> master
 
 
 ## @readonly (property)  
