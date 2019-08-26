@@ -132,18 +132,19 @@ See `MemoizeConfig<T, D>` above.
 
 ## @onError (method)  
 This decorator will catch errors thrown from the decorated method and invoke the provided `func` function. 
-The decorator will provide `func` the error that it cached and the arguments provided to the decorated method.   
-Please note that that it won't catch async errors.
+If the decorated method returns a `Promise` the `wait` property should be set to true in order to handle the promise rejection correctly.
 
 ```typescript 
 function onError(config: OnErrorConfig): OnErrorable; 
 
 interface OnErrorConfig {
   func: (e: error, args: any[]) => any | string;
+  wait?: boolean;
 }
 ```  
 
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked on an error of the decorated method.
+- `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved/rejected.  
 
 
 ## @readonly (property)  
