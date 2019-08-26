@@ -24,7 +24,7 @@ describe('onError', () => {
       }
 
       goo(x: number): any {
-        throw Error('arr');
+        throw new Error('arr');
       }
 
       onError(e: Error, args: any[]): void {
@@ -58,7 +58,34 @@ describe('onError', () => {
       }
 
       goo(x: number): any {
-        throw Error('arr');
+        throw new Error('arr');
+      }
+    }
+
+    const t = new T();
+    const spyGoo = jest.spyOn(T.prototype, 'goo');
+
+    t.foo(1);
+    expect(spyGoo).toBeCalledTimes(1);
+    expect(spyGoo).toBeCalledWith(1);
+    expect(onErrorFunc).toBeCalledTimes(1);
+  });
+
+  it('should verify onError called on exception, when wait is set to true', () => {
+    const onErrorFunc = jest.fn(async (e: Error, args: any[]): Promise<void> => {
+      expect(e.message).toBe('arr');
+      expect(args).toEqual([1]);
+    });
+
+    class T {
+
+      @onError<T>({func: onErrorFunc, wait: true})
+      foo(x: number): any {
+        return this.goo(x);
+      }
+
+      goo(x: number): any {
+        throw new Error('arr');
       }
     }
 
