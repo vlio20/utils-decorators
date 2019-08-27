@@ -63,7 +63,7 @@ interface BeforeConfig {
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
     
     
-## @cancel-previous (method)  
+## @cancelPrevious (method)  
 Invocation of the decorated method will cause the a rejection of the previous invocation with an error of `CancelPromise` type.    
   
 ```typescript 
@@ -144,10 +144,7 @@ interface OnErrorConfig {
 ```  
 
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked on an error of the decorated method.
-<<<<<<< HEAD
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved/rejected.  
-=======
->>>>>>> master
 
 
 ## @readonly (property)  

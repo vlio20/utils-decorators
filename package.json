@@ -4,7 +4,6 @@
   "description": "decorators for reducing repetitive code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
