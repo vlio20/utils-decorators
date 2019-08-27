@@ -1,12 +1,12 @@
-# utils-decorators 
-[![Build Status](https://travis-ci.org/vlio20/utils-decorators.svg?branch=master)](https://travis-ci.org/vlio20/utils-decorators)      
-[![Coverage Status](https://coveralls.io/repos/github/vlio20/utils-decorators/badge.svg?branch=master)](https://coveralls.io/github/vlio20/utils-decorators?branch=master)
+# ts-decorators 
+[![Build Status](https://travis-ci.org/vlio20/ts-decorators.svg?branch=master)](https://travis-ci.org/vlio20/ts-decorators)      
+[![Coverage Status](https://coveralls.io/repos/github/vlio20/ts-decorators/badge.svg?branch=master)](https://coveralls.io/repos/github/vlio20/ts-decorators/)      
   
 This library was highly inspired by lodash but uses decorators to implement it's util methods.   
 The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator. 
 
 ```bash
-npm i utils-decorators
+npm i decorators-ts
 ```   
 
 Please note that the decorators are **working perfectly with plain JavaScript** code as well as with TypeScript.
@@ -63,7 +63,7 @@ interface BeforeConfig {
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved.  
     
     
-## @cancel-previous (method)  
+## @cancelPrevious (method)  
 Invocation of the decorated method will cause the a rejection of the previous invocation with an error of `CancelPromise` type.    
   
 ```typescript 
@@ -139,15 +139,11 @@ function onError(config: OnErrorConfig): OnErrorable;
 
 interface OnErrorConfig {
   func: (e: error, args: any[]) => any | string;
-  wait?: boolean;
 }
 ```  
 
 - `func`: the function (`Function`) or the method name (`string`), see notes for more details, to be invoked on an error of the decorated method.
-<<<<<<< HEAD
 - `wait`: should the invocation of the decorated method be delayed to the point when `func` will be resolved/rejected.  
-=======
->>>>>>> master
 
 
 ## @readonly (property)  

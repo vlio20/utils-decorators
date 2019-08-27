@@ -1,10 +1,9 @@
 {
   "name": "utils-decorators",
-  "version": "1.1.0",
+  "version": "1.0.0-rc1",
   "description": "decorators for reducing repetitive code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
@@ -44,7 +43,7 @@
   "author": "Vlad Ioffe",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vlio20/utils-decorators/issues"
+    "url": "https://github.com/vlio20/ts-decorators/issues"
   },
-  "homepage": "https://github.com/vlio20/utils-decorators#readme"
+  "homepage": "https://github.com/vlio20/ts-decorators#readme"
 }
