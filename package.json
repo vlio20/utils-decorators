@@ -43,7 +43,7 @@
   "author": "Vlad Ioffe",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vlio20/utils-decorators/issues"
+    "url": "https://github.com/vlio20/ts-decorators/issues"
   },
-  "homepage": "https://github.com/vlio20/utils-decorators#readme"
+  "homepage": "https://github.com/vlio20/ts-decorators#readme"
 }
