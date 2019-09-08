@@ -1,23 +1,23 @@
 import {CancelPreviousable} from './cancel-previous.model';
 import {Method} from '..';
 
-export function cancelPrevious<T, D>(): CancelPreviousable<T, D> {
+export function cancelPrevious<T extends any>(): CancelPreviousable<T> {
   return (target: T,
           propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<Method<Promise<D>>>): TypedPropertyDescriptor<Method<Promise<D>>> => {
+          descriptor: TypedPropertyDescriptor<Method<Promise<any>>>): TypedPropertyDescriptor<Method<Promise<any>>> => {
 
     if (descriptor.value != null) {
       const originalMethod = descriptor.value;
       let rej: (e: CanceledPromise) => void;
 
-      descriptor.value = function (...args: any[]): Promise<D> {
+      descriptor.value = function (...args: any[]): Promise<any> {
         rej && rej(new CanceledPromise());
 
-        return new Promise<D>((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
           rej = reject;
 
           originalMethod.apply(this, args)
-            .then((data: D) => resolve(data))
+            .then((data: any) => resolve(data))
             .catch((err) => reject(err));
         });
       };
