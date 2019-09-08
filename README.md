@@ -2,18 +2,18 @@
 [![Build Status](https://travis-ci.org/vlio20/ts-decorators.svg?branch=master)](https://travis-ci.org/vlio20/ts-decorators)      
 [![Coverage Status](https://coveralls.io/repos/github/vlio20/ts-decorators/badge.svg?branch=master)](https://coveralls.io/repos/github/vlio20/ts-decorators/)      
   
-This library was highly inspired by lodash but uses decorators to implement it's util methods.   
+This library was highly inspired by lodash but uses decorators to implement its util methods.   
 The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator. 
 
 ```bash
-npm i decorators-ts
+npm i utils-decorators
 ```   
 
 Please note that the decorators are **working perfectly with plain JavaScript** code as well as with TypeScript.
 
 Usage example:
 ```typescript 
-import {before} from 'decorators-ts';
+import {before} from 'utils-decorators';
 
 class Test {
   @before<Test>({func: 'goo'})

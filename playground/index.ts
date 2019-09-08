@@ -1,4 +1,4 @@
-import {before} from 'decorators-ts';
+import {before} from 'utils-decorators';
 
 class Test {
   @before<Test>({func: 'goo'})
