@@ -3,10 +3,10 @@ import {CanceledPromise, cancelPrevious} from './cancel-previous';
 describe('cancelPrevious', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidCancelPreviouse: any = cancelPrevious<T, string>();
+      const nonValidCancelPrevious: any = cancelPrevious<T>();
 
       class T {
-        @nonValidCancelPreviouse
+        @nonValidCancelPrevious
         boo: string;
       }
     } catch (e) {
@@ -17,9 +17,9 @@ describe('cancelPrevious', () => {
   it('should cancel prev invocation', (done) => {
     class T {
 
-      @cancelPrevious<T, number>()
+      @cancelPrevious<T>()
       foo(x: number): Promise<number> {
-        return new Promise<number>((resolve, reject) => {
+        return new Promise<number>((resolve) => {
           setTimeout(() => {
             resolve(x);
           }, 10);
@@ -58,9 +58,9 @@ describe('cancelPrevious', () => {
   it('should invoke original method id was resolved before second call', (done) => {
     class T {
 
-      @cancelPrevious<T, number>()
+      @cancelPrevious()
       foo(x: number): Promise<number> {
-        return new Promise<number>((resolve, reject) => {
+        return new Promise<number>((resolve) => {
           setTimeout(() => {
             resolve(x);
           }, 10);
@@ -106,7 +106,7 @@ describe('cancelPrevious', () => {
   it('should invoke rejection if original method got an error', (done) => {
     class T {
 
-      @cancelPrevious<T, number>()
+      @cancelPrevious<T>()
       foo(x: number): Promise<number> {
         return new Promise<number>((resolve, reject) => {
           setTimeout(() => {
