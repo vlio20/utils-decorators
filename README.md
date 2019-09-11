@@ -1,6 +1,6 @@
 # utils-decorators
-[![Build Status](https://travis-ci.org/vlio20/ts-decorators.svg?branch=master)](https://travis-ci.org/vlio20/ts-decorators)      
-[![Coverage Status](https://coveralls.io/repos/github/vlio20/ts-decorators/badge.svg?branch=master)](https://coveralls.io/repos/github/vlio20/ts-decorators/)      
+[![Build Status](https://travis-ci.org/vlio20/utils-decorators.svg?branch=master)](https://travis-ci.org/vlio20/utils-decorators)      
+[![Coverage Status](https://coveralls.io/repos/github/vlio20/utils-decorators/badge.svg?branch=master)](https://coveralls.io/repos/github/vlio20/utils-decorators/)      
   
 This library was highly inspired by lodash but uses decorators to implement its util methods.   
 The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator. 
