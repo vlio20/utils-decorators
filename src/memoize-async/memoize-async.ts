@@ -1,8 +1,8 @@
 import {AsyncMemoizable, AsyncMethod, MemoizeAsyncConfig} from '..';
 
-export function memoizeAsync<T, D>(config: MemoizeAsyncConfig<T, D>): AsyncMemoizable<T, D>;
-export function memoizeAsync<T, D>(expirationTimeMs: number): AsyncMemoizable<T, D>;
-export function memoizeAsync<T, D>(input: MemoizeAsyncConfig<T, D> | number): AsyncMemoizable<T, D> {
+export function memoizeAsync<T extends any, D>(config: MemoizeAsyncConfig<T, D>): AsyncMemoizable<T, D>;
+export function memoizeAsync<T extends any, D>(expirationTimeMs: number): AsyncMemoizable<T, D>;
+export function memoizeAsync<T extends any, D>(input: MemoizeAsyncConfig<T, D> | number): AsyncMemoizable<T, D> {
   const defaultConfig: MemoizeAsyncConfig<any, D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60

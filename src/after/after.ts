@@ -6,7 +6,7 @@ const defaultConfig: Partial<AfterConfig<any, any>> = {
   wait: false
 };
 
-export function after<T, D>(config: AfterConfig<T, D>): Decorator<T> {
+export function after<T extends any, D>(config: AfterConfig<T, D>): Decorator<T> {
   const resolvedConfig: AfterConfig<T, D> = {
     ...defaultConfig,
     ...config

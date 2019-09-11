@@ -6,7 +6,7 @@ const defaultConfig: Partial<BeforeConfig<any>> = {
   wait: false
 };
 
-export function before<T>(config: BeforeConfig<T>): Decorator<T> {
+export function before<T extends any>(config: BeforeConfig<T>): Decorator<T> {
   const resolvedConfig: BeforeConfig<T> = {
     ...defaultConfig,
     ...config

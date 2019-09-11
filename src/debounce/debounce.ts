@@ -1,7 +1,7 @@
 import {Method} from '..';
 import {Decorator} from '../common/model/common.model';
 
-export function debounce<T>(delayMs: number): Decorator<T> {
+  export function debounce<T extends any>(delayMs: number): Decorator<T> {
   return (target: T,
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
