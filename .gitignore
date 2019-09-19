@@ -65,3 +65,7 @@ typings/
 
 # build
 dist
+
+# stryker
+.stryker-tmp
+reports

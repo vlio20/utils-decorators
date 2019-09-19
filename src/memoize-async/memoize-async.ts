@@ -69,31 +69,6 @@ export function memoizeAsync<T extends any, D>(input: MemoizeAsyncConfig<T, D> |
         promCache.set(key, prom);
 
         return prom;
-
-        // if (!promCache.has(key)) {
-        //   const promise = originalMethod.apply(this, args)
-        //     .then((resp) => {
-        //       setTimeout(() => {
-        //           promCache.delete(key);
-        //           config.cache.delete(key);
-        //         },
-        //         config.expirationTimeMs
-        //       );
-        //
-        //       config.cache.set(key, resp);
-        //
-        //       return resp;
-        //     })
-        //     .catch((e) => {
-        //       promCache.delete(key);
-        //
-        //       return Promise.reject(e);
-        //     });
-        //
-        //   promCache.set(key, promise);
-        // }
-
-        // return promCache.get(key);
       };
 
       return descriptor;
