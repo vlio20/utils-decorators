@@ -6,7 +6,6 @@ export type OnErrorable<T> = (target: T,
 
 export interface OnErrorConfig<T> {
   func: Function | keyof T;
-  wait?: boolean;
 }
 
 export type OnErrorHandler = (e?: Error, args?: any[]) => any;
