@@ -2,13 +2,9 @@ import {AfterFunc, Method} from '..';
 import {AfterConfig} from './after.model';
 import {Decorator} from '../common/model/common.model';
 
-const defaultConfig: Partial<AfterConfig<any, any>> = {
-  wait: false
-};
-
 export function after<T extends any, D>(config: AfterConfig<T, D>): Decorator<T> {
   const resolvedConfig: AfterConfig<T, D> = {
-    ...defaultConfig,
+    wait: false,
     ...config
   };
 
@@ -16,7 +12,7 @@ export function after<T extends any, D>(config: AfterConfig<T, D>): Decorator<T>
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
-    if (descriptor.value != null) {
+    if (descriptor.value) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<void> {
         const afterFunc: AfterFunc<D> = typeof resolvedConfig.func === 'string' ? this[resolvedConfig.func].bind(this) :

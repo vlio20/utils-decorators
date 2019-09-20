@@ -11,7 +11,11 @@ describe('onError', () => {
       }
     } catch (e) {
       expect('@onError is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should verify onError called on exception, when as string', () => {

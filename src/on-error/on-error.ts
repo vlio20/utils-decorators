@@ -7,7 +7,7 @@ export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
-    if (descriptor.value != null) {
+    if (descriptor.value) {
       const originalMethod: Function = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<any> {
         const onErrorFunc: OnErrorHandler = typeof config.func === 'string' ? this[config.func].bind(this) : config.func;

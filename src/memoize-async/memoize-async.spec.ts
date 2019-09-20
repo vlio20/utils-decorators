@@ -124,7 +124,11 @@ describe('memozie-async', () => {
       }
     } catch (e) {
       expect('@memoizeAsync is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should make sure that when promise rejected it is removed from cache', (done) => {

@@ -25,7 +25,7 @@ export function memoize<T extends any, D>(input: MemoizeConfig<T, D> | number): 
       };
     }
 
-    if (descriptor.value != null) {
+    if (descriptor.value) {
       const originalMethod = descriptor.value;
       descriptor.value = function (...args: any[]): D {
         let key;

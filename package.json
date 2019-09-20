@@ -23,7 +23,7 @@
     "typescript": "^3.5.3"
   },
   "scripts": {
-    "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage",
+    "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
     "jest": "jest",
     "lint": "tslint './src/**/*.ts'",
     "lint:fix": "tslint './src/**/*.ts' --fix",

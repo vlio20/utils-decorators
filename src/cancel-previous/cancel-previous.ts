@@ -6,7 +6,7 @@ export function cancelPrevious<T extends any>(): CancelPreviousable<T> {
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<Promise<any>>>): TypedPropertyDescriptor<Method<Promise<any>>> => {
 
-    if (descriptor.value != null) {
+    if (descriptor.value) {
       const originalMethod = descriptor.value;
       let rej: (e: CanceledPromise) => void;
 
@@ -32,7 +32,7 @@ export function cancelPrevious<T extends any>(): CancelPreviousable<T> {
 export class CanceledPromise extends Error {
 
   constructor() {
-    super('');
+    super('canceled');
 
     Object.setPrototypeOf(this, CanceledPromise.prototype);
   }

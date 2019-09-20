@@ -52,7 +52,11 @@ describe('memozie', () => {
       }
     } catch (e) {
       expect('@memoize is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should use provided cache', (done) => {

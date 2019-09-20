@@ -26,7 +26,7 @@ export function memoizeAsync<T extends any, D>(input: MemoizeAsyncConfig<T, D> |
       };
     }
 
-    if (descriptor.value != null) {
+    if (descriptor.value) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<D> {
         const keyResolver = typeof resolvedConfig.keyResolver === 'string' ?
