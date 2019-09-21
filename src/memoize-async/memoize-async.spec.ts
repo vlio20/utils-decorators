@@ -323,6 +323,7 @@ describe('memozie-async', () => {
       await t.foo();
     } catch (e) {
       expect(e.message).toBe('error');
+
       return;
     }
 
@@ -362,6 +363,7 @@ describe('memozie-async', () => {
       await t.foo();
     } catch (e) {
       expect(e.message).toBe('error');
+
       return;
     }
 
@@ -401,6 +403,7 @@ describe('memozie-async', () => {
       await t.foo();
     } catch (e) {
       expect(e.message).toBe('error');
+
       return;
     }
 
@@ -440,6 +443,7 @@ describe('memozie-async', () => {
       await t.foo();
     } catch (e) {
       expect(e.message).toBe('error');
+
       return;
     }
 
