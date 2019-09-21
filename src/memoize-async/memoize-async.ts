@@ -1,9 +1,10 @@
-import {AsyncMemoizable, AsyncMethod, MemoizeAsyncConfig} from '..';
+import {AsyncMemoizable, AsyncMethod} from '..';
+import {AsyncMemoizeConfig} from './memoize-async.model';
 
-export function memoizeAsync<T extends any, D>(config: MemoizeAsyncConfig<T, D>): AsyncMemoizable<T, D>;
+export function memoizeAsync<T extends any, D>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
 export function memoizeAsync<T extends any, D>(expirationTimeMs: number): AsyncMemoizable<T, D>;
-export function memoizeAsync<T extends any, D>(input: MemoizeAsyncConfig<T, D> | number): AsyncMemoizable<T, D> {
-  const defaultConfig: MemoizeAsyncConfig<any, D> = {
+export function memoizeAsync<T extends any, D>(input: AsyncMemoizeConfig<T, D> | number): AsyncMemoizable<T, D> {
+  const defaultConfig: AsyncMemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
   };
@@ -13,7 +14,7 @@ export function memoizeAsync<T extends any, D>(input: MemoizeAsyncConfig<T, D> |
   return (target: T,
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
-    let resolvedConfig = <MemoizeAsyncConfig<T, D>>{
+    let resolvedConfig = <AsyncMemoizeConfig<T, D>>{
       ...defaultConfig
     };
 
@@ -46,8 +47,27 @@ export function memoizeAsync<T extends any, D>(input: MemoizeAsyncConfig<T, D> |
         }
 
         const prom = new Promise<D>(async (resolve, reject) => {
-          if (await resolvedConfig.cache.has(key)) {
-            resolve(await resolvedConfig.cache.get(key));
+          let inCache: boolean;
+
+          try {
+            inCache = await resolvedConfig.cache.has(key);
+          } catch (e) {
+            reject(e);
+
+            return ;
+          }
+
+          if (inCache) {
+            let data: D;
+            try {
+              data = await resolvedConfig.cache.get(key);
+            } catch (e) {
+              reject(e);
+
+              return;
+            }
+
+            resolve(data);
           } else {
             try {
               const data = await originalMethod.apply(this, args);
