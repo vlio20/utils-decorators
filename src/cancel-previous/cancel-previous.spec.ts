@@ -11,7 +11,11 @@ describe('cancelPrevious', () => {
       }
     } catch (e) {
       expect('@cancelPrevious is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should cancel prev invocation', (done) => {
@@ -39,6 +43,7 @@ describe('cancelPrevious', () => {
         })
         .catch((e) => {
           if (e instanceof CanceledPromise) {
+            expect(e.message).toBe('canceled');
             cancelHappened++;
 
             return;

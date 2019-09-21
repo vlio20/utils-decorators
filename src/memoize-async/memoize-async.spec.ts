@@ -1,4 +1,7 @@
 import {memoizeAsync} from './memoize-async';
+import {AsyncCache} from './memoize-async.model';
+
+declare const window: any;
 
 describe('memozie-async', () => {
   it('should verify memoize async caching original method', async (done) => {
@@ -124,10 +127,14 @@ describe('memozie-async', () => {
       }
     } catch (e) {
       expect('@memoizeAsync is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
-  it('should make sure that when promise rejected it is removed from cache', (done) => {
+  it('should make sure that when promise is rejected it is removed from the cache', (done) => {
     class T {
       @memoizeAsync<T, string>(20)
       foo(): Promise<string> {
@@ -213,5 +220,233 @@ describe('memozie-async', () => {
 
     expect(await one).toBe(1);
     expect(await two).toBe(2);
+  });
+
+  it('should verify defaults', async () => {
+    class T {
+      @memoizeAsync<T, number>({})
+      one(): Promise<number> {
+        return Promise.resolve(1);
+      }
+    }
+
+    const t = new T();
+    spyOn(window, 'setTimeout');
+    await t.one();
+
+    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60000);
+  });
+
+  it('should verify usage of async cache', async (done) => {
+    const map = new Map<string, number>();
+
+    const cache: AsyncCache<number> = {
+      delete: async (p1: string) => {
+        map.delete(p1);
+      },
+      get: async (p1: string) => {
+        return map.get(p1);
+      },
+      has: async (p1: string) => {
+        return map.has(p1);
+      },
+      set: async (p1: string, p2: number) => {
+        map.set(p1, p2);
+      }
+    };
+
+    class T {
+      @memoizeAsync<T, number>({
+        expirationTimeMs: 30,
+        cache
+      })
+      foo(): Promise<number> {
+        return this.goo();
+      }
+
+      goo(): Promise<number> {
+        return Promise.resolve(1);
+      }
+    }
+
+    const spy = jest.spyOn(T.prototype, 'goo');
+
+    const t = new T();
+    t.foo();
+
+    setTimeout(() => {
+      t.foo();
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledTimes(1);
+
+        cache.delete('[]');
+        t.foo();
+
+        setTimeout(() => {
+          expect(spy).toHaveBeenCalledTimes(2);
+          done();
+        }, 0);
+      }, 0);
+    }, 10);
+  });
+
+  it('should throw exception when async has method throws an exception', async () => {
+    const map = new Map<string, number>();
+
+    const cache: AsyncCache<number> = {
+      delete: async (p1: string) => {
+        map.delete(p1);
+      },
+      get: async (p1: string) => {
+        return map.get(p1);
+      },
+      has: async (p1: string) => {
+        return Promise.reject(new Error('error'));
+      },
+      set: async (p1: string, p2: number) => {
+        map.set(p1, p2);
+      }
+    };
+
+    class T {
+      @memoizeAsync<T, number>({
+        expirationTimeMs: 30,
+        cache
+      })
+      foo(): Promise<number> {
+        return Promise.resolve(1);
+      }
+    }
+
+    const t = new T();
+    try {
+      await t.foo();
+    } catch (e) {
+      expect(e.message).toBe('error');
+
+      return;
+    }
+
+    throw new Error(`shouldn't get to here`);
+  });
+
+  it('should throw exception when async get method throws an exception', async () => {
+    const map = new Map<string, number>();
+
+    const cache: AsyncCache<number> = {
+      delete: async (p1: string) => {
+        map.delete(p1);
+      },
+      get: async (p1: string) => {
+        return Promise.reject(new Error('error'));
+      },
+      has: async (p1: string) => {
+        return Promise.resolve(true);
+      },
+      set: async (p1: string, p2: number) => {
+        map.set(p1, p2);
+      }
+    };
+
+    class T {
+      @memoizeAsync<T, number>({
+        expirationTimeMs: 30,
+        cache
+      })
+      foo(): Promise<number> {
+        return Promise.resolve(1);
+      }
+    }
+
+    const t = new T();
+    try {
+      await t.foo();
+    } catch (e) {
+      expect(e.message).toBe('error');
+
+      return;
+    }
+
+    throw new Error(`shouldn't get to here`);
+  });
+
+  it('should throw exception when async get method throws an exception', async () => {
+    const map = new Map<string, number>();
+
+    const cache: AsyncCache<number> = {
+      delete: async (p1: string) => {
+        map.delete(p1);
+      },
+      get: async (p1: string) => {
+        return Promise.reject(new Error('error'));
+      },
+      has: async (p1: string) => {
+        return true;
+      },
+      set: async (p1: string, p2: number) => {
+        map.set(p1, p2);
+      }
+    };
+
+    class T {
+      @memoizeAsync<T, number>({
+        expirationTimeMs: 30,
+        cache
+      })
+      foo(): Promise<number> {
+        return Promise.resolve(1);
+      }
+    }
+
+    const t = new T();
+    try {
+      await t.foo();
+    } catch (e) {
+      expect(e.message).toBe('error');
+
+      return;
+    }
+
+    throw new Error(`shouldn't get to here`);
+  });
+
+  it('should throw exception when original method is broken', async () => {
+    const map = new Map<string, number>();
+
+    const cache: AsyncCache<number> = {
+      delete: async (p1: string) => {
+        map.delete(p1);
+      },
+      get: async (p1: string) => {
+        return map.get(p1);
+      },
+      has: async (p1: string) => {
+        return map.has(p1);
+      },
+      set: async (p1: string, p2: number) => {
+        map.set(p1, p2);
+      }
+    };
+
+    class T {
+      @memoizeAsync<T, number>({
+        expirationTimeMs: 30,
+        cache
+      })
+      foo(): Promise<number> {
+        return Promise.reject(new Error('error'));
+      }
+    }
+
+    const t = new T();
+    try {
+      await t.foo();
+    } catch (e) {
+      expect(e.message).toBe('error');
+
+      return;
+    }
+
+    throw new Error(`shouldn't get to here`);
   });
 });

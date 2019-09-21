@@ -14,7 +14,6 @@ export function refreshable<T, D>(config: RefreshableConfig<D>): Refreshable<T> 
     }, 0);
 
     Object.defineProperty(target, key, {
-      configurable: false,
       get: (): D => {
         return data;
       },

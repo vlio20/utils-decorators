@@ -12,7 +12,11 @@ describe('after', () => {
       }
     } catch (e) {
       expect('@after is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should verify after method invocation with the right context when provided as string', () => {

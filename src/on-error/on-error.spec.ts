@@ -11,7 +11,11 @@ describe('onError', () => {
       }
     } catch (e) {
       expect('@onError is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should verify onError called on exception, when as string', () => {
@@ -71,7 +75,45 @@ describe('onError', () => {
     expect(onErrorFunc).toBeCalledTimes(1);
   });
 
-  it('should verify onError called on exception, when wait is set to true', () => {
+  it('should verify onError called on exception, when function is async', async () => {
+    const onErrorFunc = jest.fn(async (e: Error, args: any[]): Promise<void> => {
+      expect(e.message).toBe('error');
+      expect(args).toEqual([1]);
+    });
+
+    class T {
+
+      @onError<T>({func: onErrorFunc})
+      foo(x: number): Promise<void> {
+        return Promise.reject(new Error('error'));
+      }
+    }
+
+    const t = new T();
+
+    await t.foo(1);
+    expect(onErrorFunc).toBeCalledTimes(1);
+  });
+
+  it('should verify onError was not called when no error, and the function is async', async () => {
+    const onErrorFunc = jest.fn(async (): Promise<void> => {
+    });
+
+    class T {
+
+      @onError<T>({func: onErrorFunc})
+      foo(): Promise<void> {
+        return Promise.resolve();
+      }
+    }
+
+    const t = new T();
+
+    await t.foo();
+    expect(onErrorFunc).not.toBeCalled();
+  });
+
+  it('should verify onError called on exception, when function is sync', () => {
     const onErrorFunc = jest.fn(async (e: Error, args: any[]): Promise<void> => {
       expect(e.message).toBe('arr');
       expect(args).toEqual([1]);
@@ -79,22 +121,15 @@ describe('onError', () => {
 
     class T {
 
-      @onError<T>({func: onErrorFunc, wait: true})
+      @onError<T>({func: onErrorFunc})
       foo(x: number): any {
-        return this.goo(x);
-      }
-
-      goo(x: number): any {
         throw new Error('arr');
       }
     }
 
     const t = new T();
-    const spyGoo = jest.spyOn(T.prototype, 'goo');
 
     t.foo(1);
-    expect(spyGoo).toBeCalledTimes(1);
-    expect(spyGoo).toBeCalledWith(1);
     expect(onErrorFunc).toBeCalledTimes(1);
   });
 });

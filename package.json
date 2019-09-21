@@ -10,6 +10,10 @@
     "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.3.3",
+    "@stryker-mutator/core": "^2.1.0",
+    "@stryker-mutator/html-reporter": "^2.1.0",
+    "@stryker-mutator/jest-runner": "^2.1.0",
+    "@stryker-mutator/typescript": "^2.1.0",
     "@types/jest": "^24.0.17",
     "@types/node": "^11.13.19",
     "babel-jest": "^24.9.0",
@@ -19,7 +23,8 @@
     "typescript": "^3.5.3"
   },
   "scripts": {
-    "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage",
+    "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
+    "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
     "jest": "jest",
     "lint": "tslint './src/**/*.ts'",
     "lint:fix": "tslint './src/**/*.ts' --fix",
@@ -43,7 +48,7 @@
   "author": "Vlad Ioffe",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vlio20/ts-decorators/issues"
+    "url": "https://github.com/vlio20/utils-decorators/issues"
   },
-  "homepage": "https://github.com/vlio20/ts-decorators#readme"
+  "homepage": "https://github.com/vlio20/utils-decorators#readme"
 }

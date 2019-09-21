@@ -11,7 +11,11 @@ describe('throttle', () => {
       }
     } catch (e) {
       expect('@throttle is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should verify method invocation is throttled', (done) => {

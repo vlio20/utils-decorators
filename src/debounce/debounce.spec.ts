@@ -11,7 +11,11 @@ describe('debounce', () => {
       }
     } catch (e) {
       expect('@debounce is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should verify method invocation is debounced', (done) => {
@@ -24,7 +28,8 @@ describe('debounce', () => {
       }
 
       goo(): void {
-        expect(this.prop).toBe(3);
+        expect(this.prop)
+          .toBe(3);
 
         return;
       }

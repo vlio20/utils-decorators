@@ -2,13 +2,9 @@ import {Method} from '..';
 import {BeforeConfig} from './before.model';
 import {Decorator} from '../common/model/common.model';
 
-const defaultConfig: Partial<BeforeConfig<any>> = {
-  wait: false
-};
-
 export function before<T extends any>(config: BeforeConfig<T>): Decorator<T> {
   const resolvedConfig: BeforeConfig<T> = {
-    ...defaultConfig,
+    wait: false,
     ...config
   };
 
@@ -16,7 +12,7 @@ export function before<T extends any>(config: BeforeConfig<T>): Decorator<T> {
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
 
-    if (descriptor.value != null) {
+    if (descriptor.value) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<any> {
         const beforeFunc = typeof resolvedConfig.func === 'string' ?

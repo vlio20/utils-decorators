@@ -11,7 +11,11 @@ describe('before', () => {
       }
     } catch (e) {
       expect('@before is applicable only on a methods.').toBe(e.message);
+
+      return;
     }
+
+    throw new Error('should not reach this line');
   });
 
   it('should verify before method invocation with the right context when provided as string', () => {
