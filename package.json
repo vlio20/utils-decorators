@@ -24,7 +24,7 @@
   },
   "scripts": {
     "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
-    "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
+    "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest",
     "jest": "jest",
     "lint": "tslint './src/**/*.ts'",
     "lint:fix": "tslint './src/**/*.ts' --fix",
