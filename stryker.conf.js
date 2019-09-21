@@ -6,5 +6,8 @@ module.exports = function (config) {
     testRunner: 'jest',
     coverageAnalysis: 'off',
     mutate: ['src/**/*.ts', '!src/**/*.spec.ts'],
+    thresholds: {
+      break: 100
+    }
   });
 };
