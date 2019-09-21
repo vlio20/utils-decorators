@@ -1,5 +1,7 @@
 import {memoize} from './memoize';
 
+declare const window: any;
+
 describe('memozie', () => {
   it('should verify memoize caching original method', (done) => {
     class T {
@@ -142,5 +144,20 @@ describe('memozie', () => {
     expect(spyMapper).toHaveBeenCalledTimes(2);
     expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
     expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
+  });
+
+  it('should verify defaults', async () => {
+    class T {
+      @memoize<T, number>({})
+      one(): number {
+        return 1;
+      }
+    }
+
+    const t = new T();
+    spyOn((window), 'setTimeout');
+    await t.one();
+
+    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60000);
   });
 });

@@ -1,5 +1,7 @@
 import {memoizeAsync} from './memoize-async';
 
+declare const window: any;
+
 describe('memozie-async', () => {
   it('should verify memoize async caching original method', async (done) => {
     class T {
@@ -217,5 +219,20 @@ describe('memozie-async', () => {
 
     expect(await one).toBe(1);
     expect(await two).toBe(2);
+  });
+
+  it('should verify defaults', async () => {
+    class T {
+      @memoizeAsync<T, number>({})
+      one(): Promise<number> {
+        return Promise.resolve(1);
+      }
+    }
+
+    const t = new T();
+    spyOn(window, 'setTimeout');
+    await t.one();
+
+    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60000);
   });
 });
