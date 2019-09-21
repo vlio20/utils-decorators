@@ -1,7 +1,7 @@
 import {readonly} from './readonly';
 
 describe('readonly', () => {
-  xit('should verify readonly throws exception when trying to write to it', () => {
+  it('should verify readonly throws exception when trying to write to it', () => {
     class T {
 
       @readonly()
