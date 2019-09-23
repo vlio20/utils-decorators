@@ -20,7 +20,7 @@ import {Decorator} from '../common/model/common.model';
 
       return descriptor;
     } else {
-      throw Error('@debounce is applicable only on a methods.');
+      throw new Error('@debounce is applicable only on a methods.');
     }
   };
 }

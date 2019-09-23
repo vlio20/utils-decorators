@@ -24,7 +24,7 @@ export function throttle<T extends any>(delayMs: number): Decorator<T> {
 
       return descriptor;
     } else {
-      throw Error('@throttle is applicable only on a methods.');
+      throw new Error('@throttle is applicable only on a methods.');
     }
   };
 }

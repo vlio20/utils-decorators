@@ -30,7 +30,7 @@ export function before<T extends any>(config: BeforeConfig<T>): Decorator<T> {
 
       return descriptor;
     } else {
-      throw Error('@before is applicable only on a methods.');
+      throw new Error('@before is applicable only on a methods.');
     }
   };
 }

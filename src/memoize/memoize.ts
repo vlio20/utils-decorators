@@ -56,7 +56,7 @@ export function memoize<T extends any, D>(input: MemoizeConfig<T, D> | number): 
 
       return descriptor;
     } else {
-      throw Error('@memoize is applicable only on a methods.');
+      throw new Error('@memoize is applicable only on a methods.');
     }
   };
 }

@@ -35,7 +35,7 @@ export function after<T extends any, D>(config: AfterConfig<T, D>): Decorator<T>
 
       return descriptor;
     } else {
-      throw Error('@after is applicable only on a methods.');
+      throw new Error('@after is applicable only on a methods.');
     }
   };
 }

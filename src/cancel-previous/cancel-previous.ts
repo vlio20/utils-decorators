@@ -24,7 +24,7 @@ export function cancelPrevious<T extends any>(): CancelPreviousable<T> {
 
       return descriptor;
     } else {
-      throw Error('@cancelPrevious is applicable only on a methods.');
+      throw new Error('@cancelPrevious is applicable only on a methods.');
     }
   };
 }

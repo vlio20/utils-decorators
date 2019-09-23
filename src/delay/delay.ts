@@ -16,7 +16,7 @@ export function delay<T extends any>(delayMs: number): Decorator<T> {
 
       return descriptor;
     } else {
-      throw Error('@delay is applicable only on a methods.');
+      throw new Error('@delay is applicable only on a methods.');
     }
   };
 }

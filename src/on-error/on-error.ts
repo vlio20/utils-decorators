@@ -21,7 +21,7 @@ export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
 
       return descriptor;
     } else {
-      throw Error('@onError is applicable only on a methods.');
+      throw new Error('@onError is applicable only on a methods.');
     }
   };
 }
