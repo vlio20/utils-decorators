@@ -1,6 +1,6 @@
 {
   "name": "utils-decorators",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "decorators for reducing repetitive code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,14 +24,14 @@
   },
   "scripts": {
     "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
-    "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
+    "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest",
     "jest": "jest",
     "lint": "tslint './src/**/*.ts'",
     "lint:fix": "tslint './src/**/*.ts' --fix",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "release": "npm run clean && npm run test && npm run build && npm publish"
+    "release": "npm run clean && npm run test:unit && npm run build && npm publish"
   },
   "files": [
     "dist"
