@@ -1,7 +1,7 @@
 import {Method} from '..';
 import {Decorator} from '../common/model/common.model';
 
-export function throttle<T extends any>(delayMs: number): Decorator<T> {
+export function throttle<T = {}>(delayMs: number): Decorator<T> {
   return (target: T,
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {

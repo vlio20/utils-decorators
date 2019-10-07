@@ -1,7 +1,7 @@
 import {CancelPreviousable} from './cancel-previous.model';
 import {Method} from '..';
 
-export function cancelPrevious<T extends any>(): CancelPreviousable<T> {
+export function cancelPrevious<T = {}>(): CancelPreviousable<T> {
   return (target: T,
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<Promise<any>>>): TypedPropertyDescriptor<Method<Promise<any>>> => {

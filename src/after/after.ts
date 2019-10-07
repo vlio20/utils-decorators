@@ -2,7 +2,7 @@ import {AfterFunc, Method} from '..';
 import {AfterConfig} from './after.model';
 import {Decorator} from '../common/model/common.model';
 
-export function after<T extends any, D>(config: AfterConfig<T, D>): Decorator<T> {
+export function after<T = {}, D>(config: AfterConfig<T, D>): Decorator<T> {
   const resolvedConfig: AfterConfig<T, D> = {
     wait: false,
     ...config
