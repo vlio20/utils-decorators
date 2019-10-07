@@ -2,7 +2,7 @@ import {Method} from '..';
 import {BeforeConfig} from './before.model';
 import {Decorator} from '../common/model/common.model';
 
-export function before<T extends any>(config: BeforeConfig<T>): Decorator<T> {
+export function before<T = any>(config: BeforeConfig<T>): Decorator<T> {
   const resolvedConfig: BeforeConfig<T> = {
     wait: false,
     ...config
@@ -30,7 +30,7 @@ export function before<T extends any>(config: BeforeConfig<T>): Decorator<T> {
 
       return descriptor;
     } else {
-      throw Error('@before is applicable only on a methods.');
+      throw new Error('@before is applicable only on a methods.');
     }
   };
 }

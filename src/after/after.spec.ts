@@ -184,7 +184,7 @@ describe('after', () => {
     };
 
     class T {
-      @after<T, number>({
+      @after({
         func: afterFunc,
         wait: true
       })

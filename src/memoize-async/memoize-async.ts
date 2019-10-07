@@ -1,9 +1,9 @@
 import {AsyncMemoizable, AsyncMethod} from '..';
 import {AsyncMemoizeConfig} from './memoize-async.model';
 
-export function memoizeAsync<T extends any, D>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
-export function memoizeAsync<T extends any, D>(expirationTimeMs: number): AsyncMemoizable<T, D>;
-export function memoizeAsync<T extends any, D>(input: AsyncMemoizeConfig<T, D> | number): AsyncMemoizable<T, D> {
+export function memoizeAsync<T = any, D = any>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
+export function memoizeAsync<T = any, D = any>(expirationTimeMs: number): AsyncMemoizable<T, D>;
+export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> | number): AsyncMemoizable<T, D> {
   const defaultConfig: AsyncMemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
@@ -93,7 +93,7 @@ export function memoizeAsync<T extends any, D>(input: AsyncMemoizeConfig<T, D> |
 
       return descriptor;
     } else {
-      throw Error('@memoizeAsync is applicable only on a methods.');
+      throw new Error('@memoizeAsync is applicable only on a methods.');
     }
   };
 }
