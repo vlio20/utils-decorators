@@ -1,6 +1,6 @@
 import {Method} from '..';
 
-export type Refreshable<T = {}> = (target: T,
+export type Refreshable<T = any> = (target: T,
                               propertyName: keyof T) => void;
 
 export interface RefreshableConfig<D> {

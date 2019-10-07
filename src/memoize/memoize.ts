@@ -1,9 +1,9 @@
 import {Memoizable, MemoizeConfig} from './memoize.model';
 import {Method} from '..';
 
-export function memoize<T = {}, D>(config: MemoizeConfig<T, D>): Memoizable<T, D>;
-export function memoize<T = {}, D>(expirationTimeMs: number): Memoizable<T, D>;
-export function memoize<T = {}, D>(input: MemoizeConfig<T, D> | number): Memoizable<T, D> {
+export function memoize<T = any, D = any>(config: MemoizeConfig<T, D>): Memoizable<T, D>;
+export function memoize<T = any, D = any>(expirationTimeMs: number): Memoizable<T, D>;
+export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): Memoizable<T, D> {
   const defaultConfig: MemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
