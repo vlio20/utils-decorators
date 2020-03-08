@@ -1,2 +1,2 @@
 export {memoize} from './memoize';
-export {Memoizable, MemoizeConfig} from './memoize.model';
+export {Cache, Memoizable, MemoizeConfig} from './memoize.model';
