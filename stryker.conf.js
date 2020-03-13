@@ -5,7 +5,7 @@ module.exports = function (config) {
     reporters: ['progress', 'html', 'dashboard'],
     testRunner: 'jest',
     coverageAnalysis: 'off',
-    mutate: ['src/**/*utils.ts', '!src/**/*.spec.ts'],
+    mutate: ['src/**/*.ts', '!src/**/*.spec.ts'],
     thresholds: {
       break: 100
     }
