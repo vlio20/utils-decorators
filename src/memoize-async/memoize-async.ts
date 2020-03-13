@@ -1,5 +1,6 @@
 import {AsyncMemoizable, AsyncMethod} from '..';
 import {AsyncMemoizeConfig} from './memoize-async.model';
+import {TaskExec} from '../common/utils';
 
 export function memoizeAsync<T = any, D = any>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
 export function memoizeAsync<T = any, D = any>(expirationTimeMs: number): AsyncMemoizable<T, D>;
@@ -8,6 +9,7 @@ export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> |
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
   };
+  const runner = new TaskExec();
 
   const promCache = new Map<string, Promise<D>>();
 
@@ -54,7 +56,7 @@ export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> |
           } catch (e) {
             reject(e);
 
-            return ;
+            return;
           }
 
           if (inCache) {
@@ -73,7 +75,7 @@ export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> |
               const data = await originalMethod.apply(this, args);
               resolvedConfig.cache.set(key, data);
 
-              setTimeout(() => {
+              runner.exec(() => {
                 resolvedConfig.cache.delete(key);
               }, resolvedConfig.expirationTimeMs);
 
