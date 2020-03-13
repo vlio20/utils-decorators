@@ -1,4 +1,4 @@
-import TinyQueue from 'TinyQueue';
+import TinyQueue from 'tinyqueue';
 
 export class TaskExec {
   private tasks = new TinyQueue<TimedTask>([], (a, b) => {
