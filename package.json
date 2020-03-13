@@ -50,5 +50,8 @@
   "bugs": {
     "url": "https://github.com/vlio20/utils-decorators/issues"
   },
-  "homepage": "https://github.com/vlio20/utils-decorators#readme"
+  "homepage": "https://github.com/vlio20/utils-decorators#readme",
+  "dependencies": {
+    "tinyqueue": "^2.0.3"
+  }
 }
