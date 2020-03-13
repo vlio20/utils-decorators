@@ -1,13 +1,13 @@
+import TinyQueue from 'tinyqueue';
+
 export class TaskExec {
-  private tasks: TimedTask[] = [];
+  private tasks = new TinyQueue<TimedTask>([], (a, b) => {
+    return a.execTime - b.execTime;
+  });
   private handler;
 
   exec(func: (...args: any) => any, ttl: number): void {
     this.tasks.push({func, execTime: Date.now() + ttl});
-    this.tasks.sort((a, b) => {
-      return a.execTime - b.execTime;
-    });
-
     this.handleNext();
   }
 
@@ -16,14 +16,14 @@ export class TaskExec {
       return;
     }
 
-    const {execTime} = this.tasks[0];
+    const {execTime} = this.tasks.peek();
     this.execNext(Math.max(execTime - Date.now(), 0));
   }
 
   private execNext(ttl: number): void {
     clearTimeout(this.handler);
     this.handler = setTimeout(() => {
-      const {func} = this.tasks.shift();
+      const {func} = this.tasks.pop();
       func();
       this.handleNext();
     }, ttl);
