@@ -3,10 +3,11 @@ import {TaskExec} from './utils';
 describe('utils', () => {
   it('should verify task executed in time - A:40, B:20 -> B, A', async (done) => {
     const runner = new TaskExec();
-    const funA = jest.fn();
-    const funB = jest.fn();
+    let val = '';
+    const funA = jest.fn().mockImplementation(() => val += 'A');
+    const funB = jest.fn().mockImplementation(() => val += 'B');
 
-    runner.exec(funA, 40);
+    runner.exec(funA, 50);
     await sleep(10);
     expect(funA).not.toBeCalled();
     runner.exec(funB, 20);
@@ -16,9 +17,10 @@ describe('utils', () => {
     await sleep(15);
     expect(funA).not.toBeCalled();
     expect(funB).toBeCalledTimes(1);
-    await sleep(10);
+    await sleep(20);
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
+    expect(val).toBe('BA');
     done();
   });
 

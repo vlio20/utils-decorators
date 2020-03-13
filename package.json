@@ -23,7 +23,7 @@
     "typescript": "^3.5.3"
   },
   "scripts": {
-    "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && stryker run",
+    "test": "npm run clean && tsc --noEmit && npm run lint && jest --coverage && npm run test:mutation",
     "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest",
     "jest": "jest",
     "lint": "tslint './src/**/*.ts'",
@@ -31,6 +31,7 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "tsc",
     "clean": "rm -rf dist",
+    "test:mutation": "stryker run",
     "release": "npm run clean && npm run test:unit && npm run build && npm publish"
   },
   "files": [
