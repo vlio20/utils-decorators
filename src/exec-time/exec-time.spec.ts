@@ -38,8 +38,8 @@ describe('exec-time', () => {
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime >= 0).toBe(true);
-    expect(args.execTime < 5).toBe(true);
+    expect(args.execTime).toBeGreaterThanOrEqual(0);
+    expect(args.execTime).toBeLessThan(10);
   });
 
   it('should make sure that the reporter is called with the correct data when decorated method is async', async () => {
@@ -62,8 +62,8 @@ describe('exec-time', () => {
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime > 9).toBe(true);
-    expect(args.execTime < 20).toBe(true);
+    expect(args.execTime).toBeGreaterThanOrEqual(10);
+    expect(args.execTime).toBeLessThan(20);
   });
 
   it('should make sure that the console.log is being called by default', async () => {
@@ -82,6 +82,7 @@ describe('exec-time', () => {
     expect(logSpy).toBeCalledTimes(1);
     const clogSpyArgs = logSpy.mock.calls[0][0];
     expect(clogSpyArgs >= 0).toBe(true);
+    expect(clogSpyArgs).toBeGreaterThanOrEqual(0);
     logSpy.mockRestore();
   });
 
@@ -105,7 +106,7 @@ describe('exec-time', () => {
     const args: ExactTimeReportData = t.goo.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime > 9).toBe(true);
-    expect(args.execTime < 20).toBe(true);
+    expect(args.execTime).toBeGreaterThanOrEqual(10);
+    expect(args.execTime).toBeLessThan(20);
   });
 });
