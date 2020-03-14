@@ -14,7 +14,7 @@
     "@stryker-mutator/jest-runner": "^3.0.2",
     "@stryker-mutator/typescript": "^3.0.2",
     "@types/jest": "^24.9.1",
-    "@types/node": "^11.13.19",
+    "@types/node": "^11.15.7",
     "babel-jest": "^25.1.0",
     "coveralls": "^3.0.9",
     "jest": "^25.1.0",
