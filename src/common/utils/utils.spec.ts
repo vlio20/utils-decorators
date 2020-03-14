@@ -2,11 +2,8 @@ import {isPromise} from './utils';
 
 describe('utils', () => {
   describe('isPromise', () => {
-    it('should return true if a Promise', () => {
+    it('should return true if a Promise or an object with then attribute', () => {
       expect(isPromise(Promise.resolve())).toBe(true);
-    });
-
-    it('should return true if an object with then attribute', () => {
       expect(isPromise({then: () => null})).toBe(true);
     });
 
