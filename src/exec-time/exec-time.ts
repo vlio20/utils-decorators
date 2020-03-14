@@ -3,7 +3,7 @@ import {ExactTimeReportable, ExactTimeReportData, ReportFunction} from './exec-t
 import {isPromise} from '../common/utils/utils';
 
 const reporter: ReportFunction = function (data: ExactTimeReportData): void {
-  console.log(data.execTime);
+  console.info(data.execTime);
 };
 
 export function execTime<T = any>(arg?: ReportFunction | string): ExactTimeReportable<T> {
