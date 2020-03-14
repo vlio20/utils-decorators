@@ -1,6 +1,6 @@
 import {AsyncMemoizable, AsyncMethod} from '..';
 import {AsyncMemoizeConfig} from './memoize-async.model';
-import {TaskExec} from '../common/utils';
+import {TaskExec} from '../common/tesk-exec/task-exec';
 
 export function memoizeAsync<T = any, D = any>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
 export function memoizeAsync<T = any, D = any>(expirationTimeMs: number): AsyncMemoizable<T, D>;

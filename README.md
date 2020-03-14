@@ -181,6 +181,25 @@ Invocation of the decorated method will happen immediately, but if another invoc
 function throttle(delayMs: number): Throttable; 
 ```  
 
+
+## @execTime (method)  
+Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
+  
+```typescript 
+function execTime<T>(arg?: ReportFunction | string): ExactTimeReportable<T>
+```
+
+- `ReportFunction`: the function that will be invoked after the execution of decorated method. Also can be provided as `string` this way it will invoke the method that is name as the provided string. If no value will be provided then the execution time will be logged with `console.log`.
+```typescript
+type ReportFunction = (data?: ExactTimeReportData) => any;
+
+type ExactTimeReportData = {
+  args: any[];
+  result: any;
+  execTime: number;
+}
+```  
+
 ----
 
 ## Notes:  

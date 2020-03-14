@@ -1,6 +1,6 @@
 import {Memoizable, MemoizeConfig} from './memoize.model';
 import {Method} from '..';
-import {TaskExec} from '../common/utils';
+import {TaskExec} from '../common/tesk-exec/task-exec';
 
 export function memoize<T = any, D = any>(config: MemoizeConfig<T, D>): Memoizable<T, D>;
 export function memoize<T = any, D = any>(expirationTimeMs: number): Memoizable<T, D>;

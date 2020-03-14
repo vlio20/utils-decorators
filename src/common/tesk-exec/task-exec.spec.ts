@@ -1,4 +1,5 @@
-import {TaskExec} from './utils';
+import {TaskExec} from './task-exec';
+import {sleep} from '../test-utils';
 
 describe('utils', () => {
   it('should verify task executed in time - A:40, B:20 -> B, A', async (done) => {
@@ -64,7 +65,3 @@ describe('utils', () => {
     done();
   });
 });
-
-function sleep(n): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, n));
-}
