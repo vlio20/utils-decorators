@@ -67,7 +67,7 @@ describe('exec-time', () => {
   });
 
   it('should make sure that the console.log is being called by default', async () => {
-    const logSpy = jest.spyOn(global.console, 'info')
+    const logSpy = jest.spyOn(global.console, 'info');
 
     class T {
 
