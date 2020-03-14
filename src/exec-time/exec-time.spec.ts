@@ -81,7 +81,6 @@ describe('exec-time', () => {
     await t.foo('a');
     expect(logSpy).toBeCalledTimes(1);
     const clogSpyArgs = logSpy.mock.calls[0][0];
-    expect(clogSpyArgs >= 0).toBe(true);
     expect(clogSpyArgs).toBeGreaterThanOrEqual(0);
     logSpy.mockRestore();
   });
