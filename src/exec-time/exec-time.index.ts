@@ -1,2 +1,2 @@
 export {execTime} from './exec-time';
-export {ReportFunction, ExactTimeReportData} from './exec-time.model'
+export {ReportFunction, ExactTimeReportData, ExactTimeReportable} from './exec-time.model';

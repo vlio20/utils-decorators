@@ -88,14 +88,14 @@ describe('exec-time', () => {
   it('should make sure that the reporter is called when provided as sting', async () => {
     class T {
 
+      goo = jest.fn();
+
       @execTime('goo')
       async foo(x: string): Promise<string> {
         await sleep(10);
 
         return Promise.resolve(x + 'b');
       }
-
-      goo = jest.fn();
     }
 
     const t = new T();
