@@ -1,4 +1,5 @@
 import {throttle} from './throttle';
+import {sleep} from '../common/test-utils';
 
 describe('throttle', () => {
   it('should make sure error thrown when decorator not set on method', () => {
@@ -18,11 +19,11 @@ describe('throttle', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify method invocation is throttled', (done) => {
+  it('should verify method invocation is throttled', async (done) => {
     class T {
       prop: number;
 
-      @throttle<T>(15)
+      @throttle<T>(20)
       foo(x: number): void {
         return this.goo(x);
       }
@@ -41,17 +42,19 @@ describe('throttle', () => {
     expect(spy).toBeCalledTimes(1);
     expect(spy).toBeCalledWith(1);
 
-    setTimeout(() => {
-      t.foo(2);
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).lastCalledWith(1);
-    }, 5);
+    await sleep(10);
 
-    setTimeout(() => {
-      t.foo(3);
-      expect(spy).toBeCalledTimes(2);
-      expect(spy).lastCalledWith(3);
-      done();
-    }, 20);
+    t.foo(2);
+    expect(spy).toBeCalledTimes(1);
+    expect(spy).lastCalledWith(1);
+
+    await sleep(30);
+
+    t.foo(3);
+
+    expect(spy).toBeCalledTimes(2);
+    expect(spy).lastCalledWith(3);
+
+    done()
   });
 });
