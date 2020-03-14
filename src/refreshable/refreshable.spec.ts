@@ -16,12 +16,12 @@ describe('refreshable', () => {
 
     const fooDec = refreshable<any, number>({
       dataProvider: foo,
-      intervalMs: 20
+      intervalMs: 50
     });
 
     const gooDec = refreshable<any, number>({
       dataProvider: goo,
-      intervalMs: 20
+      intervalMs: 50
     });
 
     const t = <{prop: number, proop: number}>{prop: 9, proop: 4};
@@ -33,14 +33,14 @@ describe('refreshable', () => {
     expect(t.prop).toBe(0);
     expect(t.proop).toBe(0);
 
-    await sleep(20);
+    await sleep(60);
 
     expect(t.prop).toBe(1);
     expect(t.proop).toBe(1);
     t.prop = null;
     t.proop = 100;
 
-    await sleep(10);
+    await sleep(50);
 
     expect(t.prop).toBe(1);
     expect(t.proop).toBe(2);
