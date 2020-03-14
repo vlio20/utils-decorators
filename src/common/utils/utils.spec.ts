@@ -14,5 +14,5 @@ describe('utils', () => {
       expect(isPromise(null)).toBe(false);
       expect(isPromise(undefined)).toBe(false);
     });
-  })
+  });
 });
