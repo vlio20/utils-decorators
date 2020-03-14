@@ -189,7 +189,7 @@ Invocation of the decorated method will happen immediately, but if another invoc
 function execTime<T>(arg?: ReportFunction | string): ExactTimeReportable<T>
 ```
 
-- `ReportFunction`: the function that will be invoked after the execution of decorated method. Also can be provided as `string` this way it will invoke the method that is name as the provided string. If no value will be provided then the execution time will be logged with `console.log`.
+- `ReportFunction`: the function that will be invoked after the execution of decorated method. Also can be provided as `string` this way it will invoke the method that is name as the provided string. If no value will be provided then the execution time will be logged with `console.info`.
 ```typescript
 type ReportFunction = (data?: ExactTimeReportData) => any;
 
