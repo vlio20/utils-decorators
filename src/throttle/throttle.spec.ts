@@ -55,6 +55,6 @@ describe('throttle', () => {
     expect(spy).toBeCalledTimes(2);
     expect(spy).lastCalledWith(3);
 
-    done()
+    done();
   });
 });
