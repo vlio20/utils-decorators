@@ -9,16 +9,24 @@ describe('utils', () => {
     const funB = jest.fn().mockImplementation(() => val += 'B');
 
     runner.exec(funA, 50);
+
     await sleep(10);
+
     expect(funA).not.toBeCalled();
     runner.exec(funB, 20);
+
     await sleep(10);
+
     expect(funA).not.toBeCalled();
     expect(funB).not.toBeCalled();
-    await sleep(15);
+
+    await sleep(20);
+
     expect(funA).not.toBeCalled();
     expect(funB).toBeCalledTimes(1);
-    await sleep(20);
+
+    await sleep(50);
+
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
     expect(val).toBe('BA');
@@ -31,15 +39,21 @@ describe('utils', () => {
     const funA = jest.fn().mockImplementation(() => val += 'A');
     const funB = jest.fn().mockImplementation(() => val += 'B');
 
-    runner.exec(funA, 20);
-    runner.exec(funB, 40);
-    await sleep(10);
+    runner.exec(funA, 50);
+    runner.exec(funB, 100);
+
+    await sleep(20);
+
     expect(funA).not.toBeCalled();
     expect(funB).not.toBeCalled();
-    await sleep(20);
+
+    await sleep(50);
+
     expect(funA).toBeCalled();
     expect(funB).not.toBeCalled();
-    await sleep(20);
+
+    await sleep(50);
+
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
     expect(val).toBe('AB');
@@ -52,13 +66,17 @@ describe('utils', () => {
     const funB = jest.fn();
     const funC = jest.fn();
 
-    runner.exec(funA, 20);
-    runner.exec(funB, 20);
-    await sleep(10);
+    runner.exec(funA, 50);
+    runner.exec(funB, 50);
+
+    await sleep(20);
+
     expect(funA).not.toBeCalled();
     expect(funB).not.toBeCalled();
     runner.exec(funC, 10);
-    await sleep(15);
+
+    await sleep(50);
+
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
     expect(funC).toBeCalledTimes(1);
