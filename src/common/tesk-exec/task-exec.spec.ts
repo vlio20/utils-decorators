@@ -13,10 +13,10 @@ describe('utils', () => {
     expect(funA).not.toBeCalled();
     runner.exec(funB, 20);
     await sleep(10);
-    expect(funA).not.toHaveBeenCalled();
-    expect(funB).not.toHaveBeenCalled();
+    expect(funA).not.toBeCalled();
+    expect(funB).not.toBeCalled();
     await sleep(15);
-    expect(funA).not.toHaveBeenCalled();
+    expect(funA).not.toBeCalled();
     expect(funB).toBeCalledTimes(1);
     await sleep(20);
     expect(funA).toBeCalledTimes(1);
@@ -38,7 +38,7 @@ describe('utils', () => {
     expect(funB).not.toBeCalled();
     await sleep(20);
     expect(funA).toBeCalled();
-    expect(funB).not.toHaveBeenCalled();
+    expect(funB).not.toBeCalled();
     await sleep(20);
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
@@ -55,8 +55,8 @@ describe('utils', () => {
     runner.exec(funA, 20);
     runner.exec(funB, 20);
     await sleep(10);
-    expect(funA).not.toHaveBeenCalled();
-    expect(funB).not.toHaveBeenCalled();
+    expect(funA).not.toBeCalled();
+    expect(funB).not.toBeCalled();
     runner.exec(funC, 10);
     await sleep(15);
     expect(funA).toBeCalledTimes(1);
