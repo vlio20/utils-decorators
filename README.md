@@ -4,7 +4,8 @@
 [![Mutation testing badge](https://badge.stryker-mutator.io/github.com/vlio20/utils-decorators/master)](https://stryker-mutator.github.io)      
   
 This library was highly inspired by lodash but uses decorators to implement its util methods.   
-The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator. 
+The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator.  
+**All decorators are tree-shakable so you will be downloading only the for the decorators that are being used in your application.**  
 
 ```bash
 npm i utils-decorators
@@ -178,6 +179,25 @@ Invocation of the decorated method will happen immediately, but if another invoc
   
 ```typescript 
 function throttle(delayMs: number): Throttable; 
+```  
+
+
+## @execTime (method)  
+Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
+  
+```typescript 
+function execTime<T>(arg?: ReportFunction | string): ExactTimeReportable<T>
+```
+
+- `ReportFunction`: the function that will be invoked after the execution of decorated method. Also can be provided as `string` this way it will invoke the method that is name as the provided string. If no value will be provided then the execution time will be logged with `console.info`.
+```typescript
+type ReportFunction = (data?: ExactTimeReportData) => any;
+
+type ExactTimeReportData = {
+  args: any[];
+  result: any;
+  execTime: number;
+}
 ```  
 
 ----

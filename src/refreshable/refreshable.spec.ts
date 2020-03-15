@@ -1,7 +1,8 @@
 import {refreshable} from './refreshable';
+import {sleep} from '../common/test-utils';
 
 describe('refreshable', () => {
-  it('should populate refreshable property', (done) => {
+  it('should populate refreshable property', async (done) => {
     let fooCtr = 0;
     let gooCtr = 0;
 
@@ -15,35 +16,35 @@ describe('refreshable', () => {
 
     const fooDec = refreshable<any, number>({
       dataProvider: foo,
-      intervalMs: 10
+      intervalMs: 50
     });
 
     const gooDec = refreshable<any, number>({
       dataProvider: goo,
-      intervalMs: 10
+      intervalMs: 50
     });
 
     const t = <{prop: number, proop: number}>{prop: 9, proop: 4};
     fooDec(t, 'prop');
     gooDec(t, 'proop');
 
-    setTimeout(() => {
-      expect(t.prop).toBe(0);
-      expect(t.proop).toBe(0);
-    }, 5);
+    await sleep(10);
 
-    setTimeout(() => {
-      expect(t.prop).toBe(1);
-      expect(t.proop).toBe(1);
-      t.prop = null;
-      t.proop = 100;
+    expect(t.prop).toBe(0);
+    expect(t.proop).toBe(0);
 
-      setTimeout(() => {
-        expect(t.prop).toBe(1);
-        expect(t.proop).toBe(2);
+    await sleep(60);
 
-        done();
-      }, 10);
-    }, 15);
+    expect(t.prop).toBe(1);
+    expect(t.proop).toBe(1);
+    t.prop = null;
+    t.proop = 100;
+
+    await sleep(50);
+
+    expect(t.prop).toBe(1);
+    expect(t.proop).toBe(2);
+
+    done();
   });
 });

@@ -1,5 +1,6 @@
 import {Memoizable, MemoizeConfig} from './memoize.model';
 import {Method} from '..';
+import {TaskExec} from '../common/tesk-exec/task-exec';
 
 export function memoize<T = any, D = any>(config: MemoizeConfig<T, D>): Memoizable<T, D>;
 export function memoize<T = any, D = any>(expirationTimeMs: number): Memoizable<T, D>;
@@ -8,6 +9,7 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
     cache: new Map<string, D>(),
     expirationTimeMs: 1000 * 60
   };
+  const runner = new TaskExec();
 
   return (target: T,
           propertyName: keyof T,
@@ -42,11 +44,9 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
         if (!resolvedConfig.cache.has(key)) {
           const response = originalMethod.apply(this, args);
 
-          setTimeout(() => {
-              resolvedConfig.cache.delete(key);
-            },
-            resolvedConfig.expirationTimeMs
-          );
+          runner.exec(() => {
+            resolvedConfig.cache.delete(key);
+          }, resolvedConfig.expirationTimeMs);
 
           resolvedConfig.cache.set(key, response);
         }
