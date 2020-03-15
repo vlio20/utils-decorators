@@ -62,7 +62,7 @@ describe('exec-time', () => {
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(10);
+    expect(args.execTime).toBeGreaterThanOrEqual(8);
     expect(args.execTime).toBeLessThan(20);
   });
 
@@ -105,7 +105,7 @@ describe('exec-time', () => {
     const args: ExactTimeReportData = t.goo.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(10);
+    expect(args.execTime).toBeGreaterThanOrEqual(8);
     expect(args.execTime).toBeLessThan(20);
   });
 });
