@@ -1,4 +1,5 @@
 import {delay} from './delay';
+import {sleep} from '../common/test-utils';
 
 describe('delay', () => {
   it('should make sure error thrown when decorator not set on method', () => {
@@ -18,11 +19,11 @@ describe('delay', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify method invocation is delayed', (done) => {
+  it('should verify method invocation is delayed', async (done) => {
     class T {
       prop: number;
 
-      @delay<T>(5)
+      @delay<T>(50)
       foo(x: number): void {
         return this.goo(x);
       }
@@ -39,17 +40,18 @@ describe('delay', () => {
     const spy = jest.spyOn(T.prototype, 'goo');
     t.foo(1);
 
-    setTimeout(() => {
-      t.foo(2);
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).lastCalledWith(1);
-    }, 10);
-
+    await sleep(20);
     expect(spy).not.toBeCalled();
 
-    setTimeout(async () => {
-      expect(spy).toBeCalledTimes(2);
-      done();
-    }, 20);
+    await sleep(50);
+
+    t.foo(2);
+    expect(spy).toBeCalledTimes(1);
+    expect(spy).lastCalledWith(1);
+
+    await sleep(75);
+
+    expect(spy).toBeCalledTimes(2);
+    done();
   });
 });
