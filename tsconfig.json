@@ -3,6 +3,7 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": [
       "es2017"
