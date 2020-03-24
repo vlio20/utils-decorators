@@ -30,8 +30,6 @@ describe('throttle', () => {
 
       goo(x: number): void {
         expect(this.prop).toBe(3);
-
-        return;
       }
     }
 

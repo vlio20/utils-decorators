@@ -6,25 +6,25 @@ describe('refreshable', () => {
     let fooCtr = 0;
     let gooCtr = 0;
 
-    const foo = () => {
-      return fooCtr++;
+    const foo = (): void => {
+      fooCtr += 1;
     };
 
-    const goo = () => {
-      return gooCtr++;
+    const goo = (): void => {
+      gooCtr += 1;
     };
 
     const fooDec = refreshable<any, number>({
       dataProvider: foo,
-      intervalMs: 50
+      intervalMs: 50,
     });
 
     const gooDec = refreshable<any, number>({
       dataProvider: goo,
-      intervalMs: 50
+      intervalMs: 50,
     });
 
-    const t = <{prop: number; proop: number}>{prop: 9, proop: 4};
+    const t = {prop: 9, proop: 4} as {prop: number; proop: number};
     fooDec(t, 'prop');
     gooDec(t, 'proop');
 

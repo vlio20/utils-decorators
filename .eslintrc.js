@@ -18,5 +18,6 @@ module.exports = {
     "@typescript-eslint/indent": ["error", 2],
     "no-param-reassign": ['error',
       {ignorePropertyModificationsForRegex: ["^descriptor$"]}],
+    "max-classes-per-file": ['error', 2]
   }
 };

@@ -1,5 +1,4 @@
-import {RefreshableConfig} from '..';
-import {Refreshable} from './refreshable.model';
+import {Refreshable, RefreshableConfig} from './refreshable.model';
 
 export function refreshable<T, D>(config: RefreshableConfig<D>): Refreshable<T> {
   return async function (target: T, key: keyof T): Promise<void> {
