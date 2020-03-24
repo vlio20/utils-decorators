@@ -7,7 +7,7 @@ export function memoize<T = any, D = any>(expirationTimeMs: number): Memoizable<
 export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): Memoizable<T, D> {
   const defaultConfig: MemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
-    expirationTimeMs: 1000 * 60
+    expirationTimeMs: 1000 * 60,
   };
   const runner = new TaskExec();
 
@@ -15,7 +15,7 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<D>>): TypedPropertyDescriptor<Method<D>> => {
     let resolvedConfig = <MemoizeConfig<T, D>>{
-      ...defaultConfig
+      ...defaultConfig,
     };
 
     if (typeof input === 'number') {
@@ -23,7 +23,7 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
     } else {
       resolvedConfig = {
         ...resolvedConfig,
-        ...input
+        ...input,
       };
     }
 
@@ -31,9 +31,9 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
       const originalMethod = descriptor.value;
       descriptor.value = function (...args: any[]): D {
         let key;
-        const keyResolver = typeof resolvedConfig.keyResolver === 'string' ?
-          this[resolvedConfig.keyResolver].bind(this) :
-          resolvedConfig.keyResolver;
+        const keyResolver = typeof resolvedConfig.keyResolver === 'string'
+          ? this[resolvedConfig.keyResolver].bind(this)
+          : resolvedConfig.keyResolver;
 
         if (keyResolver) {
           key = keyResolver(...args);
@@ -55,8 +55,7 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
       };
 
       return descriptor;
-    } else {
-      throw new Error('@memoize is applicable only on a methods.');
     }
+    throw new Error('@memoize is applicable only on a methods.');
   };
 }

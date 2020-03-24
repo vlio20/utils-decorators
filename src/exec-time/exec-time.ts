@@ -31,13 +31,12 @@ export function execTime<T = any>(arg?: ReportFunction | string): ExactTimeRepor
         repFunc({
           args,
           result,
-          execTime: Date.now() - start
+          execTime: Date.now() - start,
         });
       };
 
       return descriptor;
-    } else {
-      throw new Error('@execTime is applicable only on a methods.');
     }
+    throw new Error('@execTime is applicable only on a methods.');
   };
 }

@@ -1,9 +1,8 @@
 import TinyQueue from 'tinyqueue';
 
 export class TaskExec {
-  private tasks = new TinyQueue<TimedTask>([], (a, b) => {
-    return a.execTime - b.execTime;
-  });
+  private tasks = new TinyQueue<TimedTask>([], (a, b) => a.execTime - b.execTime);
+
   private handler;
 
   exec(func: (...args: any) => any, ttl: number): void {
@@ -31,6 +30,6 @@ export class TaskExec {
 }
 
 type TimedTask = {
-  func: (...args: any) => any,
-  execTime: number
+  func: (...args: any) => any;
+  execTime: number;
 };

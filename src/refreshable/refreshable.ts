@@ -14,14 +14,12 @@ export function refreshable<T, D>(config: RefreshableConfig<D>): Refreshable<T> 
     }, 0);
 
     Object.defineProperty(target, key, {
-      get: (): D => {
-        return data;
-      },
+      get: (): D => data,
       set(x: D): void {
         if (x === null) {
           clearInterval(intervalHandler);
         }
-      }
+      },
     });
   };
 }

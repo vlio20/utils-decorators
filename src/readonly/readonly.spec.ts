@@ -5,7 +5,7 @@ describe('readonly', () => {
     class T {
 
       @readonly()
-      prop: number = 2;
+      prop = 2;
     }
 
     const t = new T();

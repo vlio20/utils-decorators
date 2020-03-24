@@ -20,7 +20,7 @@ describe('onError', () => {
 
   it('should verify onError called on exception, when as string', () => {
     class T {
-      prop: number = 3;
+      prop = 3;
 
       @onError<T>({func: 'onError'})
       foo(x: number): any {

@@ -5,12 +5,11 @@ export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
   return (target: T,
           propertyName: keyof T,
           descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
-
     if (descriptor.value) {
       const originalMethod: Function = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<any> {
-        const onErrorFunc: OnErrorHandler = typeof config.func === 'string' ?
-          this[config.func].bind(this) : config.func;
+        const onErrorFunc: OnErrorHandler = typeof config.func === 'string'
+          ? this[config.func].bind(this) : config.func;
 
         try {
           return await originalMethod.apply(this, args);
@@ -20,8 +19,7 @@ export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
       };
 
       return descriptor;
-    } else {
-      throw new Error('@onError is applicable only on a methods.');
     }
+    throw new Error('@onError is applicable only on a methods.');
   };
 }
