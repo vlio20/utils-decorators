@@ -1,4 +1,4 @@
-import {Method} from '..';
+import {Method} from '../common/model/common.model';
 
 export type KeyResolver = (...args: any[]) => string;
 
@@ -15,6 +15,8 @@ export interface MemoizeConfig<T, D> {
   expirationTimeMs?: number;
 }
 
-export type Memoizable<T, D> = (target: T,
-                                propertyName: keyof T,
-                                descriptor: TypedPropertyDescriptor<Method<D>>) => TypedPropertyDescriptor<Method<D>>;
+export type Memoizable<T, D> = (
+  target: T,
+  propertyName: keyof T,
+  descriptor: TypedPropertyDescriptor<Method<D>>
+) => TypedPropertyDescriptor<Method<D>>;

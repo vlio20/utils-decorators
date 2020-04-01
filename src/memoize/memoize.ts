@@ -1,5 +1,5 @@
 import {Memoizable, MemoizeConfig} from './memoize.model';
-import {Method} from '..';
+import {Method} from '../common/model/common.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 
 export function memoize<T = any, D = any>(config: MemoizeConfig<T, D>): Memoizable<T, D>;
@@ -7,23 +7,25 @@ export function memoize<T = any, D = any>(expirationTimeMs: number): Memoizable<
 export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): Memoizable<T, D> {
   const defaultConfig: MemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
-    expirationTimeMs: 1000 * 60
+    expirationTimeMs: 1000 * 60,
   };
   const runner = new TaskExec();
 
-  return (target: T,
-          propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<Method<D>>): TypedPropertyDescriptor<Method<D>> => {
-    let resolvedConfig = <MemoizeConfig<T, D>>{
-      ...defaultConfig
-    };
+  return (
+    target: T,
+    propertyName: keyof T,
+    descriptor: TypedPropertyDescriptor<Method<D>>,
+  ): TypedPropertyDescriptor<Method<D>> => {
+    let resolvedConfig = {
+      ...defaultConfig,
+    } as MemoizeConfig<T, D>;
 
     if (typeof input === 'number') {
       resolvedConfig.expirationTimeMs = input;
     } else {
       resolvedConfig = {
         ...resolvedConfig,
-        ...input
+        ...input,
       };
     }
 
@@ -31,9 +33,9 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
       const originalMethod = descriptor.value;
       descriptor.value = function (...args: any[]): D {
         let key;
-        const keyResolver = typeof resolvedConfig.keyResolver === 'string' ?
-          this[resolvedConfig.keyResolver].bind(this) :
-          resolvedConfig.keyResolver;
+        const keyResolver = typeof resolvedConfig.keyResolver === 'string'
+          ? this[resolvedConfig.keyResolver].bind(this)
+          : resolvedConfig.keyResolver;
 
         if (keyResolver) {
           key = keyResolver(...args);
@@ -55,8 +57,7 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
       };
 
       return descriptor;
-    } else {
-      throw new Error('@memoize is applicable only on a methods.');
     }
+    throw new Error('@memoize is applicable only on a methods.');
   };
 }

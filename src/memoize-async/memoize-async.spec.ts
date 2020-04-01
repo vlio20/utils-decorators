@@ -30,7 +30,7 @@ describe('memozie-async', () => {
       expect(spy).toHaveBeenCalledWith(1, 2);
       expect(spy).toBeCalledTimes(1);
 
-      const resp_1 = t.foo(1, 3);
+      const resp01 = t.foo(1, 3);
 
       setTimeout(() => {
         expect(spy).toHaveBeenCalledWith(1, 3);
@@ -48,17 +48,15 @@ describe('memozie-async', () => {
           expect(await resp1).toBe(3);
           expect(await resp2).toBe(3);
           expect(await resp3).toBe(3);
-          expect(await resp_1).toBe(4);
+          expect(await resp01).toBe(4);
           done();
         }, 0);
       }, 20);
     }, 0);
   });
 
-  it('should verify memoize key mapper', async (done) => {
-    const mapper = jest.fn((x: string, y: string) => {
-      return `${x}_${y}`;
-    });
+  it('should verify memoize key foo', async (done) => {
+    const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
 
     class T {
       @memoizeAsync<T, string>({expirationTimeMs: 10, keyResolver: mapper})
@@ -85,13 +83,13 @@ describe('memozie-async', () => {
     }, 0);
   });
 
-  it('should verify memoize key mapper as string - target method', async (done) => {
+  it('should verify memoize key foo as string - target method', async (done) => {
     class T {
-      mapper(x: string, y: string): string {
+      foo(x: string, y: string): string {
         return `${x}_${y}`;
       }
 
-      @memoizeAsync<T, string>({expirationTimeMs: 10, keyResolver: 'mapper'})
+      @memoizeAsync<T, string>({expirationTimeMs: 10, keyResolver: 'foo'})
       fooWithMapper(x: string, y: string): Promise<string> {
         return this.goo(x, y);
       }
@@ -103,7 +101,7 @@ describe('memozie-async', () => {
 
     const t = new T();
     const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
-    const mapper = jest.spyOn(T.prototype, 'mapper');
+    const mapper = jest.spyOn(T.prototype, 'foo');
 
     t.fooWithMapper('x', 'y');
     t.fooWithMapper('x', 'y');
@@ -142,7 +140,7 @@ describe('memozie-async', () => {
       }
 
       goo(): Promise<string> {
-        return Promise.reject('rejected');
+        return Promise.reject(new Error('rejected'));
       }
     }
 
@@ -151,12 +149,12 @@ describe('memozie-async', () => {
 
     t.foo()
       .catch((e) => {
-        expect(e).toBe('rejected');
+        expect(e.message).toBe('rejected');
       });
 
     setTimeout(() => {
       t.foo().catch((e) => {
-        expect(e).toBe('rejected');
+        expect(e.message).toBe('rejected');
       });
 
       setTimeout(() => {
@@ -204,19 +202,19 @@ describe('memozie-async', () => {
   it('should use different scope to different usages', async () => {
     class T {
       @memoizeAsync<T, number>(20)
-      one(): Promise<number> {
+      foo(): Promise<number> {
         return Promise.resolve(1);
       }
 
       @memoizeAsync<T, number>(20)
-      two(): Promise<number> {
+      goo(): Promise<number> {
         return Promise.resolve(2);
       }
     }
 
     const t = new T();
-    const one = t.one();
-    const two = t.two();
+    const one = t.foo();
+    const two = t.goo();
 
     expect(await one).toBe(1);
     expect(await two).toBe(2);
@@ -225,14 +223,14 @@ describe('memozie-async', () => {
   it('should verify defaults', async () => {
     class T {
       @memoizeAsync<T, number>({})
-      one(): Promise<number> {
+      foo(): Promise<number> {
         return Promise.resolve(1);
       }
     }
 
     const t = new T();
     spyOn(window, 'setTimeout');
-    await t.one();
+    await t.foo();
 
     expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60000);
   });
@@ -244,21 +242,17 @@ describe('memozie-async', () => {
       delete: async (p1: string) => {
         map.delete(p1);
       },
-      get: async (p1: string) => {
-        return map.get(p1);
-      },
-      has: async (p1: string) => {
-        return map.has(p1);
-      },
+      get: async (p1: string) => map.get(p1),
+      has: async (p1: string) => map.has(p1),
       set: async (p1: string, p2: number) => {
         map.set(p1, p2);
-      }
+      },
     };
 
     class T {
       @memoizeAsync<T, number>({
         expirationTimeMs: 30,
-        cache
+        cache,
       })
       foo(): Promise<number> {
         return this.goo();
@@ -297,21 +291,17 @@ describe('memozie-async', () => {
       delete: async (p1: string) => {
         map.delete(p1);
       },
-      get: async (p1: string) => {
-        return map.get(p1);
-      },
-      has: async (p1: string) => {
-        return Promise.reject(new Error('error'));
-      },
+      get: async (p1: string) => map.get(p1),
+      has: async (p1: string) => Promise.reject(new Error('error')),
       set: async (p1: string, p2: number) => {
         map.set(p1, p2);
-      }
+      },
     };
 
     class T {
       @memoizeAsync<T, number>({
         expirationTimeMs: 30,
-        cache
+        cache,
       })
       foo(): Promise<number> {
         return Promise.resolve(1);
@@ -327,7 +317,7 @@ describe('memozie-async', () => {
       return;
     }
 
-    throw new Error(`shouldn't get to here`);
+    throw new Error('shouldn\'t get to here');
   });
 
   it('should throw exception when async get method throws an exception', async () => {
@@ -337,21 +327,17 @@ describe('memozie-async', () => {
       delete: async (p1: string) => {
         map.delete(p1);
       },
-      get: async (p1: string) => {
-        return Promise.reject(new Error('error'));
-      },
-      has: async (p1: string) => {
-        return Promise.resolve(true);
-      },
+      get: async (p1: string) => Promise.reject(new Error('error')),
+      has: async (p1: string) => Promise.resolve(true),
       set: async (p1: string, p2: number) => {
         map.set(p1, p2);
-      }
+      },
     };
 
     class T {
       @memoizeAsync<T, number>({
         expirationTimeMs: 30,
-        cache
+        cache,
       })
       foo(): Promise<number> {
         return Promise.resolve(1);
@@ -367,7 +353,7 @@ describe('memozie-async', () => {
       return;
     }
 
-    throw new Error(`shouldn't get to here`);
+    throw new Error('shouldn\'t get to here');
   });
 
   it('should throw exception when async get method throws an exception', async () => {
@@ -377,21 +363,17 @@ describe('memozie-async', () => {
       delete: async (p1: string) => {
         map.delete(p1);
       },
-      get: async (p1: string) => {
-        return Promise.reject(new Error('error'));
-      },
-      has: async (p1: string) => {
-        return true;
-      },
+      get: async (p1: string) => Promise.reject(new Error('error')),
+      has: async (p1: string) => true,
       set: async (p1: string, p2: number) => {
         map.set(p1, p2);
-      }
+      },
     };
 
     class T {
       @memoizeAsync<T, number>({
         expirationTimeMs: 30,
-        cache
+        cache,
       })
       foo(): Promise<number> {
         return Promise.resolve(1);
@@ -407,7 +389,7 @@ describe('memozie-async', () => {
       return;
     }
 
-    throw new Error(`shouldn't get to here`);
+    throw new Error('shouldn\'t get to here');
   });
 
   it('should throw exception when original method is broken', async () => {
@@ -417,21 +399,17 @@ describe('memozie-async', () => {
       delete: async (p1: string) => {
         map.delete(p1);
       },
-      get: async (p1: string) => {
-        return map.get(p1);
-      },
-      has: async (p1: string) => {
-        return map.has(p1);
-      },
+      get: async (p1: string) => map.get(p1),
+      has: async (p1: string) => map.has(p1),
       set: async (p1: string, p2: number) => {
         map.set(p1, p2);
-      }
+      },
     };
 
     class T {
       @memoizeAsync<T, number>({
         expirationTimeMs: 30,
-        cache
+        cache,
       })
       foo(): Promise<number> {
         return Promise.reject(new Error('error'));
@@ -447,6 +425,6 @@ describe('memozie-async', () => {
       return;
     }
 
-    throw new Error(`shouldn't get to here`);
+    throw new Error('shouldn\'t get to here');
   });
 });

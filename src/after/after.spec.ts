@@ -31,7 +31,7 @@ describe('after', () => {
       }
 
       @after<T, void>({
-        func: 'after'
+        func: 'after',
       })
       foo(x: number): void {
         return this.goo(x);
@@ -39,9 +39,8 @@ describe('after', () => {
 
       goo(x: number): void {
         expect(this.prop).toBe(3);
-        expect(counter++).toBe(0);
-
-        return;
+        expect(counter).toBe(0);
+        counter += 1;
       }
     }
 
@@ -64,18 +63,16 @@ describe('after', () => {
     });
 
     class T {
-
       @after<T, void>({
-        func: afterFunc
+        func: afterFunc,
       })
       foo(x: number): void {
         return this.goo(x);
       }
 
       goo(x: number): void {
-        expect(counter++).toBe(0);
-
-        return;
+        expect(counter).toBe(0);
+        counter += 1;
       }
     }
 
@@ -92,16 +89,17 @@ describe('after', () => {
     let counter = 0;
 
     const afterFunc = jest.fn(() => {
-      expect(counter++).toBe(1);
+      expect(counter).toBe(1);
+      counter += 1;
     });
 
     class T {
-
       @after<T, void>({
-        func: afterFunc
+        func: afterFunc,
       })
       foo(x: number): Promise<void> {
-        expect(counter++).toBe(0);
+        expect(counter).toBe(0);
+        counter += 1;
 
         return new Promise((resolve) => {
           setTimeout(() => {
@@ -126,17 +124,18 @@ describe('after', () => {
     });
 
     class T {
-
       @after<T, void>({
         func: afterFunc,
-        wait: true
+        wait: true,
       })
       foo(): Promise<void> {
-        expect(counter++).toBe(0);
+        expect(counter).toBe(0);
+        counter += 1;
 
         return new Promise((resolve) => {
           setTimeout(() => {
-            expect(counter++).toBe(1);
+            expect(counter).toBe(1);
+            counter += 1;
             resolve();
           }, 0);
         });
@@ -161,7 +160,7 @@ describe('after', () => {
 
     class T {
       @after<T, number>({
-        func: afterFunc
+        func: afterFunc,
       })
       foo(x: number, y: number): number {
         return x + y;
@@ -186,7 +185,7 @@ describe('after', () => {
     class T {
       @after({
         func: afterFunc,
-        wait: true
+        wait: true,
       })
       foo(x: number, y: number): Promise<number> {
         return Promise.resolve(x + y);

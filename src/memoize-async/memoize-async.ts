@@ -1,5 +1,4 @@
-import {AsyncMemoizable, AsyncMethod} from '..';
-import {AsyncMemoizeConfig} from './memoize-async.model';
+import {AsyncMemoizable, AsyncMemoizeConfig, AsyncMethod} from './memoize-async.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 
 export function memoizeAsync<T = any, D = any>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
@@ -7,34 +6,36 @@ export function memoizeAsync<T = any, D = any>(expirationTimeMs: number): AsyncM
 export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> | number): AsyncMemoizable<T, D> {
   const defaultConfig: AsyncMemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
-    expirationTimeMs: 1000 * 60
+    expirationTimeMs: 1000 * 60,
   };
   const runner = new TaskExec();
 
   const promCache = new Map<string, Promise<D>>();
 
-  return (target: T,
-          propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
-    let resolvedConfig = <AsyncMemoizeConfig<T, D>>{
-      ...defaultConfig
-    };
+  return (
+    target: T,
+    propertyName: keyof T,
+    descriptor: TypedPropertyDescriptor<AsyncMethod<D>>,
+  ): TypedPropertyDescriptor<AsyncMethod<D>> => {
+    let resolvedConfig = {
+      ...defaultConfig,
+    } as AsyncMemoizeConfig<T, D>;
 
     if (typeof input === 'number') {
       resolvedConfig.expirationTimeMs = input;
     } else {
       resolvedConfig = {
         ...resolvedConfig,
-        ...input
+        ...input,
       };
     }
 
     if (descriptor.value) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<D> {
-        const keyResolver = typeof resolvedConfig.keyResolver === 'string' ?
-          this[resolvedConfig.keyResolver].bind(this) :
-          resolvedConfig.keyResolver;
+        const keyResolver = typeof resolvedConfig.keyResolver === 'string'
+          ? this[resolvedConfig.keyResolver].bind(this)
+          : resolvedConfig.keyResolver;
 
         let key;
 
@@ -94,8 +95,7 @@ export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> |
       };
 
       return descriptor;
-    } else {
-      throw new Error('@memoizeAsync is applicable only on a methods.');
     }
+    throw new Error('@memoizeAsync is applicable only on a methods.');
   };
 }

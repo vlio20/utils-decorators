@@ -1,8 +1,10 @@
-import {Method} from '..';
+import {Method} from '../common/model/common.model';
 
-export type OnErrorable<T> = (target: T,
-                              propertyName: keyof T,
-                              descriptor: TypedPropertyDescriptor<Method<any>>) => TypedPropertyDescriptor<Method<any>>;
+export type OnErrorable<T> = (
+  target: T,
+  propertyName: keyof T,
+  descriptor: TypedPropertyDescriptor<Method<any>>
+) => TypedPropertyDescriptor<Method<any>>;
 
 export interface OnErrorConfig<T> {
   func: Function | keyof T;

@@ -1,4 +1,4 @@
-import {Method} from '..';
+import {Method} from '../common/model/common.model';
 import {ExactTimeReportable, ExactTimeReportData, ReportFunction} from './exec-time.model';
 import {isPromise} from '../common/utils/utils';
 
@@ -7,18 +7,18 @@ const reporter: ReportFunction = function (data: ExactTimeReportData): void {
 };
 
 export function execTime<T = any>(arg?: ReportFunction | string): ExactTimeReportable<T> {
-  if (!arg) {
-    arg = reporter;
-  }
+  const input: ReportFunction | string = arg ?? reporter;
 
-  return (target: T,
-          propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
+  return (
+    target: T,
+    propertyName: keyof T,
+    descriptor: TypedPropertyDescriptor<Method<any>>,
+  ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
       const originalMethod = descriptor.value;
 
       descriptor.value = async function (...args: any[]): Promise<void> {
-        const repFunc: ReportFunction = typeof arg === 'string' ? this[arg].bind(this) : arg;
+        const repFunc: ReportFunction = typeof input === 'string' ? this[input].bind(this) : input;
 
         const start = Date.now();
 
@@ -31,13 +31,12 @@ export function execTime<T = any>(arg?: ReportFunction | string): ExactTimeRepor
         repFunc({
           args,
           result,
-          execTime: Date.now() - start
+          execTime: Date.now() - start,
         });
       };
 
       return descriptor;
-    } else {
-      throw new Error('@execTime is applicable only on a methods.');
     }
+    throw new Error('@execTime is applicable only on a methods.');
   };
 }

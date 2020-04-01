@@ -20,7 +20,6 @@ describe('cancelPrevious', () => {
 
   it('should cancel prev invocation', (done) => {
     class T {
-
       @cancelPrevious<T>()
       foo(x: number): Promise<number> {
         return new Promise<number>((resolve) => {
@@ -44,12 +43,11 @@ describe('cancelPrevious', () => {
         .catch((e) => {
           if (e instanceof CanceledPromise) {
             expect(e.message).toBe('canceled');
-            cancelHappened++;
+            cancelHappened += 1;
 
             return;
-          } else {
-            throw new Error(`should't get here`);
           }
+          throw new Error('should\'t get here');
         });
     };
 
@@ -62,7 +60,6 @@ describe('cancelPrevious', () => {
 
   it('should invoke original method id was resolved before second call', (done) => {
     class T {
-
       @cancelPrevious()
       foo(x: number): Promise<number> {
         return new Promise<number>((resolve) => {
@@ -81,7 +78,7 @@ describe('cancelPrevious', () => {
       t.foo(x)
         .then((data) => {
           if (round === 1) {
-            round++;
+            round += 1;
             expect(data).toBe(10);
           } else {
             expect(data).toBe(100);
@@ -92,11 +89,9 @@ describe('cancelPrevious', () => {
         })
         .catch((e) => {
           if (e instanceof CanceledPromise) {
-            cancelHappened++;
-
-            return;
+            cancelHappened += 1;
           } else {
-            throw new Error(`should't get here`);
+            throw new Error('should\'t get here');
           }
         });
     };
@@ -110,7 +105,6 @@ describe('cancelPrevious', () => {
 
   it('should invoke rejection if original method got an error', (done) => {
     class T {
-
       @cancelPrevious<T>()
       foo(x: number): Promise<number> {
         return new Promise<number>((resolve, reject) => {
@@ -126,11 +120,11 @@ describe('cancelPrevious', () => {
     const func = (x: number) => {
       t.foo(x)
         .then(() => {
-          throw new Error(`should't get here`);
+          throw new Error('should\'t get here');
         })
         .catch((e) => {
           if (e instanceof CanceledPromise) {
-            throw new Error(`should't get here`);
+            throw new Error('should\'t get here');
           } else {
             expect(e.message).toBe('server error');
             done();
