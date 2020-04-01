@@ -5,8 +5,12 @@ describe('utils', () => {
   it('should verify task executed in time - A:40, B:20 -> B, A', async (done) => {
     const runner = new TaskExec();
     let val = '';
-    const funA = jest.fn().mockImplementation(() => val += 'A');
-    const funB = jest.fn().mockImplementation(() => val += 'B');
+    const funA = jest.fn().mockImplementation(() => {
+      val += 'A';
+    });
+    const funB = jest.fn().mockImplementation(() => {
+      val += 'B';
+    });
 
     runner.exec(funA, 50);
 
@@ -36,8 +40,12 @@ describe('utils', () => {
   it('should verify task executed in time - A:20, B:40 -> A, B', async (done) => {
     const runner = new TaskExec();
     let val = '';
-    const funA = jest.fn().mockImplementation(() => val += 'A');
-    const funB = jest.fn().mockImplementation(() => val += 'B');
+    const funA = jest.fn().mockImplementation(() => {
+      val += 'A';
+    });
+    const funB = jest.fn().mockImplementation(() => {
+      val += 'B';
+    });
 
     runner.exec(funA, 50);
     runner.exec(funB, 100);

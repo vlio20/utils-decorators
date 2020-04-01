@@ -6,12 +6,18 @@ describe('refreshable', () => {
     let fooCtr = 0;
     let gooCtr = 0;
 
-    const foo = (): void => {
+    const foo = (): number => {
+      const tmp = gooCtr;
       fooCtr += 1;
+
+      return tmp;
     };
 
-    const goo = (): void => {
+    const goo = (): number => {
+      const tmp = gooCtr;
       gooCtr += 1;
+
+      return tmp;
     };
 
     const fooDec = refreshable<any, number>({

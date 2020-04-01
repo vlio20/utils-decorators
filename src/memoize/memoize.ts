@@ -1,5 +1,5 @@
 import {Memoizable, MemoizeConfig} from './memoize.model';
-import {Method} from '..';
+import {Method} from '../common/model/common.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 
 export function memoize<T = any, D = any>(config: MemoizeConfig<T, D>): Memoizable<T, D>;
@@ -11,12 +11,14 @@ export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): 
   };
   const runner = new TaskExec();
 
-  return (target: T,
-          propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<Method<D>>): TypedPropertyDescriptor<Method<D>> => {
-    let resolvedConfig = <MemoizeConfig<T, D>>{
+  return (
+    target: T,
+    propertyName: keyof T,
+    descriptor: TypedPropertyDescriptor<Method<D>>,
+  ): TypedPropertyDescriptor<Method<D>> => {
+    let resolvedConfig = {
       ...defaultConfig,
-    };
+    } as MemoizeConfig<T, D>;
 
     if (typeof input === 'number') {
       resolvedConfig.expirationTimeMs = input;

@@ -13,11 +13,14 @@ module.exports = {
   ],
   rules: {
     'object-curly-spacing': ['error', 'never'],
-    "import/prefer-default-export": "off",
-    "max-len": ['error', {code: 120}],
-    "@typescript-eslint/indent": ["error", 2],
-    "no-param-reassign": ['error',
-      {ignorePropertyModificationsForRegex: ["^descriptor$"]}],
-    "max-classes-per-file": ['error', 2]
+    'import/prefer-default-export': 'off',
+    'max-len': ['error', {code: 120}],
+    '@typescript-eslint/indent': ['error', 2],
+    'no-param-reassign': ['error',
+      {ignorePropertyModificationsForRegex: ['^descriptor$']}
+    ],
+    'max-classes-per-file': ['off'],
+    'class-methods-use-this': ['error', {exceptMethods: ['foo', 'goo']}],
+    'no-async-promise-executor': ['off']
   }
 };

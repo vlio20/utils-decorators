@@ -1,5 +1,4 @@
-import {AsyncMemoizable, AsyncMethod} from '..';
-import {AsyncMemoizeConfig} from './memoize-async.model';
+import {AsyncMemoizable, AsyncMemoizeConfig, AsyncMethod} from './memoize-async.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 
 export function memoizeAsync<T = any, D = any>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
@@ -13,12 +12,14 @@ export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> |
 
   const promCache = new Map<string, Promise<D>>();
 
-  return (target: T,
-          propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<AsyncMethod<D>>): TypedPropertyDescriptor<AsyncMethod<D>> => {
-    let resolvedConfig = <AsyncMemoizeConfig<T, D>>{
+  return (
+    target: T,
+    propertyName: keyof T,
+    descriptor: TypedPropertyDescriptor<AsyncMethod<D>>,
+  ): TypedPropertyDescriptor<AsyncMethod<D>> => {
+    let resolvedConfig = {
       ...defaultConfig,
-    };
+    } as AsyncMemoizeConfig<T, D>;
 
     if (typeof input === 'number') {
       resolvedConfig.expirationTimeMs = input;

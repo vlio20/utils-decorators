@@ -30,8 +30,6 @@ describe('delay', () => {
 
       goo(x: number): void {
         expect(this.prop).toBe(3);
-
-        return;
       }
     }
 

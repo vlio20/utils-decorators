@@ -24,10 +24,9 @@ describe('exec-time', () => {
     const reporter = jest.fn();
 
     class T {
-
       @execTime(reporter)
       foo(x: string): string {
-        return x + 'b';
+        return `${x}b`;
       }
     }
 
@@ -46,12 +45,11 @@ describe('exec-time', () => {
     const reporter = jest.fn();
 
     class T {
-
       @execTime(reporter)
       async foo(x: string): Promise<string> {
         await sleep(10);
 
-        return Promise.resolve(x + 'b');
+        return Promise.resolve(`${x}b`);
       }
     }
 
@@ -70,10 +68,9 @@ describe('exec-time', () => {
     const logSpy = jest.spyOn(global.console, 'info');
 
     class T {
-
       @execTime()
       foo(x: string): string {
-        return x + 'b';
+        return `${x}b`;
       }
     }
 
@@ -87,14 +84,13 @@ describe('exec-time', () => {
 
   it('should make sure that the reporter is called when provided as sting', async () => {
     class T {
-
       goo = jest.fn();
 
       @execTime('goo')
       async foo(x: string): Promise<string> {
         await sleep(10);
 
-        return Promise.resolve(x + 'b');
+        return Promise.resolve(`${x}b`);
       }
     }
 

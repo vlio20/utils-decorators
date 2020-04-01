@@ -8,8 +8,8 @@ export function after<T = any, D = any>(config: AfterConfig<T, D>): Decorator<T>
   };
 
   return (target: T,
-          propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
+    propertyName: keyof T,
+    descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<void> {

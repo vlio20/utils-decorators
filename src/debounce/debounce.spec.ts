@@ -1,4 +1,5 @@
 import {debounce} from './debounce';
+import {sleep} from '../common/test-utils';
 
 describe('debounce', () => {
   it('should make sure error thrown when decorator not set on method', () => {
@@ -18,20 +19,17 @@ describe('debounce', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify method invocation is debounced', (done) => {
+  it('should verify method invocation is debounced', async (done) => {
     class T {
       prop: number;
 
-      @debounce<T>(15)
+      @debounce<T>(30)
       foo(): void {
         return this.goo();
       }
 
       goo(): void {
-        expect(this.prop)
-          .toBe(3);
-
-        return;
+        expect(this.prop).toBe(3);
       }
     }
 
@@ -40,21 +38,18 @@ describe('debounce', () => {
     const spy = jest.spyOn(T.prototype, 'goo');
     t.foo(); // 15
 
-    setTimeout(() => {
-      expect(spy).toBeCalledTimes(0);
-      t.foo(); // 20
-    }, 5);
-
-    setTimeout(() => {
-      expect(spy).toBeCalledTimes(0);
-    }, 15);
-
-    setTimeout(() => {
-      expect(spy).toBeCalledTimes(1);
-      done();
-    }, 25);
-
     expect(spy).not.toBeCalled();
+
+    await sleep(10);
+    expect(spy).toBeCalledTimes(0);
+    t.foo(); // 20
+
+    await sleep(20);
+    expect(spy).toBeCalledTimes(0);
+
+    await sleep(40);
+    expect(spy).toBeCalledTimes(1);
+    done();
   });
 
   it('should verify method params are passed', (done) => {
@@ -65,7 +60,7 @@ describe('debounce', () => {
       }
 
       goo(x: number, y: number): void {
-        return;
+
       }
     }
 

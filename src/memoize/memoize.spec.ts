@@ -24,7 +24,7 @@ describe('memozie', () => {
     const spy = jest.spyOn(T.prototype, 'goo');
     const resp1 = t.foo(1, 2);
     const resp2 = t.foo(1, 2);
-    const resp_1 = t.foo(1, 3);
+    const resp4 = t.foo(1, 3);
 
     expect(spy).toBeCalledTimes(2);
     expect(spy.mock.calls[0][0]).toBe(1);
@@ -39,7 +39,7 @@ describe('memozie', () => {
       expect(resp1).toBe(3);
       expect(resp2).toBe(3);
       expect(resp3).toBe(3);
-      expect(resp_1).toBe(4);
+      expect(resp4).toBe(4);
       done();
     }, 20);
   });
@@ -91,10 +91,8 @@ describe('memozie', () => {
     }, 10);
   });
 
-  it('should verify memoize key mapper as function', async () => {
-    const mapper = jest.fn((x: string, y: string) => {
-      return `${x}_${y}`;
-    });
+  it('should verify memoize key foo as function', async () => {
+    const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
 
     class T {
       @memoize<T, string>({expirationTimeMs: 10, keyResolver: mapper})
@@ -118,13 +116,13 @@ describe('memozie', () => {
     expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
   });
 
-  it('should verify memoize key mapper as string - method name', async () => {
+  it('should verify memoize key foo as string - method name', async () => {
     class T {
-      mapper(x: string, y: string): string {
+      foo(x: string, y: string): string {
         return `${x}_${y}`;
       }
 
-      @memoize<T, string>({expirationTimeMs: 10, keyResolver: 'mapper'})
+      @memoize<T, string>({expirationTimeMs: 10, keyResolver: 'foo'})
       fooWithInnerMapper(x: string, y: string): string {
         return this.goo(x, y);
       }
@@ -136,7 +134,7 @@ describe('memozie', () => {
 
     const t = new T();
     const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
-    const spyMapper = jest.spyOn(T.prototype, 'mapper');
+    const spyMapper = jest.spyOn(T.prototype, 'foo');
 
     t.fooWithInnerMapper('x', 'y');
     t.fooWithInnerMapper('x', 'y');
@@ -149,14 +147,14 @@ describe('memozie', () => {
   it('should verify defaults', async () => {
     class T {
       @memoize<T, number>({})
-      one(): number {
+      foo(): number {
         return 1;
       }
     }
 
     const t = new T();
     spyOn((window), 'setTimeout');
-    await t.one();
+    await t.foo();
 
     expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60000);
   });

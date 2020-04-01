@@ -20,7 +20,9 @@ export function cancelPrevious<T = any>(): CancelPreviousable<T> {
       let rej: (e: CanceledPromise) => void;
 
       descriptor.value = function (...args: any[]): Promise<any> {
-        rej && rej(new CanceledPromise());
+        if (rej) {
+          rej(new CanceledPromise());
+        }
 
         return new Promise<any>((resolve, reject) => {
           rej = reject;

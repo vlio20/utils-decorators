@@ -1,4 +1,4 @@
-import {Method} from '..';
+import {Method} from '../common/model/common.model';
 
 export type ReportFunction = (data?: ExactTimeReportData) => any;
 
@@ -8,6 +8,8 @@ export type ExactTimeReportData = {
   execTime: number;
 };
 
-export type ExactTimeReportable<T> = (target: T,
-                                      propertyName: keyof T,
-                                      descriptor: TypedPropertyDescriptor<Method<any>>) => TypedPropertyDescriptor<Method<any>>;
+export type ExactTimeReportable<T> = (
+  target: T,
+  propertyName: keyof T,
+  descriptor: TypedPropertyDescriptor<Method<any>>
+) => TypedPropertyDescriptor<Method<any>>;

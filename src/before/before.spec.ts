@@ -26,11 +26,12 @@ describe('before', () => {
 
       before(): void {
         expect(this.prop).toBe(3);
-        expect(counter++).toBe(0);
+        expect(counter).toBe(0);
+        counter += 1;
       }
 
       @before<T>({
-        func: 'before'
+        func: 'before',
       })
       foo(x: number): void {
         return this.goo(x);
@@ -39,8 +40,6 @@ describe('before', () => {
       goo(x: number): void {
         expect(this.prop).toBe(3);
         expect(counter).toBe(1);
-
-        return;
       }
     }
 
@@ -59,13 +58,13 @@ describe('before', () => {
     let counter = 0;
 
     const beforeFunc = jest.fn(() => {
-      expect(counter++).toBe(0);
+      expect(counter).toBe(0);
+      counter += 1;
     });
 
     class T {
-
       @before<T>({
-        func: beforeFunc
+        func: beforeFunc,
       })
       foo(x: number): void {
         return this.goo(x);
@@ -73,8 +72,6 @@ describe('before', () => {
 
       goo(x: number): void {
         expect(counter).toBe(1);
-
-        return;
       }
     }
 
@@ -90,29 +87,25 @@ describe('before', () => {
   it('should verify before method invocation when method is provided without waiting for it to be resolved', (done) => {
     let counter = 0;
 
-    const beforeFunc = jest.fn(() => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          expect(counter).toBe(1);
-          resolve();
-          done();
-        }, 0);
-      });
-    });
+    const beforeFunc = jest.fn(() => new Promise((resolve) => {
+      setTimeout(() => {
+        expect(counter).toBe(1);
+        resolve();
+        done();
+      }, 0);
+    }));
 
     class T {
-
       @before<T>({
-        func: beforeFunc
+        func: beforeFunc,
       })
       foo(x: number): void {
         return this.goo(x);
       }
 
       goo(x: number): void {
-        expect(counter++).toBe(0);
-
-        return;
+        expect(counter).toBe(0);
+        counter += 1;
       }
     }
 
@@ -123,21 +116,19 @@ describe('before', () => {
   it('should verify before method invocation when method is provided with waiting for it to be resolved', (done) => {
     let counter = 0;
 
-    const beforeFunc = jest.fn(() => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          expect(counter++).toBe(0);
-          resolve();
-          done();
-        }, 10);
-      });
-    });
+    const beforeFunc = jest.fn(() => new Promise((resolve) => {
+      setTimeout(() => {
+        expect(counter).toBe(0);
+        counter += 1;
+        resolve();
+        done();
+      }, 10);
+    }));
 
     class T {
-
       @before<T>({
         func: beforeFunc,
-        wait: true
+        wait: true,
       })
       foo(x: number): void {
         return this.goo(x);
@@ -145,8 +136,6 @@ describe('before', () => {
 
       goo(x: number): void {
         expect(counter).toBe(1);
-
-        return;
       }
     }
 

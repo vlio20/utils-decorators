@@ -55,7 +55,6 @@ describe('onError', () => {
     });
 
     class T {
-
       @onError<T>({func: onErrorFunc})
       foo(x: number): any {
         return this.goo(x);
@@ -82,7 +81,6 @@ describe('onError', () => {
     });
 
     class T {
-
       @onError<T>({func: onErrorFunc})
       foo(x: number): Promise<void> {
         return Promise.reject(new Error('error'));
@@ -100,7 +98,6 @@ describe('onError', () => {
     });
 
     class T {
-
       @onError<T>({func: onErrorFunc})
       foo(): Promise<void> {
         return Promise.resolve();
@@ -120,7 +117,6 @@ describe('onError', () => {
     });
 
     class T {
-
       @onError<T>({func: onErrorFunc})
       foo(x: number): any {
         throw new Error('arr');
