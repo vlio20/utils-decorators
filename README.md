@@ -4,8 +4,7 @@
 [![Mutation testing badge](https://badge.stryker-mutator.io/github.com/vlio20/utils-decorators/master)](https://stryker-mutator.github.io)      
   
 This library was highly inspired by lodash but uses decorators to implement its util methods.   
-The lib can be used both in node and in web application, it is built to be tree shakable so you can use it even if you need a specific decorator.  
-**All decorators are tree-shakable so you will be downloading only the for the decorators that are being used in your application.**  
+The lib can be used both in node and in web application, it is built to be **tree-shakable so you can use it even if you need a specific decorator**.  
 
 ```bash
 npm i utils-decorators
