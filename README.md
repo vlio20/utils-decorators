@@ -182,7 +182,8 @@ function throttle(delayMs: number): Throttable;
 
 
 ## @execTime (method)  
-Invocation of the decorated method will happen immediately, but if another invocation of this method will happen during the provided time (in ms) it will be ignored.   
+Measures the time that takes for the decorated method to response. 
+By default will log the result using `console.info()` but this can be changed by providing your own reporter function.    
   
 ```typescript 
 function execTime<T>(arg?: ReportFunction | string): ExactTimeReportable<T>
