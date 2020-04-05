@@ -1,5 +1,5 @@
 import {Decorator, Method} from '../common/model/common.model';
-import {RetryInput} from './retry.model';
+import {Retryable, RetryInput} from './retry.model';
 import {sleep} from '../common/utils/utils';
 
 function getRetriesArray(input: RetryInput): number[] {
@@ -39,7 +39,7 @@ async function exec(
   }
 }
 
-export function retry<T = any>(input: RetryInput): Decorator<T> {
+export function retry<T = any>(input: RetryInput): Retryable<T> {
   const retriesArray = getRetriesArray(input);
 
   return (
