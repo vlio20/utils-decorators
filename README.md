@@ -200,6 +200,21 @@ type ExactTimeReportData = {
 }
 ```  
 
+## @retry (method)  
+Retries execution of the decorated method. The method will be invoked extra x + 1 (where x is the retries values) in the worst case (when all invocation failed).     
+You can provide you own delay time (or delay times array) between the invocations - see details below.
+  
+```typescript 
+function retry<T>(config: RetryInput): Retryable<T>
+```
+
+```typescript
+type RetryInput = number | number[] | {
+  retries: number;
+  delay: number;
+};
+```  
+
 ----
 
 ## Notes:  

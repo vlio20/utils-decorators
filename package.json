@@ -28,13 +28,13 @@
   "scripts": {
     "test": "npm run clean && tsc -p tsconfig.test.json --noEmit && npm run lint && jest --coverage && npm run test:mutation",
     "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest",
+    "test:mutation": "stryker run",
     "jest": "jest",
     "lint": "eslint ./src --ext .ts --quiet",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "test:mutation": "stryker run",
     "release": "npm run clean && npm run test:unit && npm run build && npm publish"
   },
   "files": [
