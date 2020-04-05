@@ -2,9 +2,8 @@ language: node_js
 node_js:
   - '10'
 branches:
-  only:
-    - master
-    - next
+  except:
+    - gh-pages
 cache:
   directories:
     - node_modules
