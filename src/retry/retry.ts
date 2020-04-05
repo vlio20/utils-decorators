@@ -1,5 +1,6 @@
 import {Decorator, Method} from '../common/model/common.model';
 import {RetryInput} from './retry.model';
+import {sleep} from '../common/utils/utils';
 
 function getRetriesArray(input: RetryInput): number[] {
   if (Array.isArray(input)) {
@@ -29,6 +30,8 @@ async function exec(
     return res;
   } catch (e) {
     if (retries < retriesArr.length) {
+      await sleep(retriesArr[retries]);
+
       return exec(originalMethod, args, retriesArr, retries + 1);
     }
 
