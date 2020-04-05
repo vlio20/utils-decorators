@@ -202,7 +202,7 @@ type ExactTimeReportData = {
 
 ## @retry (method)  
 Retries execution of the decorated method. The method will be invoked extra x + 1 (where x is the retries values) in the worst case (when all invocation failed).     
-You can provide you own delay time (or delay times array) between the invocations - see details below.
+You can provide you own delay time (or delay times array) between the invocations - see details below. Note that the default delay between retries is 1000ms.
   
 ```typescript 
 function retry<T>(config: RetryInput): Retryable<T>
