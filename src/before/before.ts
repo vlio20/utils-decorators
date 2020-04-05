@@ -7,9 +7,11 @@ export function before<T = any>(config: BeforeConfig<T>): Decorator<T> {
     ...config,
   };
 
-  return (target: T,
-          propertyName: keyof T,
-          descriptor: TypedPropertyDescriptor<Method<any>>): TypedPropertyDescriptor<Method<any>> => {
+  return (
+    target: T,
+    propertyName: keyof T,
+    descriptor: TypedPropertyDescriptor<Method<any>>
+  ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
       const originalMethod = descriptor.value;
       descriptor.value = async function (...args: any[]): Promise<any> {
