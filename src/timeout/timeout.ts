@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import {AsyncMethod} from '../common/model/common.model';
 import {Timeoutable} from './timeout.model';
 
 export class TimeoutError extends Error {
@@ -13,12 +13,12 @@ export function timeout<T = any>(ms: number): Timeoutable<T> {
   return (
     target: T,
     propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<Method<any>>,
-  ): TypedPropertyDescriptor<Method<any>> => {
+    descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
+  ): TypedPropertyDescriptor<AsyncMethod<any>> => {
     if (descriptor.value) {
       const originalMethod = descriptor.value;
 
-      descriptor.value = function (...args: any[]): any {
+      descriptor.value = function (...args: any[]): Promise<any> {
         return new Promise((resolve, reject) => {
           originalMethod.apply(this, args).then((data: any) => {
             resolve(data);

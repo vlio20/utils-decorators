@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import {AsyncMethod} from '../common/model/common.model';
 
 export type RetryInput = number | number[] | {
   retries: number;
@@ -8,5 +8,5 @@ export type RetryInput = number | number[] | {
 export type Retryable<T> = (
   target: T,
   propertyName: keyof T,
-  descriptor: TypedPropertyDescriptor<Method<any>>
-) => TypedPropertyDescriptor<Method<any>>;
+  descriptor: TypedPropertyDescriptor<AsyncMethod<any>>
+) => TypedPropertyDescriptor<AsyncMethod<any>>;

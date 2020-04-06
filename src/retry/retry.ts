@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import {AsyncMethod} from '../common/model/common.model';
 import {Retryable, RetryInput} from './retry.model';
 import {sleep} from '../common/utils/utils';
 
@@ -45,12 +45,12 @@ export function retry<T = any>(input: RetryInput): Retryable<T> {
   return (
     target: T,
     propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<Method<any>>,
-  ): TypedPropertyDescriptor<Method<any>> => {
+    descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
+  ): TypedPropertyDescriptor<AsyncMethod<any>> => {
     if (descriptor.value) {
       const originalMethod = descriptor.value;
 
-      descriptor.value = function (...args: any[]): any {
+      descriptor.value = function (...args: any[]): Promise<any> {
         return exec(
           originalMethod.bind(this),
           args,
