@@ -33,6 +33,6 @@ export function timeout<T = any>(ms: number): Timeoutable<T> {
       return descriptor;
     }
 
-    throw new Error('@retry is applicable only on a methods.');
+    throw new Error('@timeout is applicable only on a methods.');
   };
 }
