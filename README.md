@@ -224,6 +224,16 @@ function timeout<T>(ms: number): Timeoutable<T>
 
 - `ms`: time in milliseconds for waiting for the promise to be resolved.
 
+## @multiDispatch (method)  
+Will invoke the decorated method the amount of provided time in parallel. This decorator is useful when you want to increase the chance of the decorated method to return a value.  
+Note that the fastest resolved promise will resolve the decorated method and in case where all dispatched will fail the last error would be of the last rejected promise.  
+  
+```typescript 
+function multiDispatch<T>(dispatchesAmount: number): MultiDispatchable<T>
+```
+
+- `dispatchesAmount`: the amount of invocations to generate simultaneously.
+
 ----
 
 ## Notes:  
