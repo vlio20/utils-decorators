@@ -1,3 +1,5 @@
-export type Readonlyable<T = any> = (target: T,
+export type Readonlyable<T = any> = (
+  target: T,
   propertyName: keyof T,
-  descriptor: PropertyDescriptor) => PropertyDescriptor;
+  descriptor: PropertyDescriptor
+) => PropertyDescriptor;

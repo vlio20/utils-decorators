@@ -215,6 +215,15 @@ type RetryInput = number | number[] | {
 };
 ```  
 
+## @timeout (method)  
+Will throw an error (`TimeoutError`) if the decorated method returned promise won't be resolved withing the provided timeout (timeout is in milliseconds). 
+  
+```typescript 
+function timeout<T>(ms: number): Timeoutable<T>
+```
+
+- `ms`: time in milliseconds for waiting for the promise to be resolved.
+
 ----
 
 ## Notes:  
