@@ -1,4 +1,4 @@
-import {Decorator, Method} from '../common/model/common.model';
+import {Method} from '../common/model/common.model';
 import {Retryable, RetryInput} from './retry.model';
 import {sleep} from '../common/utils/utils';
 

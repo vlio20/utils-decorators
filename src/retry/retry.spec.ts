@@ -1,5 +1,4 @@
 import {retry} from './retry';
-import * as RetryObj from './retry';
 import {sleep} from '../common/test-utils';
 
 describe('retry', () => {
