@@ -1,1 +1,1 @@
-export {retry} from './delegate';
+export {delegate} from './delegate';
