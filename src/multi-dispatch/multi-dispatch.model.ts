@@ -1,7 +1,7 @@
-import {Method} from '../common/model/common.model';
+import {AsyncMethod, Method} from '../common/model/common.model';
 
 export type MultiDispatchable<T> = (
   target: T,
   propertyName: keyof T,
-  descriptor: TypedPropertyDescriptor<Method<Promise<any>>>
-) => TypedPropertyDescriptor<Method<Promise<any>>>;
+  descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
+) => TypedPropertyDescriptor<AsyncMethod<any>>;

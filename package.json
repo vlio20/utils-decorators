@@ -28,8 +28,7 @@
   "scripts": {
     "test": "npm run clean && tsc -p tsconfig.test.json --noEmit && npm run lint && jest --coverage && npm run test:mutation",
     "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest",
-    "test:mutation": "stryker run",
-    "jest": "jest",
+    "test:mutation": "stryker run"est",
     "lint": "eslint ./src --ext .ts --quiet",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
