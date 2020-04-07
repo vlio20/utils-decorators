@@ -14,3 +14,4 @@ export * from './exec-time/exec-time.index';
 export * from './retry/retry.index';
 export * from './timeout/timeout.index';
 export * from './multi-dispatch/multi-dispatch.index';
+export * from './delegate/delegate.index';
