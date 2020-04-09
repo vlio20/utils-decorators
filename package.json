@@ -34,7 +34,7 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "release": "npm run clean && npm run test:unit && npm run build"
+    "release": "npm run clean && npm run test:unit && npm run build && npm publish"
   },
   "files": [
     "dist"
