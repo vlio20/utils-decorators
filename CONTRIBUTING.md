@@ -32,4 +32,4 @@ You can also reach us at hello@angular-datepicker.opencollective.com.
 
 
 ## Bug reporting
-It would be very helpful if you provide some code, preferably post a unit test that not passing. 
+It would be very helpful if you provide some code, preferably post a unit test that not passing.~~~~ 

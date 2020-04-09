@@ -1,1 +1,1 @@
-export {Method} from './model/common.model';
+export {Method, AsyncMethod, Decorator} from './model/common.model';
