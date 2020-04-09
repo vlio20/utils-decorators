@@ -41,6 +41,40 @@ describe('delegate', () => {
     expect(counter).toEqual(1);
   });
 
+  it('should delegate method with same key invocation until delegator is resolved / rejected', async () => {
+    const timestampBeforeTest = Date.now();
+    let counter = 0;
+
+    class T {
+      @delegate()
+      async foo(): Promise<number> {
+        counter += 1;
+        await sleep(20);
+
+        return Date.now();
+      }
+    }
+
+    const t = new T();
+    t.foo();
+    t.foo();
+
+    const res0 = await Promise.all([t.foo(), t.foo()]);
+    expect(res0[0]).toEqual(res0[1]);
+    expect(res0[0]).toBeGreaterThan(timestampBeforeTest);
+    expect(counter).toEqual(1);
+
+    t.foo();
+    t.foo();
+
+    const res1 = await Promise.all([t.foo(), t.foo()]);
+    expect(res1).not.toEqual(res0);
+
+    expect(res1[0]).toEqual(res1[1]);
+    expect(res1[0]).toBeGreaterThan(res0[0]);
+    expect(counter).toEqual(2);
+  });
+
   it('should delegate method with same key invocation - default key serialization', async () => {
     let counter = 0;
 
