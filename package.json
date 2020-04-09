@@ -1,6 +1,6 @@
 {
   "name": "utils-decorators",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "decorators for reducing repetitive code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
