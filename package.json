@@ -23,6 +23,7 @@
     "eslint-config-airbnb-typescript": "^7.2.0",
     "eslint-plugin-import": "^2.20.1",
     "jest": "^25.1.0",
+    "rxjs": "^6.5.4",
     "typescript": "^3.8.3"
   },
   "scripts": {
