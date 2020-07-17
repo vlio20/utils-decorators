@@ -7,7 +7,7 @@ export function memoize<T = any, D = any>(expirationTimeMs: number): Memoizable<
 export function memoize<T = any, D = any>(input: MemoizeConfig<T, D> | number): Memoizable<T, D> {
   const defaultConfig: MemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
-    expirationTimeMs: 1000 * 60,
+    expirationTimeMs: 60000,
   };
   const runner = new TaskExec();
 
