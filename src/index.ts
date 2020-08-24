@@ -15,3 +15,4 @@ export * from './retry/retry.index';
 export * from './timeout/timeout.index';
 export * from './multi-dispatch/multi-dispatch.index';
 export * from './delegate/delegate.index';
+export * from './rate-limit/rate-limit.index';
