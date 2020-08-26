@@ -248,6 +248,44 @@ function delegate<T>(keyResolver?: (...args: any[]) => string): MultiDispatchabl
 
 ----
 
+## @rateLimit (method)  
+Limits the amount of calls to the decorated method in a given time period. This decorator can support both local (in-memory) counter or a distributed one. 
+  
+```typescript 
+function reateLimit<T, D>(config: RateLimitConfigs) => string): RateLimitable<T, D>
+```
+
+```typescript 
+interface RateLimitConfigs<T = any> {
+  timeSpanMs: number;
+  allowedCalls: number;
+  keyResolver?: ((...args: any[]) => string) | keyof T;
+  rateLimitCounter?: RateLimitCounter;
+  rateLimitAsyncCounter?: RateLimitAsyncCounter;
+  exceedHandler?: () => void;
+}
+
+interface RateLimitCounter {
+  inc: (key: string) => void;
+  dec: (key: string) => void;
+  getCount: (key: string) => number;
+}
+
+interface RateLimitAsyncCounter {
+  inc: (key: string) => Promise<void>;
+  dec: (key: string) => Promise<void>;
+  getCount: (key: string) => Promise<number>;
+}
+```
+
+- `timeSpanMs`: the time window for which the rate-limit should hold the counts (time in milliseconds).
+- `allowedCalls`: the amount of call allowed in the provided `timeSpanMs`.
+- `keyResolver`: Sometimes you want to group your calls and only then apply the rate-limit. By providing the `keyResolver` you can group your calls by the provided arguments.
+- `rateLimitCounter`: You can provide your custom rate limit counter.
+- `rateLimitAsyncCounter`: You can provide your custom async rate limit counter - it should implement the `RateLimitCounter` interface. Note that in such cases it is expected that the decorated method is returning a promise.
+- `exceedHandler`: There are scenarios in which you want to handle the cases in which the amount of calls exceeds the allowed amount, by providing your custom function you will have this control. By default the decorator will throw an `Error`.
+----
+
 ## Notes:  
 **Class methods:** some decorators expect you to provide a function as one of their attributes or arguments, for example in the `@before`.  
 Because of the way decorators currently work in JavaScript, there is no way to provide a class method from the same context. We will continue withe the `@before` example, the following code won't work:  

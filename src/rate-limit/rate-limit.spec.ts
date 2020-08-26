@@ -266,4 +266,29 @@ describe('rate-limit', () => {
     await sleep(120);
     t.foo('a');
   });
+
+  it('should invoke custom handler when exceeds the amount of allowed calls', async () => {
+    class TT {
+      @rateLimit<TT>({
+        allowedCalls: 1,
+        timeSpanMs: 50,
+        exceedHandler: () => {
+          throw new Error('blarg');
+        },
+      })
+      foo() {
+      }
+    }
+
+    const t = new TT();
+    t.foo();
+    await sleep(20);
+
+    try {
+      t.foo();
+      throw new Error('should not get to this line');
+    } catch (e) {
+      expect(e.message).toEqual('blarg');
+    }
+  });
 });
