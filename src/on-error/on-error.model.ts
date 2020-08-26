@@ -7,7 +7,7 @@ export type OnErrorable<T> = (
 ) => TypedPropertyDescriptor<Method<any>>;
 
 export interface OnErrorConfig<T> {
-  func: Function | keyof T;
+  func: ((...args: any[]) => any) | keyof T;
 }
 
 export type OnErrorHandler = (e?: Error, args?: any[]) => any;

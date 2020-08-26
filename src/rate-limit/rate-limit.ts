@@ -76,7 +76,7 @@ export function rateLimit<T = any, D = any>(config: RateLimitConfigs): RateLimit
 
       descriptor.value = function (...args: any[]): D | Promise<D> {
         const keyResolver: (...args: any[]) => string = typeof resolvedConfig.keyResolver === 'string'
-          ? this[resolvedConfig.keyResolver] : (resolvedConfig.keyResolver as Function).bind(target);
+          ? this[resolvedConfig.keyResolver] : (resolvedConfig.keyResolver as (...args: any[]) => any).bind(target);
         const key = keyResolver(...args);
 
         if (resolvedConfig.rateLimitAsyncCounter) {
