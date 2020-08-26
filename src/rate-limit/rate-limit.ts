@@ -1,6 +1,7 @@
-import {RateLimitConfigs, SimpleRateLimitCounter} from './rate-limit.model';
+import {RateLimitConfigs} from './rate-limit.model';
 import {Decorator, Method} from '../common/model/common.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
+import {SimpleRateLimitCounter} from './simple-rate-limit-counter';
 
 async function handleAsyncRateLimit<T, D>(
   target: T,

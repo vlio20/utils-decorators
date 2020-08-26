@@ -1,6 +1,7 @@
 import {rateLimit} from './rate-limit';
 import {sleep} from '../common/test-utils';
-import {RateLimitAsyncCounter, SimpleRateLimitCounter} from './rate-limit.model';
+import {RateLimitAsyncCounter} from './rate-limit.model';
+import {SimpleRateLimitCounter} from './simple-rate-limit-counter';
 
 export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
   counterMap = new Map<string, number>();
@@ -111,13 +112,15 @@ describe('rate-limit', () => {
   });
 
   it('should verify sync limit is working as expected with custom Rate Limiter', async () => {
+    const countMap = new Map<string, number>();
+
     class TT {
       counter = 0;
 
       @rateLimit({
         allowedCalls: 2,
         timeSpanMs: 200,
-        rateLimitCounter: new SimpleRateLimitCounter(),
+        rateLimitCounter: new SimpleRateLimitCounter(countMap),
       })
       foo() {
         this.counter += 1;
@@ -126,9 +129,12 @@ describe('rate-limit', () => {
 
     const t = new TT();
     t.foo();
+    expect(countMap.size).toEqual(1);
     await sleep(50);
     expect(t.counter).toEqual(1);
     t.foo();
+    expect(countMap.size).toEqual(1);
+    expect(countMap.get('__rateLimit__')).toEqual(2);
     await sleep(50);
     expect(t.counter).toEqual(2);
 
@@ -142,9 +148,14 @@ describe('rate-limit', () => {
     }
 
     await sleep(80);
+    expect(countMap.get('__rateLimit__')).toEqual(1);
     t.foo();
+    expect(countMap.get('__rateLimit__')).toEqual(2);
 
     expect(t.counter).toEqual(3);
+
+    await sleep(220);
+    expect(countMap.size).toEqual(0);
   });
 
   it('should verify async limit is working as expected with custom Rate Limiter', async () => {
