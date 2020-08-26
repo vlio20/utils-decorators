@@ -1,9 +1,12 @@
+import {Method} from '../common/model/common.model';
+
 export interface RateLimitConfigs<T = any> {
   timeSpanMs: number;
   allowedCalls: number;
   keyResolver?: ((...args: any[]) => string) | keyof T;
   rateLimitCounter?: RateLimitCounter;
   rateLimitAsyncCounter?: RateLimitAsyncCounter;
+  exceedHandler?: () => void;
 }
 
 export interface RateLimitCounter {
@@ -17,3 +20,9 @@ export interface RateLimitAsyncCounter {
   dec: (key: string) => Promise<void>;
   getCount: (key: string) => Promise<number>;
 }
+
+export type RateLimitable<T, D> = (
+  target: T,
+  propertyName: keyof T,
+  descriptor: TypedPropertyDescriptor<Method<D>>
+) => TypedPropertyDescriptor<Method<D>>;

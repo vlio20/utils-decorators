@@ -1,5 +1,5 @@
-import {RateLimitConfigs} from './rate-limit.model';
-import {Decorator, Method} from '../common/model/common.model';
+import {RateLimitable, RateLimitConfigs} from './rate-limit.model';
+import {Method} from '../common/model/common.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 import {SimpleRateLimitCounter} from './simple-rate-limit-counter';
 
@@ -15,7 +15,7 @@ async function handleAsyncRateLimit<T, D>(
   const currentCount = await rateLimitCounter.getCount(key);
 
   if (currentCount >= resolvedConfig.allowedCalls) {
-    throw Error('You have acceded the amount of allowed calls');
+    resolvedConfig.exceedHandler();
   }
 
   await rateLimitCounter.inc(key);
@@ -39,7 +39,7 @@ function handleRateLimit<T, D>(
   const currentCount = rateLimitCounter.getCount(key);
 
   if (currentCount >= resolvedConfig.allowedCalls) {
-    throw Error('You have acceded the amount of allowed calls');
+    resolvedConfig.exceedHandler();
   }
 
   rateLimitCounter.inc(key);
@@ -51,7 +51,7 @@ function handleRateLimit<T, D>(
   return originalMethod.apply(target, args);
 }
 
-export function rateLimit<T = any, D = any>(config: RateLimitConfigs): Decorator<T> {
+export function rateLimit<T = any, D = any>(config: RateLimitConfigs): RateLimitable<T, D> {
   if (config.rateLimitAsyncCounter && config.rateLimitCounter) {
     throw new Error('You cant provide both rateLimitAsyncCounter and rateLimitCounter.');
   }
@@ -59,6 +59,9 @@ export function rateLimit<T = any, D = any>(config: RateLimitConfigs): Decorator
   const taskExec = new TaskExec();
   const resolvedConfig: RateLimitConfigs = {
     rateLimitCounter: new SimpleRateLimitCounter(),
+    exceedHandler: () => {
+      throw new Error('You have acceded the amount of allowed calls');
+    },
     keyResolver: () => '__rateLimit__',
     ...config,
   };
