@@ -1,4 +1,4 @@
-import {Method} from '..';
+import {Method} from '../common/model/common.model';
 
 export interface RateLimitConfigs<T = any> {
   timeSpanMs: number;
