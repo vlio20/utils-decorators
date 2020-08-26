@@ -89,8 +89,7 @@ function delay(delayMs: number): Delayable;
      
      
 ## @memoize (method)  
-Memoizes the response that is being returned by the decorated method.      
-    
+Memoizes the response that is being returned by the decorated method.         
 Be default the key of the cached value will be the serialized (`JSON.stringify`) value of the provided arguments.       
 You can supply your own key resolver.    
 Also, you can provide your own cache, it has to implement the `GetterSetter<D>` interface, by default the decorator is using a simple `Map<string, Promise<D>>`.        
@@ -108,7 +107,7 @@ interface MemoizeConfig<T, D> {
 
 - `cache`: A cache object the previous values would be stored, needs to implement the `Cahce<D> interface`.
 - `keyResolver`: A custom resolver for the cache key.
-- `expirationTimeMs`: A TTL (time to leave) the cache.  
+- `expirationTimeMs`: A TTL (time to leave) the cache. *If not provided the cache will be never cleared* 
 
 
 ## @memoizeAsync  (method)  
@@ -123,6 +122,7 @@ Also, you can provide your own cache, it has to implement the `GetterSetter<D>` 
       
 ```typescript 
 function memoizeAsync<D>(config: MemoizeAsyncConfig<D>): AsyncMemoizable<D>; 
+function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>;
 function memoizeAsync<D>(expirationTimeMs: number): AsyncMemoizable<D>; 
 
 type MemoizeAsyncConfig<T, D> = MemoizeConfig<T, D>

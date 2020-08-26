@@ -1,5 +1,6 @@
 import {memoizeAsync} from './memoize-async';
 import {AsyncCache} from './memoize-async.model';
+import {sleep} from '../common/test-utils';
 
 declare const window: any;
 
@@ -220,19 +221,23 @@ describe('memozie-async', () => {
     expect(await two).toBe(2);
   });
 
-  it('should verify defaults', async () => {
+  it('should verify that by default the cache is never cleaned', async () => {
+    const cache = new Map();
+
     class T {
-      @memoizeAsync<T, number>({})
+      @memoizeAsync<T, number>({cache})
       foo(): Promise<number> {
         return Promise.resolve(1);
       }
     }
 
     const t = new T();
-    spyOn(window, 'setTimeout');
-    await t.foo();
 
-    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60000);
+    await t.foo();
+    expect(cache.size).toEqual(1);
+
+    await sleep(50);
+    expect(cache.size).toEqual(1);
   });
 
   it('should verify usage of async cache', async (done) => {
