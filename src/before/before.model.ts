@@ -1,4 +1,4 @@
 export interface BeforeConfig<T> {
-  func: Function | keyof T;
+  func: ((...args: any[]) => any) | keyof T;
   wait?: boolean;
 }
