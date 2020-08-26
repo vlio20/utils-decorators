@@ -1,4 +1,5 @@
 import {memoize} from './memoize';
+import {sleep} from '../common/test-utils';
 
 declare const window: any;
 
@@ -144,18 +145,22 @@ describe('memozie', () => {
     expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
   });
 
-  it('should verify defaults', async () => {
+  it('should verify that by default the cache is never cleaned', async () => {
+    const cache = new Map();
+
     class T {
-      @memoize<T, number>({})
+      @memoize<T, number>({cache})
       foo(): number {
         return 1;
       }
     }
 
     const t = new T();
-    spyOn((window), 'setTimeout');
-    await t.foo();
 
-    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60000);
+    t.foo();
+    expect(cache.size).toEqual(1);
+
+    await sleep(50);
+    expect(cache.size).toEqual(1);
   });
 });

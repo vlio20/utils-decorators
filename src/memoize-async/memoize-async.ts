@@ -2,12 +2,12 @@ import {AsyncMemoizable, AsyncMemoizeConfig} from './memoize-async.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 import {AsyncMethod} from '../common/model/common.model';
 
+export function memoizeAsync<T = any, D = any>(): AsyncMemoizable<T, D>;
 export function memoizeAsync<T = any, D = any>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;
 export function memoizeAsync<T = any, D = any>(expirationTimeMs: number): AsyncMemoizable<T, D>;
-export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> | number): AsyncMemoizable<T, D> {
+export function memoizeAsync<T = any, D = any>(input?: AsyncMemoizeConfig<T, D> | number): AsyncMemoizable<T, D> {
   const defaultConfig: AsyncMemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
-    expirationTimeMs: 1000 * 60,
   };
   const runner = new TaskExec();
 
@@ -77,9 +77,11 @@ export function memoizeAsync<T = any, D = any>(input: AsyncMemoizeConfig<T, D> |
               const data = await originalMethod.apply(this, args);
               resolvedConfig.cache.set(key, data);
 
-              runner.exec(() => {
-                resolvedConfig.cache.delete(key);
-              }, resolvedConfig.expirationTimeMs);
+              if (resolvedConfig.expirationTimeMs !== undefined) {
+                runner.exec(() => {
+                  resolvedConfig.cache.delete(key);
+                }, resolvedConfig.expirationTimeMs);
+              }
 
               resolve(data);
             } catch (e) {
