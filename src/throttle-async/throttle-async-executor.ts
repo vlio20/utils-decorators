@@ -32,9 +32,9 @@ export class ThrottleAsyncExecutor<D> {
   private async invoke(context: any, args: any[]): Promise<D> {
     this.futureCallsArgs.push(args);
     const res = await this.lastProm;
-    console.log(res);
+
     this.onGoingCallsCount -= 1;
-    this.lastProm = this.fun.apply(context, this.futureCallsArgs.pop())
+    this.lastProm = this.fun.apply(context, this.futureCallsArgs.pop());
 
     return this.lastProm;
   }
