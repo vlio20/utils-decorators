@@ -286,6 +286,17 @@ interface RateLimitAsyncCounter {
 - `exceedHandler`: There are scenarios in which you want to handle the cases in which the amount of calls exceeds the allowed amount, by providing your custom function you will have this control. By default the decorator will throw an `Error`.
 ----
 
+## @throttleAsync (method)  
+For a given limit, the decorator will invoke the decorated method jus the allowed times. Once one of the promises will be resolved the next call in queue will be invoked,   
+  
+```typescript 
+function throttleAsync<T, D>(limit? = 1) => Promise<D>): Decorator<T>
+```
+
+- `limit`: The limit of allowed concurrent calls.
+
+----
+
 ## Notes:  
 **Class methods:** some decorators expect you to provide a function as one of their attributes or arguments, for example in the `@before`.  
 Because of the way decorators currently work in JavaScript, there is no way to provide a class method from the same context. We will continue withe the `@before` example, the following code won't work:  
