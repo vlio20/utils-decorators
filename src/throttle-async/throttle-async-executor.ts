@@ -3,8 +3,6 @@ import {AsyncMethod} from '../common/model/common.model';
 export class ThrottleAsyncExecutor<D> {
   private onGoingCallsCount = 0;
 
-  private futureCallsArgs: any[][] = [];
-
   private lastProm: Promise<D> = Promise.resolve(null);
 
   constructor(
@@ -15,27 +13,22 @@ export class ThrottleAsyncExecutor<D> {
 
   async exec(context: any, args: any[]): Promise<D> {
     if (this.onGoingCallsCount < this.parallelCalls) {
-      this.onGoingCallsCount += 1;
-
-      this.lastProm = this.fun.apply(context, args)
-        .then((res) => res)
-        .finally(() => {
-          this.onGoingCallsCount -= 1;
-        });
-
-      return this.lastProm;
+      this.lastProm = this.handlePromise(this.fun.apply(context, args));
+    } else {
+      this.lastProm = this.lastProm
+        .then(() => this.handlePromise(this.fun.apply(context, args)))
+        .catch(() => this.handlePromise(this.fun.apply(context, args)));
     }
 
-    return this.invoke(context, args);
+    return this.lastProm;
   }
 
-  private async invoke(context: any, args: any[]): Promise<D> {
-    this.futureCallsArgs.push(args);
-    const res = await this.lastProm;
+  private async handlePromise(promise: Promise<D>): Promise<D> {
+    this.onGoingCallsCount += 1;
 
-    this.onGoingCallsCount -= 1;
-    this.lastProm = this.fun.apply(context, this.futureCallsArgs.pop());
-
-    return this.lastProm;
+    return promise
+      .finally(() => {
+        this.onGoingCallsCount -= 1;
+      });
   }
 }
