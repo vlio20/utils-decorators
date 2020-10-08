@@ -8,10 +8,9 @@
     "lib": [
       "es2017"
     ],
-    "mapRoot": "./dist",
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "outDir": "./dist",
+    "outDir": "./dist/esm",
     "sourceMap": true,
     "target": "es5",
     "typeRoots": [

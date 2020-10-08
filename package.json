@@ -1,6 +1,6 @@
 {
   "name": "utils-decorators",
-  "version": "1.6.0",
+  "version": "1.7.0-rc.1",
   "description": "decorators for reducing repetitive code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -32,7 +32,7 @@
     "lint": "eslint ./src --ext .ts --quiet",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "clean": "rm -rf dist",
     "release": "npm run clean && npm run test:unit && npm run build && npm publish"
   },
