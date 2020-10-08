@@ -2,8 +2,9 @@
   "name": "utils-decorators",
   "version": "1.7.0-rc.1",
   "description": "decorators for reducing repetitive code",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "devDependencies": {
     "@babel/core": "^7.11.4",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -37,7 +38,7 @@
     "release": "npm run clean && npm run test:unit && npm run build && npm publish"
   },
   "files": [
-    "dist"
+    "dist/"
   ],
   "repository": {
     "type": "git",
