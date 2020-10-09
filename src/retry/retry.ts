@@ -19,7 +19,7 @@ function getRetriesArray(input: RetryInput): number[] {
 }
 
 async function exec(
-  originalMethod: (...args: any[]) => any,
+  originalMethod: (...x: any[]) => any,
   args: any[],
   retriesArr: number[],
   retries = 0,

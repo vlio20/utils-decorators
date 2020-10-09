@@ -8,7 +8,7 @@ async function handleAsyncRateLimit<T, D>(
   resolvedConfig: RateLimitConfigs,
   key: string,
   taskExec: TaskExec,
-  originalMethod: (...args: any[]) => Promise<D>,
+  originalMethod: (...x: any[]) => Promise<D>,
   args: any[],
 ): Promise<D> {
   const rateLimitCounter = resolvedConfig.rateLimitAsyncCounter;
@@ -32,7 +32,7 @@ function handleRateLimit<T, D>(
   resolvedConfig: RateLimitConfigs,
   key: string,
   taskExec: TaskExec,
-  originalMethod: (...args: any[]) => D,
+  originalMethod: (...x: any[]) => D,
   args: any[],
 ): Promise<D> {
   const {rateLimitCounter} = resolvedConfig;
@@ -75,8 +75,8 @@ export function rateLimit<T = any, D = any>(config: RateLimitConfigs): RateLimit
       const originalMethod = descriptor.value;
 
       descriptor.value = function (...args: any[]): D | Promise<D> {
-        const keyResolver: (...args: any[]) => string = typeof resolvedConfig.keyResolver === 'string'
-          ? this[resolvedConfig.keyResolver] : (resolvedConfig.keyResolver as (...args: any[]) => any).bind(target);
+        const keyResolver: (...x: any[]) => string = typeof resolvedConfig.keyResolver === 'string'
+          ? this[resolvedConfig.keyResolver] : (resolvedConfig.keyResolver as (...x: any[]) => any).bind(target);
         const key = keyResolver(...args);
 
         if (resolvedConfig.rateLimitAsyncCounter) {
