@@ -1,6 +1,6 @@
 import {Refreshable, RefreshableConfig} from './refreshable.model';
 
-export function refreshable<T, D>(config: RefreshableConfig<D>): Refreshable<T> {
+export function refreshable<T = any, D = any>(config: RefreshableConfig<D>): Refreshable<T> {
   return async function (target: T, key: keyof T): Promise<void> {
     let data: D;
 
