@@ -6,11 +6,16 @@
 This library was highly inspired by lodash but uses decorators to implement its util methods.   
 The lib can be used both in node and in web application, it is built to be **tree-shakable so you can use it even if you need a specific decorator**.  
 
+<a href="https://opencollective.com/utils-decorators#backers" target="_blank"><img src="https://opencollective.com/utils-decorators/backers.svg?width=890"></a> 
+
+### installation:
+
 ```bash
 npm i utils-decorators
 ```   
 
 Please note that the decorators are **working perfectly with plain JavaScript** code as well as with TypeScript.
+
 
 Usage example:
 ```typescript 
