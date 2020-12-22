@@ -90,7 +90,7 @@ describe('before', () => {
     const beforeFunc = jest.fn(() => new Promise((resolve) => {
       setTimeout(() => {
         expect(counter).toBe(1);
-        resolve();
+        resolve(null);
         done();
       }, 0);
     }));
@@ -120,7 +120,7 @@ describe('before', () => {
       setTimeout(() => {
         expect(counter).toBe(0);
         counter += 1;
-        resolve();
+        resolve(null);
         done();
       }, 10);
     }));

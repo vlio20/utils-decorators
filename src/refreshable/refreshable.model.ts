@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import {AsyncMethod} from '../common/model/common.model';
 
 export type Refreshable<T = any> = (
   target: T,
@@ -6,6 +6,6 @@ export type Refreshable<T = any> = (
 ) => void;
 
 export interface RefreshableConfig<D> {
-  dataProvider: Method<D> | Method<Promise<D>>;
+  dataProvider: AsyncMethod<D>;
   intervalMs: number;
 }
