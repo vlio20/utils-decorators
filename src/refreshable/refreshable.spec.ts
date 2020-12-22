@@ -6,14 +6,14 @@ describe('refreshable', () => {
     let fooCtr = 0;
     let gooCtr = 0;
 
-    const foo = (): number => {
+    const foo = async (): Promise<number> => {
       const tmp = gooCtr;
       fooCtr += 1;
 
       return tmp;
     };
 
-    const goo = (): number => {
+    const goo = async (): Promise<number> => {
       const tmp = gooCtr;
       gooCtr += 1;
 
