@@ -1,8 +1,10 @@
 import {AsyncMemoizeConfig} from './memoize-async.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 
-export function memoizeAsyncify<D = any>(originalMethod: (...args: any[]) => Promise<D>,
-                                         input?: AsyncMemoizeConfig<any, D> | number): (...args: any[]) => Promise<D> {
+export function memoizeAsyncify<D = any>(
+  originalMethod: (...args: any[]) => Promise<D>,
+  input?: AsyncMemoizeConfig<any, D> | number,
+): (...args: any[]) => Promise<D> {
   const defaultConfig: AsyncMemoizeConfig<any, D> = {
     cache: new Map<string, D>(),
   };
@@ -83,5 +85,5 @@ export function memoizeAsyncify<D = any>(originalMethod: (...args: any[]) => Pro
     promCache.set(key, prom);
 
     return prom;
-  }
+  };
 }
