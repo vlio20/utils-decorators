@@ -1,27 +1,15 @@
 import {Delegatable} from './delegate.model';
 import {AsyncMethod} from '../common/model/common.model';
+import {delegatify} from './delegatify';
 
-export function delegate<T = any>(keyResolver?: (...args: any[]) => string): Delegatable<T> {
-  const delegatedKeysMap = new Map<string, Promise<any>>();
-  const keyGenerator: (...args: any[]) => string = keyResolver ?? JSON.stringify;
-
+export function delegate<T = any, D = any>(keyResolver?: (...args: any[]) => string): Delegatable<T, D> {
   return (
     target: T,
     propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
+    descriptor: TypedPropertyDescriptor<AsyncMethod<D>>,
   ): TypedPropertyDescriptor<AsyncMethod<any>> => {
     if (descriptor.value) {
-      const originalMethod = descriptor.value;
-
-      descriptor.value = function (...args: any[]): Promise<any> {
-        const key = keyGenerator(...args);
-
-        if (!delegatedKeysMap.has(key)) {
-          delegatedKeysMap.set(key, originalMethod.apply(this, args).finally(() => delegatedKeysMap.delete(key)));
-        }
-
-        return delegatedKeysMap.get(key);
-      };
+      descriptor.value = delegatify(descriptor.value, keyResolver);
 
       return descriptor;
     }
