@@ -1,7 +1,7 @@
 import {RateLimitConfigs} from './rate-limit.model';
 import {TaskExec} from '../common/tesk-exec/task-exec';
 import {SimpleRateLimitCounter} from './simple-rate-limit-counter';
-import {AsyncMethod, Method} from '..';
+import {AsyncMethod, Method} from '../common/model/common.model';
 
 async function handleAsyncRateLimit<T, D>(
   target: T,
