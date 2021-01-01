@@ -12,7 +12,7 @@ export function memoizeAsync<T = any, D = any>(input?: AsyncMemoizeConfig<T, D> 
     descriptor: TypedPropertyDescriptor<AsyncMethod<D>>,
   ): TypedPropertyDescriptor<AsyncMethod<D>> => {
     if (descriptor.value) {
-      descriptor.value = memoizeAsyncify(descriptor.value, input);
+      descriptor.value = memoizeAsyncify(descriptor.value, input as any);
 
       return descriptor;
     }
