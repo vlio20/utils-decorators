@@ -5,6 +5,7 @@
   <title>Utils-Decorators</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link href="./site/tailwind.css" rel="stylesheet">
+  <link href="./site/highlight.css" rel="stylesheet">
 
   <style>
     .ud-sidenav li:target {
@@ -22,7 +23,7 @@
   <span class="text-xl">utils-decorators</span>
 </div>
 <div class="flex bg-gray-200 flex-grow">
-  <div class="ud-sidenav h-full bg-white w-52">
+  <div class="ud-sidenav hidden md:block h-full bg-white w-52">
     <ul class="divide-y">
       <li class="h-16 hover:bg-gray-100 target:bg-gray-200">
         <a class="h-full p-4 flex items-center" href="#install">Installation</a>
@@ -41,14 +42,86 @@
       </li>
     </ul>
   </div>
-  <div class="du-main h-full max-h-full flex-grow p-4 overflow-auto">
-    <section id="install">
-      <div class="text-xl">Installation</div>
+  <div class="du-main h-full max-h-full flex-grow p-4 overflow-auto flex flex-col space-y-12">
+    <section>
+      <div id="install" class="flex items-center text-xl h-20 p-6 bg-blue-200 mb-4 -mx-4">Installation</div>
+      <p>
+         To install the lib via npm please follow the command bellow:
+      </p>
+      <pre class="hu-code mt-4">
+    npm i utils-decorators
+      </pre>
     </section>
-    <section id="after">
-      <div class="text-xl">After</div>
+
+    <section>
+      <div id="after" class="flex items-center text-xl h-20 p-6 bg-blue-200 mb-4 -mx-4">After</div>
+      <div class="font-bold">Description:</div>
+      <p class="mb-4">
+        Invocation of the decorated method will cause execution of the provided function method before the invocation of the decorated method.
+      </p>
+
+      <div class="font-bold">Arguments:</div>
+      <pre class="hu-code mt-4">
+  interface AfterConfig&lt;T = any, D = any&gt; {
+    // the function (or the method name within the context) to invoke after the invocation of the decorated method
+    func: keyof T | (args: ...any[]) => &lt;D&gt; ;
+
+    // in case of a returned promise, should the decorator wait for it to finish
+    wait?: boolean;
+  }
+      </pre>
+
+      <div class="font-bold mt-4">Arguments to provided method:</div>
+      <pre class="hu-code mt-4">
+  interface AfterParams&lt;D = any&gt; {
+    // the arguments that were provided to the decorated method
+    args: any[];
+
+    // the response data of the decorated method
+    response: D;
+  }
+      </pre>
+      <div class="font-bold  mt-4">Decorator Example 1:</div>
+      <pre class="hu-code mt-4">
+  class Example1 {
+
+    @after({
+      func: 'after',
+    })
+    foo(x: number): number {
+      return 42;
+    }
+
+    after(respData: AfterParams&lt;number&gt;): void {
+      console.log(respData.args, respData.response);
+    }
+  }
+      </pre>
+
+      <div class="font-bold  mt-4">Decorator Example 2:</div>
+      <pre class="hu-code mt-4">
+  class Example2 {
+
+    @after({
+      func: (respData: AfterParams&lt;number&gt) => console.log(respData.args, respData.response),
+      wait: true,
+    })
+    foo(x: number): Promise&lt;number&gt; {
+      return this.numberProvider.getNumber(x);
+    }
+  }
+      </pre>
     </section>
   </div>
 </div>
+<script src="./site/highlight.js"></script>
+<script>
+  addEventListener('load', () => {
+    document.querySelectorAll('pre.hu-code')
+      .forEach(block => {
+        hljs.highlightBlock(block);
+      });
+  });
+</script>
 </body>
 </html>
