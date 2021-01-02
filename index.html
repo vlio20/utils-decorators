@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Utils-Decorators</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="./site/tailwind.css" rel="stylesheet">
+
+  <style>
+    .ud-sidenav li:target {
+      background-color: #E5E7EB;
+    }
+
+    .du-main {
+      height: calc(100vh - 4rem);
+    }
+  </style>
+
+</head>
+<body class="h-screen flex flex-col">
+<div class="ud-toolbar h-16 flex items-center p-4 shadow-lg z-10">
+  <span class="text-xl">utils-decorators</span>
+</div>
+<div class="flex bg-gray-200 flex-grow">
+  <div class="ud-sidenav h-full bg-white w-52">
+    <ul class="divide-y">
+      <li class="h-16 hover:bg-gray-100 target:bg-gray-200">
+        <a class="h-full p-4 flex items-center" href="#install">Installation</a>
+      </li>
+
+      <li class="h-16">
+        <div class="h-full p-4 font-bold">Decorators</div>
+      </li>
+
+      <li class="h-16 hover:bg-gray-100 target:bg-gray-200">
+        <a class="h-full p-4 flex items-center" href="#after">after</a>
+      </li>
+
+      <li class="h-16 hover:bg-gray-100">
+        <a class="h-full p-4 flex items-center" href="#before">before</a>
+      </li>
+    </ul>
+  </div>
+  <div class="du-main h-full max-h-full flex-grow p-4 overflow-auto">
+    <section id="install">
+      <div class="text-xl">Installation</div>
+    </section>
+    <section id="after">
+      <div class="text-xl">After</div>
+    </section>
+  </div>
+</div>
+</body>
+</html>
