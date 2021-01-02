@@ -1,32 +1,15 @@
 import {BeforeConfig} from './before.model';
 import {Decorator, Method} from '../common/model/common.model';
+import {beforify} from './beforify';
 
 export function before<T = any>(config: BeforeConfig<T>): Decorator<T> {
-  const resolvedConfig: BeforeConfig<T> = {
-    wait: false,
-    ...config,
-  };
-
   return (
     target: T,
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
-      const originalMethod = descriptor.value;
-      descriptor.value = async function (...args: any[]): Promise<any> {
-        const beforeFunc = typeof resolvedConfig.func === 'string'
-          ? this[resolvedConfig.func].bind(this)
-          : resolvedConfig.func;
-
-        if (resolvedConfig.wait) {
-          await beforeFunc();
-          originalMethod.apply(this, args);
-        } else {
-          beforeFunc();
-          originalMethod.apply(this, args);
-        }
-      };
+      descriptor.value = beforify(descriptor.value, config);
 
       return descriptor;
     }

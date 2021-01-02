@@ -1,4 +1,5 @@
-import {CanceledPromise, cancelPrevious} from './cancel-previous';
+import {cancelPrevious} from './cancel-previous';
+import {CanceledPromise} from './canceled-promise';
 
 describe('cancelPrevious', () => {
   it('should make sure error thrown when decorator not set on method', () => {

@@ -14,7 +14,7 @@ module.exports = {
   rules: {
     'object-curly-spacing': ['error', 'never'],
     'import/prefer-default-export': 'off',
-    'max-len': ['error', {code: 120}],
+    'max-len': ['error', {code: 180}],
     '@typescript-eslint/indent': ['error', 2],
     'no-param-reassign': ['error',
       {ignorePropertyModificationsForRegex: ['^descriptor$']}

@@ -1,7 +1,7 @@
-import {Method} from '../common/model/common.model';
+import {AsyncMethod} from '../common/model/common.model';
 
-export type Delegatable<T> = (
+export type Delegatable<T, D> = (
   target: T,
   propertyName: keyof T,
-  descriptor: TypedPropertyDescriptor<Method<Promise<any>>>
-) => TypedPropertyDescriptor<Method<Promise<any>>>;
+  descriptor: TypedPropertyDescriptor<AsyncMethod<D>>
+) => TypedPropertyDescriptor<AsyncMethod<D>>;

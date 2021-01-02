@@ -1,5 +1,6 @@
 import {retry} from './retry';
 import {sleep} from '../common/test-utils';
+import {retryfy} from './retryfy';
 
 describe('retry', () => {
   it('should make sure error thrown when decorator not set on method', () => {
@@ -151,6 +152,6 @@ describe('retry', () => {
   });
 
   it('should throw error when invalid input', async () => {
-    expect(retry.bind(this, '6')).toThrowError('invalid input');
+    expect(retryfy.bind(this, '6')).toThrow('invalid input');
   });
 });

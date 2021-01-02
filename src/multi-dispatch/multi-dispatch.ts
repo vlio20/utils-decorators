@@ -1,5 +1,6 @@
 import {AsyncMethod} from '../common/model/common.model';
 import {MultiDispatchable} from './multi-dispatch.model';
+import {multiDispatchify} from './multi-dispatchify';
 
 export function multiDispatch<T = any>(dispatchesAmount: number): MultiDispatchable<T> {
   return (
@@ -8,27 +9,7 @@ export function multiDispatch<T = any>(dispatchesAmount: number): MultiDispatcha
     descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
   ): TypedPropertyDescriptor<AsyncMethod<any>> => {
     if (descriptor.value) {
-      const originalMethod = descriptor.value;
-
-      descriptor.value = function (...args: any[]): Promise<any> {
-        return new Promise((resolve, reject) => {
-          let rejectionsAmount = 0;
-
-          const catchHandler = (e: Error) => {
-            rejectionsAmount += 1;
-
-            if (rejectionsAmount === dispatchesAmount) {
-              reject(e);
-            }
-          };
-
-          for (let i = 1; i <= dispatchesAmount; i += 1) {
-            originalMethod.apply(this, ...args)
-              .then(resolve)
-              .catch(catchHandler);
-          }
-        });
-      };
+      descriptor.value = multiDispatchify(descriptor.value, dispatchesAmount);
 
       return descriptor;
     }
