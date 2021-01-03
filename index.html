@@ -161,6 +161,10 @@
       <li class="ud-nav">
         <a href="#debounce">debounce</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#delay">delay</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -442,13 +446,63 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Function Example 1:</div>
             <pre class="ud-code">
-  import { debounce } from 'utils-decorators';
+  import { debouncify } from 'utils-decorators';
 
   function foo(): void {
     console.log('will be debounced')
   }
 
-  function debouncedFoo = debounce(foo, 1000);
+  function debouncedFoo = debouncify(foo, 1000);
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="delay"></div>
+      <div class="ud-section-title">DElay</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Causes a delay in the invocation of the decorated method by given time (in ms).
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Arguments:</div>
+            <pre class="ud-code">
+                // the time (in milliseconds) to wait before invoke
+                delay: number;
+              </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { delay } from 'utils-decorators';
+
+  class Example1 {
+
+    @delay(1000)
+    foo(x: number): number {
+      return 42;
+    }
+  }
+            </pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { delayfy } from 'utils-decorators';
+
+  function foo(): void {
+    console.log('will be delayed')
+  }
+
+  function delayedFoo = delayfy(foo, 1000);
             </pre>
           </div>
         </div>
