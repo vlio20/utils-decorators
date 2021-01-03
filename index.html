@@ -157,6 +157,10 @@
       <li class="ud-nav">
         <a href="#cancel-previous">cancel-previous</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#debounce">debounce</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -395,6 +399,57 @@
     return fetch(...);
   }));
           </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="debounce"></div>
+      <div class="ud-section-title">Debounce</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Causes a delay in the invocation of the decorated method by given time (in ms), if during the delay another
+          invocation will happen, the delay will be restarted.
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Arguments:</div>
+            <pre class="ud-code">
+                // the time (in milliseconds) to wait before invoke
+                delay: number;
+              </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { debounce } from 'utils-decorators';
+
+  class Example1 {
+
+    @debounce(1000)
+    foo(x: number): number {
+      return 42;
+    }
+  }
+            </pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { debounce } from 'utils-decorators';
+
+  function foo(): void {
+    console.log('will be debounced')
+  }
+
+  function debouncedFoo = debounce(foo, 1000);
+            </pre>
           </div>
         </div>
       </div>
