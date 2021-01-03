@@ -8,60 +8,162 @@
   <link href="./site/highlight.css" rel="stylesheet">
 
   <style>
-    .ud-sidenav li:target {
-      background-color: #E5E7EB;
+    *, ::after, ::before {
+      box-sizing: border-box;
     }
 
-    .du-main {
-      height: calc(100vh - 4rem);
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+
+    .ud-toolbar {
+      display: flex;
+      align-items: center;
+      height: 4rem;
+      padding: 0 1.2rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      z-index: 10;
+    }
+
+    .ud-toolbar .ud-header {
+      font-size: 1.5rem;
+      color: #5F5F5F;
+    }
+
+    .ud-page-container {
+      flex: 1;
+      display: flex;
+    }
+
+    .ud-sidenav {
+      width: 14rem;
+      height: calc(100vh - 4rem);
+      background-color: white;
+      border-right: 1px solid #F3F4F6;
+      z-index: 5;
+    }
+
+    .ud-sidenav li {
+      height: 3.5rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .ud-nav {
+      border-bottom: 1px solid #F3F4F6;
+    }
+
+    .ud-nav:hover {
+      background-color: #F3F4F6;
+    }
+
+    .ud-sidenav li > a,
+    .ud-sidenav li > div {
+      height: 100%;
+      padding: 1rem;
+    }
+
+    .ud-sidenav li > a {
+      padding-left: 1.5rem;
+    }
+
+    .ud-group {
+      font-weight: bold;
+    }
+
+    .ud-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 4rem);
+      overflow: auto;
+    }
+
+    .ud-section-title {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      background-color: #E5E7EB;
+      color: #5F5F5F;
+      font-size: 1.3rem;
+      padding: 1.5rem;
+    }
+
+    .ud-section .ud-subtitle {
+      font-weight: bold;
+    }
+
+    .ud-section-content {
+      padding: 1.5rem;
+    }
+
+    .ud-description,
+    .ud-code {
+      margin-bottom: 1rem;
+    }
+
   </style>
 
 </head>
-<body class="h-screen flex flex-col">
-<div class="ud-toolbar h-16 flex items-center p-4 shadow-lg z-10">
-  <span class="text-xl">utils-decorators</span>
+<body>
+<div class="ud-toolbar">
+  <span class="ud-header">utils-decorators</span>
 </div>
-<div class="flex bg-gray-200 flex-grow">
-  <div class="ud-sidenav hidden md:block h-full bg-white w-52">
-    <ul class="divide-y">
-      <li class="h-16 hover:bg-gray-100 target:bg-gray-200">
-        <a class="h-full p-4 flex items-center" href="#install">Installation</a>
+<div class="ud-page-container">
+  <div class="ud-sidenav">
+    <ul>
+      <li class="ud-group">
+        <div>General</div>
       </li>
 
-      <li class="h-16">
-        <div class="h-full p-4 font-bold">Decorators</div>
+      <li class="ud-nav">
+        <a href="#install">Installation</a>
       </li>
 
-      <li class="h-16 hover:bg-gray-100 target:bg-gray-200">
-        <a class="h-full p-4 flex items-center" href="#after">after</a>
+      <li class="ud-group">
+        <div>Decorators</div>
       </li>
 
-      <li class="h-16 hover:bg-gray-100">
-        <a class="h-full p-4 flex items-center" href="#before">before</a>
+      <li class="ud-nav">
+        <a href="#after">after</a>
+      </li>
+
+      <li class="ud-nav">
+        <a href="#before">before</a>
       </li>
     </ul>
   </div>
-  <div class="du-main h-full max-h-full flex-grow p-4 overflow-auto flex flex-col space-y-12">
-    <section>
-      <div id="install" class="flex items-center text-xl h-20 p-6 bg-blue-200 mb-4 -mx-4">Installation</div>
-      <p>
-         To install the lib via npm please follow the command bellow:
-      </p>
-      <pre class="hu-code mt-4">
+  <div class="ud-main">
+    <section class="ud-section">
+      <div id="install"></div>
+      <div class="ud-section-title">Installation</div>
+      <div class="ud-section-content">
+        <p class="ud-description">
+          To install the lib via npm please follow the command bellow:
+        </p>
+        <pre class="ud-code">
     npm i utils-decorators
       </pre>
+      </div>
     </section>
 
-    <section>
-      <div id="after" class="flex items-center text-xl h-20 p-6 bg-blue-200 mb-4 -mx-4">After</div>
-      <div class="font-bold">Description:</div>
-      <p class="mb-4">
-        Invocation of the decorated method will cause execution of the provided function method before the invocation of the decorated method.
-      </p>
+    <section class="ud-section">
+      <div id="after"></div>
+      <div class="ud-section-title">After</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Invocation of the decorated method will cause execution of the provided function method after the invocation
+          of the decorated method.
+        </p>
 
-      <div class="font-bold">Arguments:</div>
-      <pre class="hu-code mt-4">
+        <div class="ud-subtitle">Arguments:</div>
+        <pre class="ud-code">
   interface AfterConfig&lt;T = any, D = any&gt; {
     // the function (or the method name within the context) to invoke after the invocation of the decorated method
     func: keyof T | (args: ...any[]) => &lt;D&gt; ;
@@ -71,8 +173,8 @@
   }
       </pre>
 
-      <div class="font-bold mt-4">Arguments to provided method:</div>
-      <pre class="hu-code mt-4">
+        <div class="ud-subtitle">Arguments to provided method:</div>
+        <pre class="ud-code">
   interface AfterParams&lt;D = any&gt; {
     // the arguments that were provided to the decorated method
     args: any[];
@@ -81,8 +183,8 @@
     response: D;
   }
       </pre>
-      <div class="font-bold  mt-4">Decorator Example 1:</div>
-      <pre class="hu-code mt-4">
+        <div class="ud-subtitle">Decorator Example 1:</div>
+        <pre class="ud-code">
   class Example1 {
 
     @after({
@@ -98,8 +200,8 @@
   }
       </pre>
 
-      <div class="font-bold  mt-4">Decorator Example 2:</div>
-      <pre class="hu-code mt-4">
+        <div class="ud-subtitle">Decorator Example 2:</div>
+        <pre class="ud-code">
   class Example2 {
 
     @after({
@@ -111,13 +213,15 @@
     }
   }
       </pre>
+      </div>
+
     </section>
   </div>
 </div>
 <script src="./site/highlight.js"></script>
 <script>
   addEventListener('load', () => {
-    document.querySelectorAll('pre.hu-code')
+    document.querySelectorAll('pre.ud-code')
       .forEach(block => {
         hljs.highlightBlock(block);
       });
