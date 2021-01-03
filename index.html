@@ -22,6 +22,7 @@
     .ud-toolbar {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       height: 4rem;
       padding: 0 1.2rem;
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -31,6 +32,21 @@
     .ud-toolbar .ud-header {
       font-size: 1.5rem;
       color: #5F5F5F;
+    }
+
+    .ud-menu-btn {
+      display: none;
+      position: relative;
+      top: 2px;
+      border: 0;
+      background: transparent;
+      outline: 0;
+    }
+
+    @media (max-width: 599px) {
+      .ud-menu-btn {
+        display: block;
+      }
     }
 
     .ud-page-container {
@@ -44,6 +60,33 @@
       background-color: white;
       border-right: 1px solid #F3F4F6;
       z-index: 5;
+    }
+
+    .ud-overlay {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: none;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+
+    @media (max-width: 599px) {
+      .ud-sidenav {
+        position: fixed;
+        transform: translateX(-100%);
+      }
+
+      .ud-nav-open .ud-sidenav {
+        transform: translateX(0);
+        transition: all 500ms;
+      }
+
+      .ud-nav-open .ud-overlay {
+        display: block;
+      }
     }
 
     .ud-sidenav li {
@@ -77,6 +120,7 @@
     }
 
     .ud-main {
+      position: relative;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -114,15 +158,19 @@
       gap: 1.5rem;
     }
 
+    @media (max-width: 599px) {
+      .ud-code-wrapper {
+        flex-direction: column;
+      }
+    }
+
     .ud-code-wrapper .ud-code-part {
       flex: 1;
       display: flex;
       flex-direction: column;
+      max-width: 100%;
+      overflow: auto;
     }
-
-    /*.ud-code-part:not(:last-of-type) {*/
-    /*  margin-right: 2rem;*/
-    /*}*/
 
   </style>
 
@@ -130,6 +178,12 @@
 <body>
 <div class="ud-toolbar">
   <span class="ud-header">utils-decorators</span>
+  <button class="ud-menu-btn" onclick="toggleMenu()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px">
+      <path d="M0 0h24v24H0z" fill="none"/>
+      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+    </svg>
+  </button>
 </div>
 <div class="ud-page-container">
   <div class="ud-sidenav">
@@ -168,6 +222,7 @@
     </ul>
   </div>
   <div class="ud-main">
+    <div class="ud-overlay" onclick="toggleMenu()"></div>
     <section class="ud-section">
       <div id="install"></div>
       <div class="ud-section-title">Installation</div>
@@ -512,12 +567,30 @@
 </div>
 <script src="./site/highlight.js"></script>
 <script>
+  const body = document.querySelector('body');
+
   addEventListener('load', () => {
     document.querySelectorAll('pre.ud-code')
       .forEach(block => {
         hljs.highlightBlock(block);
       });
   });
+
+  document.querySelectorAll('.ud-sidenav a').forEach(item => {
+    item.addEventListener('click', event => {
+      if (body.classList.contains('ud-nav-open')) {
+        toggleMenu();
+      }
+    })
+  })
+
+  function toggleMenu() {
+    if (body.classList.contains('ud-nav-open')) {
+      body.classList.remove('ud-nav-open');
+    } else {
+      body.classList.add('ud-nav-open');
+    }
+  }
 </script>
 </body>
 </html>
