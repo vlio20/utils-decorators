@@ -2,7 +2,7 @@ import {Method} from '../common/model/common.model';
 
 export type ReportFunction = (data?: ExactTimeReportData) => any;
 
-export type ExactTimeReportData = {
+export interface ExactTimeReportData {
   args: any[];
   result: any;
   execTime: number;

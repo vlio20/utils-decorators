@@ -223,6 +223,10 @@
       <li class="ud-nav">
         <a href="#delegate">delegate</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#execTime">execTime</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -277,8 +281,8 @@
   }
           </pre>
           </div>
-
         </div>
+
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
             <div class="ud-subtitle">Decorator Example 1:</div>
@@ -317,7 +321,6 @@
   });
           </pre>
           </div>
-
         </div>
 
 
@@ -653,6 +656,116 @@
   }
 
   function delegatedFoo = delegatify(getData, (x, y) => `${x}_${y}`);
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="execTime"></div>
+      <div class="ud-section-title">Exec-Time</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Measures the time that takes for the decorated method to response.
+          By default will log the result using <i>console.info()</i> but this can be changed by providing your own
+          reporter
+          function.
+        </p>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Arguments to the reporter function:</div>
+            <pre class="ud-code">
+  interface ExactTimeReportData = {
+    args: any[];
+    result: any;
+    execTime: number;
+  };
+          </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Arguments:</div>
+            <pre class="ud-code">
+  // an optional function (or a function name within the context) that receives <i>ExactTimeReportData</i>
+  // (see details above) as an argument. If the decorated method returns a Promise,
+  // the decorator will wait for it to be resolved/rejected.
+  // The default report function is (data: ExactTimeReportData) => console.info(data.execTime)
+  reporter?: string | (data: ExactTimeReportData) => any;
+              </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { execTime } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider.service';
+
+  class Example1 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @execTime()
+    getData(): Promise&lt;DataDto&gt; {
+      return this.dataProvider.getData();
+    }
+  }
+            </pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { execTimify } from 'utils-decorators';
+
+  function getData(): Promise&lt;DataDto> {
+    return dataProvider.getData();
+  }
+
+  function measuredFoo = execTimify(getData);
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 2 (with custom reporter):</div>
+            <pre class="ud-code">
+  import { execTime } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider.service';
+
+  class Example2 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @execTime((data: ExactTimeReportData) => {
+        console.log(data.args, data.result, data.execTime);
+    })
+    getData(x, y): Promise&lt;DataDto&gt; {
+      return this.dataProvider.getData(x, y);
+    }
+  }
+            </pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 2 (with custom reporter):</div>
+            <pre class="ud-code">
+  import { delegatify } from 'utils-decorators';
+
+  function getData(): Promise&lt;DataDto> {
+    return dataProvider.getData();
+  }
+
+  function measuredFoo = execTimify(getData, (data: ExactTimeReportData) => {
+    console.log(data.args, data.result, data.execTime);
+  });
             </pre>
           </div>
         </div>
