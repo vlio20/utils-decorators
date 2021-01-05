@@ -243,8 +243,7 @@
           To install the lib via npm please follow the command bellow:
         </p>
         <pre class="ud-code">
-    npm i utils-decorators
-      </pre>
+    npm i utils-decorators</pre>
       </div>
     </section>
 
@@ -259,7 +258,7 @@
         </p>
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
-            <div class="ud-subtitle">Arguments:</div>
+            <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
   interface AfterConfig&lt;T = any, D = any&gt; {
     // the function (or the method name within the context) to invoke after the invocation of the decorated method
@@ -267,8 +266,7 @@
 
     // in case of a returned promise of the decorated method, should the after function wait for it to be resolved
     wait?: boolean;
-  }
-      </pre>
+  }</pre>
           </div>
         </div>
 
@@ -282,8 +280,7 @@
 
     // the response data of the decorated method
     response: D;
-  }
-          </pre>
+  }</pre>
           </div>
         </div>
 
@@ -305,8 +302,7 @@
     after(respData: AfterParams&lt;number&gt;): void {
       console.log(respData.args, respData.response);
     }
-  }
-          </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -322,8 +318,7 @@
     func: (respData: AfterParams&lt;number&gt;) => {
         console.log(respData.args, respData.response);
     };
-  });
-          </pre>
+  });</pre>
           </div>
         </div>
 
@@ -341,8 +336,7 @@
     foo(x: number): Promise&lt;number&gt; {
       return this.numberProvider.getNumber(x);
     }
-  }
-        </pre>
+  }</pre>
       </div>
     </section>
 
@@ -358,7 +352,7 @@
         </p>
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
-            <div class="ud-subtitle">Arguments:</div>
+            <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
   interface BeforeConfig&lt;T = any, D = any&gt; {
     // the function (or the method name within the context) to invoke before the invocation of the decorated method
@@ -366,8 +360,7 @@
 
     // in case of a returned promise of the decorated method, should the before function wait for it to be resolved
     wait?: boolean;
-  }
-      </pre>
+  }</pre>
           </div>
         </div>
 
@@ -389,8 +382,7 @@
     before(): void {
       console.log('this will be invoked before');
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -406,8 +398,7 @@
     func: () => {
         console.log('this will be invoked before');
     };
-  });
-          </pre>
+  });</pre>
           </div>
 
         </div>
@@ -426,8 +417,7 @@
     foo(x: number): Promise&lt;number&gt; {
       return this.numberProvider.getNumber(x);
     }
-  }
-        </pre>
+  }</pre>
       </div>
     </section>
 
@@ -456,8 +446,7 @@
     getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -467,8 +456,7 @@
 
   const dataProvider = cancelPreviousify(() => {
     return fetch(...);
-  }));
-          </pre>
+  }));</pre>
           </div>
         </div>
       </div>
@@ -485,11 +473,11 @@
         </p>
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
-            <div class="ud-subtitle">Arguments:</div>
+            <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
     // the time (in milliseconds) to wait before invoke
     delay: number;
-              </pre>
+            </pre>
           </div>
         </div>
 
@@ -505,8 +493,7 @@
     foo(x: number): number {
       return 42;
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -518,8 +505,7 @@
     console.log('will be debounced')
   }
 
-  const debouncedFoo = debouncify(foo, 1000);
-            </pre>
+  const debouncedFoo = debouncify(foo, 1000);</pre>
           </div>
         </div>
       </div>
@@ -535,11 +521,11 @@
         </p>
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
-            <div class="ud-subtitle">Arguments:</div>
+            <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
   // the time (in milliseconds) to wait before invoke
   delay: number;
-              </pre>
+            </pre>
           </div>
         </div>
 
@@ -555,8 +541,7 @@
     foo(x: number): number {
       return 42;
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -568,8 +553,7 @@
     console.log('will be delayed')
   }
 
-  const delayedFoo = delayfy(foo, 1000);
-            </pre>
+  const delayedFoo = delayfy(foo, 1000);</pre>
           </div>
         </div>
       </div>
@@ -589,12 +573,12 @@
 
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
-            <div class="ud-subtitle">Arguments:</div>
+            <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
   // an optional function (or a function name within the context) that maps the arguments to a specific key.
   // The default mapping function is JSON.stringify(args).
   keyResolver?: string | (...args: any[]) => string;
-              </pre>
+            </pre>
           </div>
         </div>
 
@@ -613,8 +597,7 @@
     getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -626,8 +609,7 @@
     return dataProvider.getData();
   }
 
-  const delegatedFoo = delegatify(getData);
-            </pre>
+  const delegatedFoo = delegatify(getData);</pre>
           </div>
         </div>
 
@@ -646,8 +628,7 @@
     getData(x, y): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData(x, y);
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -659,8 +640,7 @@
     return dataProvider.getData();
   }
 
-  const delegatedFoo = delegatify(getData, (x, y) => `${x}_${y}`);
-            </pre>
+  const delegatedFoo = delegatify(getData, (x, y) => `${x}_${y}`);</pre>
           </div>
         </div>
       </div>
@@ -686,21 +666,20 @@
     args: any[];
     result: any;
     execTime: number;
-  };
-          </pre>
+  };</pre>
           </div>
         </div>
 
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
-            <div class="ud-subtitle">Arguments:</div>
+            <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
   // an optional function (or a function name within the context) that receives <i>ExactTimeReportData</i>
   // (see details above) as an argument. If the decorated method returns a Promise,
   // the decorator will wait for it to be resolved/rejected.
   // The default report function is (data: ExactTimeReportData) => console.info(data.execTime)
   reporter?: string | (data: ExactTimeReportData) => any;
-              </pre>
+            </pre>
           </div>
         </div>
 
@@ -719,8 +698,7 @@
     getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -732,8 +710,7 @@
     return dataProvider.getData();
   }
 
-  const measuredFoo = execTimify(getData);
-            </pre>
+  const measuredFoo = execTimify(getData);</pre>
           </div>
         </div>
 
@@ -754,8 +731,7 @@
     getData(x, y): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData(x, y);
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -769,8 +745,7 @@
 
   const measuredFoo = execTimify(getData, (data: ExactTimeReportData) => {
     console.log(data.args, data.result, data.execTime);
-  });
-            </pre>
+  });</pre>
           </div>
         </div>
       </div>
@@ -806,8 +781,7 @@
     // An optional TTL (time to leave in milliseconds) for the entry to be removed from the cache.
     // If not provided the cache will be never cleared.
     expirationTimeMs?: number;
-  }
-          </pre>
+  }</pre>
           </div>
         </div>
 
@@ -825,8 +799,7 @@
 
       return this.fibo(n - 1) + this.fibo(n - 2);
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -840,8 +813,7 @@
      return fibo(n - 1) + fibo(n - 2);
   );
 
-  const memoizedFibo = memoizify(fibo);
-            </pre>
+  const memoizedFibo = memoizify(fibo);</pre>
           </div>
         </div>
 
@@ -860,8 +832,7 @@
 
       return this.fibo(n - 1) + this.fibo(n - 2);
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -876,9 +847,7 @@
   );
 
   // a one hour ttl
-  const memoizedFibo = memoizeify(fibo, 1000 * 60 * 60);
-
-            </pre>
+  const memoizedFibo = memoizeify(fibo, 1000 * 60 * 60);</pre>
           </div>
         </div>
 
@@ -907,8 +876,7 @@
 
       return this.fibo(n - 1) + this.fibo(n - 2);
     }
-  }
-            </pre>
+  }</pre>
           </div>
 
           <div class="ud-code-part">
@@ -931,9 +899,7 @@
 
   const memoizedFibo = memoizeify(fibo, {
     cache: customCache,
-  });
-
-            </pre>
+  });</pre>
           </div>
         </div>
       </div>
