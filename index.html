@@ -227,6 +227,10 @@
       <li class="ud-nav">
         <a href="#execTime">execTime</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#memoize">memoize</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -314,7 +318,7 @@
     console.log('original method called');
   }
 
-  function fooWithAfter = afterify(foo, {
+  const fooWithAfter = afterify(foo, {
     func: (respData: AfterParams&lt;number&gt;) => {
         console.log(respData.args, respData.response);
     };
@@ -398,7 +402,7 @@
     console.log('original method called');
   }
 
-  function fooWithBefore = beforify(foo, {
+  const fooWithBefore = beforify(foo, {
     func: () => {
         console.log('this will be invoked before');
     };
@@ -461,7 +465,7 @@
             <pre class="ud-code">
   import { cancelPreviousify } from 'utils-decorators';
 
-  function dataProvider = cancelPreviousify(() => {
+  const dataProvider = cancelPreviousify(() => {
     return fetch(...);
   }));
           </pre>
@@ -514,7 +518,7 @@
     console.log('will be debounced')
   }
 
-  function debouncedFoo = debouncify(foo, 1000);
+  const debouncedFoo = debouncify(foo, 1000);
             </pre>
           </div>
         </div>
@@ -564,7 +568,7 @@
     console.log('will be delayed')
   }
 
-  function delayedFoo = delayfy(foo, 1000);
+  const delayedFoo = delayfy(foo, 1000);
             </pre>
           </div>
         </div>
@@ -589,7 +593,7 @@
             <pre class="ud-code">
   // an optional function (or a function name within the context) that maps the arguments to a specific key.
   // The default mapping function is JSON.stringify(args).
-  keyMapper?: string | (...args: any[]) => string;
+  keyResolver?: string | (...args: any[]) => string;
               </pre>
           </div>
         </div>
@@ -622,7 +626,7 @@
     return dataProvider.getData();
   }
 
-  function delegatedFoo = delegatify(getData);
+  const delegatedFoo = delegatify(getData);
             </pre>
           </div>
         </div>
@@ -655,7 +659,7 @@
     return dataProvider.getData();
   }
 
-  function delegatedFoo = delegatify(getData, (x, y) => `${x}_${y}`);
+  const delegatedFoo = delegatify(getData, (x, y) => `${x}_${y}`);
             </pre>
           </div>
         </div>
@@ -728,7 +732,7 @@
     return dataProvider.getData();
   }
 
-  function measuredFoo = execTimify(getData);
+  const measuredFoo = execTimify(getData);
             </pre>
           </div>
         </div>
@@ -763,9 +767,135 @@
     return dataProvider.getData();
   }
 
-  function measuredFoo = execTimify(getData, (data: ExactTimeReportData) => {
+  const measuredFoo = execTimify(getData, (data: ExactTimeReportData) => {
     console.log(data.args, data.result, data.execTime);
   });
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="memoize"></div>
+      <div class="ud-section-title">Memoize</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Memoizes the response that is being returned by the decorated method.
+          Be default the key of the cached value will be the serialized <i>JSON.stringify</i> value of the provided
+          arguments. You can supply your own key resolver.
+          Also, you can provide your own cache, it has to implement the <i>Cache&lt;D&gt;</i> interface (see bellow), by
+          default
+          the decorator is using a simple <i>Map&lt;string, D&gt;</i>.
+        </p>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  interface MemoizeConfig&lt;T, D&gt; {
+    // an optional cache object which should implement the Cache interface.
+    // Internally the decorator is using Map&lt;string, D&gt;
+    cache?: Cache&lt;D&gt;;
+
+    // an optional function (or a function name within the context) that maps the arguments to a specific key.
+    // The default mapping function is JSON.stringify(args).
+    keyResolver?: string | (...args: any[]) => string;
+
+    // An optional TTL (time to leave in milliseconds) for the entry to be removed from the cache.
+    // If not provided the cache will be never cleared.
+    expirationTimeMs?: number;
+  }
+          </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1 (cache with no ttl):</div>
+            <pre class="ud-code">
+  import { memoize } from 'utils-decorators';
+
+  class Example1 {
+
+    @memoize()
+    fibo(n: number): number; {
+      if (n &lt; 2) return 1;
+
+      return this.fibo(n - 1) + this.fibo(n - 2);
+    }
+  }
+            </pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1 (cache with no ttl):</div>
+            <pre class="ud-code">
+  import { memoizify } from 'utils-decorators';
+
+  function fibo(n: number): number {
+    if (n &lt; 2) return 1;
+
+     return fibo(n - 1) + fibo(n - 2);
+  );
+
+  const memoizedFibo = memoizify(fibo));
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 2 (with a custom cache):</div>
+            <pre class="ud-code">
+  import { memoize, Cache } from 'utils-decorators';
+
+  class CustomCache implements Cache<number> {
+    set: (key: string, value: number) => {...};
+    get: (key: string) => number | null => {...}
+    delete: (key: string) => void => {...}
+    has: (key: string) => boolean => {...}
+  }
+
+  const customCache = new CustomCache();
+
+  class Example2 {
+
+    @memoize({
+      cache: customCache
+    })
+    fibo(n: number): number; {
+      if (n &lt; 2) return 1;
+
+      return this.fibo(n - 1) + this.fibo(n - 2);
+    }
+  }
+            </pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 2 (with a custom cache):</div>
+            <pre class="ud-code">
+  import { memoizify } from 'utils-decorators';
+
+  const customCache: Cache&lt;number&gt; = {
+    set: (key: string, value: number) => {...};
+    get: (key: string) => number | null => {...}
+    delete: (key: string) => void => {...}
+    has: (key: string) => boolean => {...}
+  }
+
+  function fibo(n: number): number {
+    if (n &lt; 2) return 1;
+
+     return fibo(n - 1) + fibo(n - 2);
+  );
+
+  const memoizedFibo = memoizeify(fibo), {
+    cache: customCache,
+  });
+
             </pre>
           </div>
         </div>
