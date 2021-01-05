@@ -840,7 +840,7 @@
      return fibo(n - 1) + fibo(n - 2);
   );
 
-  const memoizedFibo = memoizify(fibo));
+  const memoizedFibo = memoizify(fibo);
             </pre>
           </div>
         </div>
@@ -851,7 +851,7 @@
             <pre class="ud-code">
   import { memoize, Cache } from 'utils-decorators';
 
-  class CustomCache implements Cache<number> {
+  class CustomCache implements Cache&lt;number> {
     set: (key: string, value: number) => {...};
     get: (key: string) => number | null => {...}
     delete: (key: string) => void => {...}
@@ -892,9 +892,46 @@
      return fibo(n - 1) + fibo(n - 2);
   );
 
-  const memoizedFibo = memoizeify(fibo), {
+  const memoizedFibo = memoizeify(fibo, {
     cache: customCache,
   });
+
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 3 (with a ttl only):</div>
+            <pre class="ud-code">
+  import { memoize, Cache } from 'utils-decorators';
+
+  class Example3 {
+
+    // a one hour ttl
+    @memoize(1000 * 60 * 60)
+    fibo(n: number): number; {
+      if (n &lt; 2) return 1;
+
+      return this.fibo(n - 1) + this.fibo(n - 2);
+    }
+  }
+            </pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 3 (with a ttl only):</div>
+            <pre class="ud-code">
+  import { memoizify } from 'utils-decorators';
+
+  function fibo(n: number): number {
+    if (n &lt; 2) return 1;
+
+     return fibo(n - 1) + fibo(n - 2);
+  );
+
+  // a one hour ttl
+  const memoizedFibo = memoizeify(fibo, 1000 * 60 * 60);
 
             </pre>
           </div>
