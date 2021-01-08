@@ -239,6 +239,10 @@
       <li class="ud-nav">
         <a href="#multiDispatch">multiDispatch</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#onError">onError</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -251,7 +255,7 @@
           To install the lib via npm please follow the command bellow:
         </p>
         <pre class="ud-code">
-    npm i utils-decorators</pre>
+  npm i utils-decorators</pre>
       </div>
     </section>
 
@@ -1160,6 +1164,67 @@
   import { dataProvider } from './data-provider';
 
   const multiDispatchedDataProvider = multiDispatchify(dataProvider.getData, 2);</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="onError"></div>
+      <div class="ud-section-title">On Error</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          This decorator will catch errors thrown from the decorated method and invoke the provided `func` function.
+          If the decorated method returns a <i>Promise</i> the <i>wait</i> property should be set to true in order to
+          handle the
+          promise rejection correctly.
+        </p>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  interface OnErrorConfig&lt;T = any, D = any&gt; {
+    // the function (or the method name within the context) to invoke on an error of the decorated method
+    func: keyof T | (args: ...any[]) => &lt;D&gt; ;
+  }</pre>
+          </div>
+        </div>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { onError } from 'utils-decorators';
+
+  class Example1 {
+
+    @onError({
+      func: 'errorHandler',
+    })
+    foo(x: number): Promise&lt;number&gt; {
+      return doSomething();
+    }
+
+    errorHandler(e: Error): void {
+      console.error(e);
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { onErrorify } from 'utils-decorators';
+
+  const wrappedFunction = onErrorify(
+    () => {
+      doSomething();
+    },
+    {
+      func: console.error,
+    }
+  );</pre>
           </div>
         </div>
       </div>
