@@ -6,7 +6,7 @@ export interface ExactTimeReportData {
   args: any[];
   result: any;
   execTime: number;
-};
+}
 
 export type ExactTimeReportable<T> = (
   target: T,
