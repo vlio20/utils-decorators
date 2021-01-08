@@ -235,6 +235,10 @@
       <li class="ud-nav">
         <a href="#memoizeAsync">memoizeAsync</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#multiDispatch">multiDispatch</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -1105,6 +1109,57 @@
       cache: customCache,
       expirationTimeMs: 1000 * 60 * 60,
   });</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="multiDispatch"></div>
+      <div class="ud-section-title">Multi Dispatch</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Will invoke the decorated method the amount of provided time in parallel. This decorator is useful when you
+          want to increase the chance of the decorated method to return a value.
+          Note that the fastest resolved promise will resolve the decorated method and in case where all dispatched will
+          fail the last error would be of the last rejected promise.
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  // the amount of invocations to generate simultaneously
+  dispatchesAmount: number;
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { multiDispatch } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider';
+
+  class Example1 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @multiDispatch(2)
+    getData(): Promise&lt;DataDto> {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { multiDispatchify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const multiDispatchedDataProvider = multiDispatchify(dataProvider.getData, 2);</pre>
           </div>
         </div>
       </div>
