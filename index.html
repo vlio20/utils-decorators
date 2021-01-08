@@ -243,6 +243,10 @@
       <li class="ud-nav">
         <a href="#onError">onError</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#rateLimit">rateLimit</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -1225,6 +1229,268 @@
       func: console.error,
     }
   );</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="rateLimit"></div>
+      <div class="ud-section-title">Rate Limit</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Limits the amount of calls to the decorated method in a given time period. This decorator can support both
+          local (in-memory) counter or a distributed one.
+        </p>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  interface RateLimitConfigs&lt;T = any> {
+    // the time window for which the rate-limit should hold the counts (time in milliseconds)
+    timeSpanMs: number;
+
+    // the amount of call allowed in the provided timeSpanMs.
+    allowedCalls: number;
+
+    // Sometimes you want to group your calls and only then apply the rate-limit.
+    // By providing the keyResolver you can group your calls by the provided arguments.
+    // You should supply here an optional function (or the method name within the context) which will be invoked to get
+    // in order to get a key
+    keyResolver?: keyof T | (...args: any[]) => string;
+
+    // An optional custom rate limit counter, note that you can only provide rateLimitCounter
+    // or rateLimitAsyncCounter - not both
+    rateLimitCounter?: RateLimitCounter;
+
+    // An optional custom async rate limit counter, note that you can only provide rateLimitCounter
+    // or rateLimitAsyncCounter - not both
+    rateLimitAsyncCounter?: RateLimitAsyncCounter;
+
+    // An optional custom handler which will be invoked when the amount of calls has exceeds,
+    // By default the decorator will throw an Error
+    exceedHandler?: () => void;
+  }</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { rateLimit } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider.service';
+
+  class Example1 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @rateLimit({
+      timeSpanMs: 2000,
+      allowedCalls: 10,
+    })
+    getData(): Promise&lt;DataDto&gt; {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { rateLimitify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const delegatedFoo = rateLimitify(dataProvider.getData, {
+    timeSpanMs: 2000,
+    allowedCalls: 10,
+  });</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 2 (with custom keyResolver):</div>
+            <pre class="ud-code">
+  import { rateLimit } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider.service';
+
+  class Example1 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @rateLimit({
+      timeSpanMs: 2000,
+      allowedCalls: 10,
+      keyResolver: 'groupCalls',
+    })
+    getData(userId: number): Promise&lt;DataDto&gt; {
+      return this.dataProvider.getUserData(userId);
+    }
+
+    groupCalls(userId: number): string {
+      return userId.toString();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 2 (with custom keyResolver):</div>
+            <pre class="ud-code">
+  import { rateLimitify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const delegatedFoo = rateLimitify(dataProvider.getUserData, {
+    timeSpanMs: 2000,
+    allowedCalls: 10,
+    keyResolver: (userId: number) => {
+      return userId.toString();
+    },
+  });</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 3 (with custom rate limit counter):</div>
+            <pre class="ud-code">
+  import { rateLimit, RateLimitCounter } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider.service';
+
+  class CustomCounter implements RateLimitCounter {
+    inc: (key: string): void => { ... };
+    dec: (key: string): void => { ... };
+    getCount: (key: string): number => { ... };
+  }
+
+  const customCounter = new CustomCounter();
+
+  class Example3 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @rateLimit({
+      timeSpanMs: 2000,
+      allowedCalls: 10,
+      rateLimitCounter: customCounter,
+    })
+    getData(): Promise&lt;DataDto&gt; {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 3 (with custom rate limit counter):</div>
+            <pre class="ud-code">
+  import { rateLimitify, RateLimitCounter } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const customCounter: RateLimitCounter = {
+    inc: (key: string): void => { ... };
+    dec: (key: string): void => { ... };
+    getCount: (key: string): number => { ... };
+  }
+
+  const delegatedFoo = rateLimitify(dataProvider.getData, {
+    timeSpanMs: 2000,
+    allowedCalls: 10,
+    rateLimitCounter: customCounter,
+  });</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 4 (with custom async rate limit counter):</div>
+            <pre class="ud-code">
+  import { rateLimit, RateLimitAsyncCounter } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider.service';
+
+  class CustomCounter implements RateLimitAsyncCounter {
+    inc: (key: string): Promise&lt;void> => { ... };
+    dec: (key: string): Promise&lt;void> => { ... };
+    getCount: (key: string): Promise&lt;number> => { ... };
+  }
+
+  const customCounter = new CustomCounter();
+
+  class Example4 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @rateLimit({
+      timeSpanMs: 2000,
+      allowedCalls: 10,
+      rateLimitAsyncCounter: customCounter,
+    })
+    getData(): Promise&lt;DataDto&gt; {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 4 (with custom async rate limit counter):</div>
+            <pre class="ud-code">
+  import { rateLimitify, RateLimitAsyncCounter } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const customCounter: RateLimitAsyncCounter = {
+    inc: (key: string): Promise&lt;void> => { ... },
+    dec: (key: string): Promise&lt;void> => { ... },
+    getCount: (key: string): Promise&lt;number> => { ... },
+  }
+
+  const delegatedFoo = rateLimitify(dataProvider.getData, {
+    timeSpanMs: 2000,
+    allowedCalls: 10,
+    rateLimitAsyncCounter: customCounter,
+  });</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 5 (with custom exceedHandler):</div>
+            <pre class="ud-code">
+  import { rateLimit } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider.service';
+
+  class Example1 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @rateLimit({
+      timeSpanMs: 2000,
+      allowedCalls: 10,
+      keyResolver: 'exceedHandler',
+    })
+    getData(userId: number): Promise&lt;DataDto&gt; {
+      return this.dataProvider.getUserData(userId);
+    }
+
+    exceedHandler(): void {
+      throw new Error('too much call in allowed window');
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 5 (with custom exceedHandler):</div>
+            <pre class="ud-code">
+  import { rateLimitify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const delegatedFoo = rateLimitify(dataProvider.getUserData, {
+    timeSpanMs: 2000,
+    allowedCalls: 10,
+    exceedHandler: (userId: number) => {
+      throw new Error('too much call in allowed window');
+    },
+  });</pre>
           </div>
         </div>
       </div>
