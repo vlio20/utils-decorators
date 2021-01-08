@@ -231,6 +231,10 @@
       <li class="ud-nav">
         <a href="#memoize">memoize</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#memoizeAsync">memoizeAsync</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -823,7 +827,7 @@
             <pre class="ud-code">
   import { memoize, Cache } from 'utils-decorators';
 
-  class Example3 {
+  class Example2 {
 
     // a one hour ttl
     @memoize(1000 * 60 * 60)
@@ -866,7 +870,7 @@
 
   const customCache = new CustomCache();
 
-  class Example2 {
+  class Example3 {
 
     @memoize({
       cache: customCache
@@ -899,6 +903,207 @@
 
   const memoizedFibo = memoizeify(fibo, {
     cache: customCache,
+  });</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="memoizeAsync"></div>
+      <div class="ud-section-title">Memoize Async</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Memoizes the promise that being returned by the decorated method.
+          If the promise would be rejected, the promise won't be memoized.
+          Another great feature of this decorator is that it delegates requests, for example if the same method has been
+          called more than one time after the promise was resolved,
+          only one invocation of the decorated method will be invoked.
+          Be default the key of the cached value will be the serialized <i>JSON.stringify</i> value of the provided
+          arguments.
+          You can supply your own key resolver.
+          Also, you can provide your own cache, it has to implement the <i>GetterSetter&lt;D&gt;</i> interface, by
+          default the decorator is using a simple <i>Map&lt;string, Promise&lt;D>></i>.
+          For further readying please read <a
+            href="https://medium.com/swlh/caching-in-node-nestjs-web-applications-was-never-easier-1bb560c7cd62">this</a>
+          blog post.
+        </p>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  interface MemoizeAsyncConfig&lt;T, D&gt; {
+    // an optional cache object which should implement the Cache or the AsyncCache interface.
+    // Internally the decorator is using Map&lt;string, D&gt;
+    cache?: Cache&lt;D&gt;;
+
+    // an optional function (or a function name within the context) that maps the arguments to a specific key.
+    // The default mapping function is JSON.stringify(args).
+    keyResolver?: string | (...args: any[]) => string;
+
+    // An optional TTL (time to leave in milliseconds) for the entry to be removed from the cache.
+    // If not provided the cache will be never cleared.
+    expirationTimeMs?: number;
+  }</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1 (cache with no ttl):</div>
+            <pre class="ud-code">
+  import { memoizeAsync } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider';
+
+  class Example1 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @memoizeAsync()
+    getData(): Promise&lt;DataDto>; {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1 (cache with no ttl):</div>
+            <pre class="ud-code">
+  import { memoizeAsyncify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const memoizedDataProvider = memoizeAsyncify(dataProvider);</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 2 (with a ttl only):</div>
+            <pre class="ud-code">
+  import { memoizeAsync } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider';
+
+  class Example2 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    // a one hour ttl
+    @memoizeAsync(1000 * 60 * 60)
+    getData(): Promise&lt;DataDto>; {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 2 (with a ttl only):</div>
+            <pre class="ud-code">
+  import { memoizeAsyncify, Cache } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  // a one hour ttl
+  const memoizedDataProvider = memoizeAsyncify(dataProvider, 1000 * 60 * 60);</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 3 (with a custom cache):</div>
+            <pre class="ud-code">
+  import { memoizeAsync, Cache } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider';
+
+  class CustomCache implements Cache&lt;number> {
+    set: (key: string, value: number) => {...};
+    get: (key: string) => number | null => {...}
+    delete: (key: string) => void => {...}
+    has: (key: string) => boolean => {...}
+  }
+
+  const customCache = new CustomCache();
+
+  class Example3 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @memoizeAsync({
+        cache: customCache,
+        expirationTimeMs: 1000 * 60 * 60,
+    })
+    getData(): Promise&lt;DataDto>; {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 3 (with a custom cache):</div>
+            <pre class="ud-code">
+  import { memoizeAsyncify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const customCache: Cache&lt;number> = {
+    set: (key: string, value: number) => {...};
+    get: (key: string) => number | null => {...}
+    delete: (key: string) => void => {...}
+    has: (key: string) => boolean => {...}
+  }
+
+  const memoizedDataProvider = memoizeAsyncify(dataProvider, {
+      cache: customCache,
+      expirationTimeMs: 1000 * 60 * 60,
+  });</pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 4 (with an async cache):</div>
+            <pre class="ud-code">
+  import { memoizeAsync, AsyncCache } from 'utils-decorators';
+  import { DataProvider, DataDto } from './data-provider';
+
+  class CustomCache implements AsyncCache&lt;number> {
+    set: (key: string, value: number): Promise&lt;void> => {...};
+    get: (key: string) => Promise&lt;number | null> => {...}
+    delete: (key: string) => Promise&lt;void> => {...}
+    has: (key: string) => Promise&lt;boolean> => {...}
+  }
+
+  const customCache = new CustomCache();
+
+  class Example4 {
+
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @memoizeAsync({
+        cache: customCache,
+        expirationTimeMs: 1000 * 60 * 60,
+    })
+    getData(): Promise&lt;DataDto>; {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 4 (with an async cache):</div>
+            <pre class="ud-code">
+  import { memoizeAsyncify, AsyncCache } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const customCache: AsyncCache&lt;number> = {
+    set: (key: string, value: number): Promise&lt;void> => {...};
+    get: (key: string) => Promise&lt;number | null> => {...}
+    delete: (key: string) => Promise&lt;void> => {...}
+    has: (key: string) => Promise&lt;boolean> => {...}
+  }
+
+  const memoizedDataProvider = memoizeAsyncify(dataProvider, {
+      cache: customCache,
+      expirationTimeMs: 1000 * 60 * 60,
   });</pre>
           </div>
         </div>
