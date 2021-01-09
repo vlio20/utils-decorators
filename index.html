@@ -260,6 +260,14 @@
       <li class="ud-nav">
         <a href="#retry">retry</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#throttle">throttle</a>
+      </li>
+
+      <li class="ud-nav">
+        <a href="#throttleAsync">throttleAsync</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -1698,6 +1706,103 @@
     retries: 3,
     delay: 1500,
   });</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="throttle"></div>
+      <div class="ud-section-title">Throttle</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Invocation of the decorated method will happen immediately, but if another invocation of this method will
+          happen during the provided time (in ms) it will be ignored.
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  // the time (in milliseconds) to delay the invocation between the calls
+  delayMs: number;
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { throttle } from 'utils-decorators';
+
+  class Example1 {
+
+    @throttle(1000)
+    foo(x: number): number {
+      return 42;
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { throttlify } from 'utils-decorators';
+
+  function foo(): void {
+    console.log('will be throttled')
+  }
+
+  const delayedFoo = throttlify(foo, 1000);</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="throttleAsync"></div>
+      <div class="ud-section-title">Throttle Async</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          For a given limit, the decorator will invoke the decorated method jus the allowed times. Once one of the
+          promises will be resolved the next call in queue will be invoked,
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  // The limit of allowed concurrent calls
+  limit: number;
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { throttleAsync } from 'utils-decorators';
+  import { DataProvider, DataDto }
+
+  class Example1 {
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @throttleAsync(2)
+    getData(): DataDto {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { throttleAsyncify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const delayedFoo = throttleAsyncify(dataProvider.getData, 3);</pre>
           </div>
         </div>
       </div>
