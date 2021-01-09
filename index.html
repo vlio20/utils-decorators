@@ -247,6 +247,10 @@
       <li class="ud-nav">
         <a href="#rateLimit">rateLimit</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#readonly">readonly</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -1466,13 +1470,13 @@
     @rateLimit({
       timeSpanMs: 2000,
       allowedCalls: 10,
-      keyResolver: 'exceedHandler',
+      exceedHandler: 'handler',
     })
     getData(userId: number): Promise&lt;DataDto&gt; {
       return this.dataProvider.getUserData(userId);
     }
 
-    exceedHandler(): void {
+    handler(): void {
       throw new Error('too much call in allowed window');
     }
   }</pre>
@@ -1491,6 +1495,31 @@
       throw new Error('too much call in allowed window');
     },
   });</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="readonly"></div>
+      <div class="ud-section-title">Readonly</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          This decorator prevents setting new values to decorated property.
+        </p>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { readonly } from 'utils-decorators';
+
+  class Example1 {
+
+    @readonly()
+    userId: number = 100;
+  }</pre>
           </div>
         </div>
       </div>
