@@ -38,7 +38,7 @@ const t = new Test();
 
 
 ## @after (method)  
-Invocation of the decorated method will cause execution of the provided `func` method before the invocation of the decorated method.    
+Invocation of the decorated method will cause execution of the provided `func` method after the invocation of the decorated method.    
   
 ```typescript 
 function after(config: AfterConfig): Afterable; 
@@ -175,7 +175,7 @@ interface RefreshableConfig<D> {
 ```  
 
 - `dataProvider`: the function that will provide the data to the decorated attribute.
-- `intervalMs`: the time interval (in milliseconds) in which the data will be refreshed .
+- `intervalMs`: the time interval (in milliseconds) in which the data will be refreshed.
 
 
 ## @throttle (method)  
