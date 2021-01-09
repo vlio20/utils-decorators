@@ -175,7 +175,7 @@ interface RefreshableConfig<D> {
 ```  
 
 - `dataProvider`: the function that will provide the data to the decorated attribute.
-- `intervalMs`: the time interval (in milliseconds) in which the data will be refreshed .
+- `intervalMs`: the time interval (in milliseconds) in which the data will be refreshed.
 
 
 ## @throttle (method)  

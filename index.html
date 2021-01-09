@@ -252,6 +252,10 @@
       <li class="ud-nav">
         <a href="#readonly">readonly</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#refreshable">refreshable</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -1138,6 +1142,7 @@
           Note that the fastest resolved promise will resolve the decorated method and in case where all dispatched will
           fail the last error would be of the last rejected promise.
         </p>
+
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
@@ -1520,6 +1525,59 @@
 
     @readonly()
     userId: number = 100;
+  }</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="refreshable"></div>
+      <div class="ud-section-title">Refreshable</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          This decorator provides an ability to access a property which value is being updated over and over in a given
+          interval (in ms) by the returned value of the provided method. Note that the method can also return a promise
+          which will be resolved after each interval.
+          In order to cancel the refreshment of the data you need to set the decorated value to null (this is very
+          important note to prevent memory leaks). Setting any other value will be ignored.
+          Another important note is that the initial value of the decorated attribute must not be <i>null</i>. Any other
+          value should be fine.
+        </p>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  // the amount of invocations to generate simultaneously
+  interface RefreshableConfig&lt;D> {
+    // the function that will provide the data to the decorated attribute
+    dataProvider: AsyncMethod&lt;D>;
+
+    // the time interval (in milliseconds) in which the data will be refreshed
+    intervalMs: number;
+  }
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { refreshable } from 'utils-decorators';
+  import { userProvider, UserDto } from 'user.service';
+
+  class Example1 {
+
+    @refreshable({
+        dataProvider: userProvider.getUsers,
+
+        // 10 minuts
+        intervalMs: 1000 * 60 * 10
+    })
+    users: UserDto[];
   }</pre>
           </div>
         </div>
