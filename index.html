@@ -268,6 +268,10 @@
       <li class="ud-nav">
         <a href="#throttleAsync">throttleAsync</a>
       </li>
+
+      <li class="ud-nav">
+        <a href="#timeout">timeout</a>
+      </li>
     </ul>
   </div>
   <div class="ud-main">
@@ -1802,7 +1806,55 @@
   import { throttleAsyncify } from 'utils-decorators';
   import { dataProvider } from './data-provider';
 
-  const delayedFoo = throttleAsyncify(dataProvider.getData, 3);</pre>
+  const throttledDataProvider = throttleAsyncify(dataProvider.getData, 3);</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="timeout"></div>
+      <div class="ud-section-title">Timeout</div>
+      <div class="ud-section-content">
+        <div class="ud-subtitle">Description:</div>
+        <p class="ud-description">
+          Will throw an error (<i>TimeoutError</i>) if the decorated method returned promise won't be resolved withing
+          the provided timeout (timeout is in milliseconds).
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Configuration:</div>
+            <pre class="ud-code">
+  // time in milliseconds for waiting for the promise to be resolved
+  ms: number;
+            </pre>
+          </div>
+        </div>
+
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Decorator Example 1:</div>
+            <pre class="ud-code">
+  import { timeout } from 'utils-decorators';
+  import { DataProvider, DataDto }
+
+  class Example1 {
+    constructor(private readonly dataProvider: DataProvider) { }
+
+    @timeout(2000)
+    getData(): DataDto {
+      return this.dataProvider.getData();
+    }
+  }</pre>
+          </div>
+
+          <div class="ud-code-part">
+            <div class="ud-subtitle">Function Example 1:</div>
+            <pre class="ud-code">
+  import { timeoutify } from 'utils-decorators';
+  import { dataProvider } from './data-provider';
+
+  const dataProviderWithTimeout = timeoutify(dataProvider.getData, 2000);</pre>
           </div>
         </div>
       </div>
