@@ -1,4 +1,4 @@
-import {AsyncMethod, Method} from '../common/model/common.model';
+import {AsyncMethod} from '../common/model/common.model';
 
 export type MultiDispatchable<T> = (
   target: T,

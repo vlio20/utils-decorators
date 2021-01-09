@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Run buikd and tests
+        run: |
+          npm ci
+          npm run test
+
+      - name: Archive mutation reports
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v1
+        with:
+          name: mutation reports
+          path: reports

@@ -1,5 +1,6 @@
-import {timeout, TimeoutError} from './timeout';
+import {timeout} from './timeout';
 import {sleep} from '../common/utils/utils';
+import {TimeoutError} from './timeout.index';
 
 describe('timeout', () => {
   it('should make sure error thrown when decorator not set on method', () => {

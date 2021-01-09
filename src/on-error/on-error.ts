@@ -1,5 +1,6 @@
 import {Method} from '../common/model/common.model';
-import {OnErrorable, OnErrorConfig, OnErrorHandler} from './on-error.model';
+import {OnErrorable, OnErrorConfig} from './on-error.model';
+import {onErrorify} from './on-errorify';
 
 export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
   return (
@@ -8,17 +9,7 @@ export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
-      const originalMethod: (...args: any[]) => any = descriptor.value;
-      descriptor.value = async function (...args: any[]): Promise<any> {
-        const onErrorFunc: OnErrorHandler = typeof config.func === 'string'
-          ? this[config.func].bind(this) : config.func;
-
-        try {
-          return await originalMethod.apply(this, args);
-        } catch (e) {
-          return onErrorFunc(e, args);
-        }
-      };
+      descriptor.value = onErrorify(descriptor.value, config);
 
       return descriptor;
     }

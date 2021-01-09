@@ -38,6 +38,7 @@ describe('throttle-async', () => {
     t.foo('a').then((res) => {
       expect(res).toEqual('a');
     });
+    expect(t.prop).toEqual(1);
 
     t.foo('b').then((res) => {
       expect(res).toEqual('b');

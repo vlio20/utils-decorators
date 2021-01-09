@@ -1,4 +1,5 @@
 import {Decorator, Method} from '../common/model/common.model';
+import {debouncify} from './debouncify';
 
 export function debounce<T = any>(delayMs: number): Decorator<T> {
   return (
@@ -7,16 +8,7 @@ export function debounce<T = any>(delayMs: number): Decorator<T> {
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
-      const originalMethod = descriptor.value;
-      let handler: any;
-
-      descriptor.value = function (...args: any[]): any {
-        clearTimeout(handler);
-
-        handler = setTimeout(() => {
-          originalMethod.apply(this, args);
-        }, delayMs);
-      };
+      descriptor.value = debouncify(descriptor.value, delayMs);
 
       return descriptor;
     }

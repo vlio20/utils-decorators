@@ -1,4 +1,5 @@
 import {Decorator, Method} from '../common/model/common.model';
+import {delayfy} from './delayfy';
 
 export function delay<T = any>(delayMs: number): Decorator<T> {
   return (
@@ -7,12 +8,7 @@ export function delay<T = any>(delayMs: number): Decorator<T> {
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
-      const originalMethod = descriptor.value;
-      descriptor.value = function (...args: any[]): any {
-        setTimeout(() => {
-          originalMethod.apply(this, args);
-        }, delayMs);
-      };
+      descriptor.value = delayfy(descriptor.value, delayMs);
 
       return descriptor;
     }

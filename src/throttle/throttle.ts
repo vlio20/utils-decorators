@@ -1,4 +1,5 @@
 import {Decorator, Method} from '../common/model/common.model';
+import {throttlify} from './throttlify';
 
 export function throttle<T = any>(delayMs: number): Decorator<T> {
   return (
@@ -7,18 +8,7 @@ export function throttle<T = any>(delayMs: number): Decorator<T> {
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
-      const originalMethod = descriptor.value;
-      let throttling = false;
-      descriptor.value = function (...args: any[]): any {
-        if (!throttling) {
-          throttling = true;
-          originalMethod.apply(this, args);
-
-          setTimeout(() => {
-            throttling = false;
-          }, delayMs);
-        }
-      };
+      descriptor.value = throttlify(descriptor.value, delayMs);
 
       return descriptor;
     }
