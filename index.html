@@ -34,6 +34,17 @@
       color: #5F5F5F;
     }
 
+    .ud-toolbar .ud-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ud-toolbar .ud-actions > span {
+      position: relative;
+      top: 5px;
+    }
+
     .ud-menu-btn {
       display: none;
       position: relative;
@@ -181,7 +192,11 @@
 
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+
   gtag('js', new Date());
 
   gtag('config', 'G-ZL8PJHMK5L');
@@ -190,12 +205,16 @@
 
 <div class="ud-toolbar">
   <span class="ud-header">utils-decorators</span>
-  <button class="ud-menu-btn" onclick="toggleMenu()">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px">
-      <path d="M0 0h24v24H0z" fill="none"/>
-      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-    </svg>
-  </button>
+  <div class="ud-actions">
+    <a class="github-button" href="https://github.com/vlio20/utils-decorators" data-icon="octicon-star"
+       data-show-count="true" aria-label="Star vlio20/utils-decorators on GitHub">Star</a>
+    <button class="ud-menu-btn" onclick="toggleMenu()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+      </svg>
+    </button>
+  </div>
 </div>
 <div class="ud-page-container">
   <div class="ud-sidenav">
@@ -205,7 +224,7 @@
       </li>
 
       <li class="ud-nav">
-        <a href="#install">Installation</a>
+        <a href="#install" onclick="logNavEvent('install')">Installation</a>
       </li>
 
       <li class="ud-group">
@@ -213,75 +232,75 @@
       </li>
 
       <li class="ud-nav">
-        <a href="#after">after</a>
+        <a href="#after" onclick="logNavEvent('after')">after</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#before">before</a>
+        <a href="#before" onclick="logNavEvent('before')">before</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#cancel-previous">cancel-previous</a>
+        <a href="#cancelPrevious" onclick="logNavEvent('cancelPrevious')">cancel-previous</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#debounce">debounce</a>
+        <a href="#debounce" onclick="logNavEvent('debounce')">debounce</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#delay">delay</a>
+        <a href="#delay" onclick="logNavEvent('delay')">delay</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#delegate">delegate</a>
+        <a href="#delegate" onclick="logNavEvent('delegate')">delegate</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#execTime">execTime</a>
+        <a href="#execTime" onclick="logNavEvent('execTime')">execTime</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#memoize">memoize</a>
+        <a href="#memoize" onclick="logNavEvent('memoize')">memoize</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#memoizeAsync">memoizeAsync</a>
+        <a href="#memoizeAsync" onclick="logNavEvent('memoizeAsync')">memoizeAsync</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#multiDispatch">multiDispatch</a>
+        <a href="#multiDispatch" onclick="logNavEvent('multiDispatch')">multiDispatch</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#onError">onError</a>
+        <a href="#onError" onclick="logNavEvent('onError')">onError</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#rateLimit">rateLimit</a>
+        <a href="#rateLimit" onclick="logNavEvent('rateLimit')">rateLimit</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#readonly">readonly</a>
+        <a href="#readonly" onclick="logNavEvent('readonly')">readonly</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#refreshable">refreshable</a>
+        <a href="#refreshable" onclick="logNavEvent('refreshable')">refreshable</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#retry">retry</a>
+        <a href="#retry" onclick="logNavEvent('retry')">retry</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#throttle">throttle</a>
+        <a href="#throttle" onclick="logNavEvent('throttle')">throttle</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#throttleAsync">throttleAsync</a>
+        <a href="#throttleAsync" onclick="logNavEvent('throttleAsync')">throttleAsync</a>
       </li>
 
       <li class="ud-nav">
-        <a href="#timeout">timeout</a>
+        <a href="#timeout" onclick="logNavEvent('timeout')">timeout</a>
       </li>
     </ul>
   </div>
@@ -293,7 +312,8 @@
       <div class="ud-section-content">
         <p class="ud-description">
           This library was highly inspired by lodash but uses decorators to implement its util methods.
-          The lib can be used both in node and in web application, it is built to be <b>tree-shakable so you can use it even if you need a specific decorator</b>.
+          The lib can be used both in node and in web application, it is built to be <b>tree-shakable so you can use it
+          even if you need a specific decorator</b>.
 
           To install the lib via npm please follow the command bellow:
         </p>
@@ -477,7 +497,7 @@
     </section>
 
     <section class="ud-section">
-      <div id="cancel-previous"></div>
+      <div id="cancelPrevious"></div>
       <div class="ud-section-title">Cancel Previous</div>
       <div class="ud-section-content">
         <div class="ud-subtitle">Description:</div>
@@ -1901,6 +1921,17 @@
       body.classList.add('ud-nav-open');
     }
   }
+
+  function logNavEvent(event) {
+    if (gtag) {
+      gtag('event', 'navigation', {
+        'event_category': event,
+      });
+    }
+  }
 </script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
 </html>
+
