@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import {refreshable} from './refreshable';
 import {sleep} from '../common/test-utils';
 
