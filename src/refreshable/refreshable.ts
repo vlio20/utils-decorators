@@ -7,6 +7,7 @@ export function refreshable<T = any, D = any>(config: RefreshableConfig<D>): Ref
     const intervalHandler = setInterval(async () => {
       data = await config.dataProvider.apply(this);
     }, config.intervalMs);
+
     if (typeof intervalHandler.unref === 'function') {
       intervalHandler.unref();
     }
