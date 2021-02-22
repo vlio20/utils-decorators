@@ -2,6 +2,30 @@ import {refreshable} from './refreshable';
 import {sleep} from '../common/test-utils';
 
 describe('refreshable', () => {
+  const originalSetInterval = global.setInterval;
+  const unrefMock = jest.fn();
+  function useFakeSetInterval() {
+    global.setInterval = <any>jest.fn(() => ({unref: unrefMock}));
+  }
+
+  function restoreSetInterval() {
+    global.setInterval = originalSetInterval;
+  }
+
+  afterEach(restoreSetInterval);
+
+  it('should call unref on setInterval', async () => {
+    useFakeSetInterval();
+    const foo = refreshable<any, number>({
+      dataProvider: () => Promise.resolve(0),
+      intervalMs: 50,
+    });
+    const t = {prop: 0} as {prop: number};
+    foo(t, 'prop');
+    await sleep(10);
+    expect(unrefMock).toBeCalled();
+  });
+
   it('should populate refreshable property', async (done) => {
     let fooCtr = 0;
     let gooCtr = 0;
