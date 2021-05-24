@@ -1,5 +1,5 @@
-import {debounce} from './debounce';
-import {sleep} from '../common/test-utils';
+import { debounce } from './debounce';
+import { sleep } from '../common/test-utils';
 
 describe('debounce', () => {
   it('should make sure error thrown when decorator not set on method', () => {

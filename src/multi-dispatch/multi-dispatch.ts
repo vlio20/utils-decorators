@@ -1,6 +1,6 @@
-import {AsyncMethod} from '../common/model/common.model';
-import {MultiDispatchable} from './multi-dispatch.model';
-import {multiDispatchify} from './multi-dispatchify';
+import { AsyncMethod } from '../common/model/common.model';
+import { MultiDispatchable } from './multi-dispatch.model';
+import { multiDispatchify } from './multi-dispatchify';
 
 export function multiDispatch<T = any>(dispatchesAmount: number): MultiDispatchable<T> {
   return (

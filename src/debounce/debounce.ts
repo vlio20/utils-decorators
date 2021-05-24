@@ -1,5 +1,5 @@
-import {Decorator, Method} from '../common/model/common.model';
-import {debouncify} from './debouncify';
+import { Decorator, Method } from '../common/model/common.model';
+import { debouncify } from './debouncify';
 
 export function debounce<T = any>(delayMs: number): Decorator<T> {
   return (

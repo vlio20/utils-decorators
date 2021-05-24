@@ -1,4 +1,4 @@
-import {AsyncMethod} from '../common/model/common.model';
+import { AsyncMethod } from '../common/model/common.model';
 
 export function delegatify<D>(
   originalMethod: AsyncMethod<D>,

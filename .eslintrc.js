@@ -12,7 +12,6 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   rules: {
-    'object-curly-spacing': ['error', 'never'],
     'import/prefer-default-export': 'off',
     'max-len': ['error', {code: 180}],
     '@typescript-eslint/indent': ['error', 2],

@@ -1,6 +1,6 @@
-import {AsyncMemoizable, AsyncMemoizeConfig} from './memoize-async.model';
-import {AsyncMethod} from '../common/model/common.model';
-import {memoizeAsyncify} from './memoize-asyncify';
+import { AsyncMemoizable, AsyncMemoizeConfig } from './memoize-async.model';
+import { AsyncMethod } from '../common/model/common.model';
+import { memoizeAsyncify } from './memoize-asyncify';
 
 export function memoizeAsync<T = any, D = any>(): AsyncMemoizable<T, D>;
 export function memoizeAsync<T = any, D = any>(config: AsyncMemoizeConfig<T, D>): AsyncMemoizable<T, D>;

@@ -1,11 +1,12 @@
-import {refreshable} from './refreshable';
-import {sleep} from '../common/test-utils';
+import { refreshable } from './refreshable';
+import { sleep } from '../common/test-utils';
 
 describe('refreshable', () => {
   const originalSetInterval = global.setInterval;
   const unrefMock = jest.fn();
+
   function useFakeSetInterval() {
-    global.setInterval = <any>jest.fn(() => ({unref: unrefMock}));
+    global.setInterval = <any>jest.fn(() => ({ unref: unrefMock }));
   }
 
   function restoreSetInterval() {
@@ -20,7 +21,7 @@ describe('refreshable', () => {
       dataProvider: () => Promise.resolve(0),
       intervalMs: 50,
     });
-    const t = {prop: 0} as {prop: number};
+    const t = { prop: 0 } as { prop: number };
     foo(t, 'prop');
     await sleep(10);
     expect(unrefMock).toBeCalled();
@@ -54,7 +55,7 @@ describe('refreshable', () => {
       intervalMs: 50,
     });
 
-    const t = {prop: 9, proop: 4} as {prop: number; proop: number};
+    const t = { prop: 9, proop: 4 } as { prop: number; proop: number };
     fooDec(t, 'prop');
     gooDec(t, 'proop');
 

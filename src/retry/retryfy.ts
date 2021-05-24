@@ -1,6 +1,6 @@
-import {AsyncMethod} from '../common/model/common.model';
-import {RetryInput} from './retry.model';
-import {sleep} from '../common/utils/utils';
+import { AsyncMethod } from '../common/model/common.model';
+import { RetryInput } from './retry.model';
+import { sleep } from '../common/utils/utils';
 
 function getRetriesArray(input: RetryInput): number[] {
   if (Array.isArray(input)) {

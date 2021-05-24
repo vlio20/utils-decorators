@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import { Method } from '../common/model/common.model';
 
 export type CancelPreviousable<T = any> = (
   target: T,

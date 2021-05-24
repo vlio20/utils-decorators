@@ -1,6 +1,6 @@
-import {retry} from './retry';
-import {sleep} from '../common/test-utils';
-import {retryfy} from './retryfy';
+import { retry } from './retry';
+import { sleep } from '../common/test-utils';
+import { retryfy } from './retryfy';
 
 describe('retry', () => {
   it('should make sure error thrown when decorator not set on method', () => {

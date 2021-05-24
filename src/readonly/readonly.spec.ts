@@ -1,4 +1,4 @@
-import {readonly} from './readonly';
+import { readonly } from './readonly';
 
 describe('readonly', () => {
   it('should verify readonly throws exception when trying to write to it', () => {

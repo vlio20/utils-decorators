@@ -1,7 +1,7 @@
-import {RateLimitConfigs} from './rate-limit.model';
-import {TaskExec} from '../common/tesk-exec/task-exec';
-import {SimpleRateLimitCounter} from './simple-rate-limit-counter';
-import {AsyncMethod, Method} from '../common/model/common.model';
+import { RateLimitConfigs } from './rate-limit.model';
+import { TaskExec } from '../common/tesk-exec/task-exec';
+import { SimpleRateLimitCounter } from './simple-rate-limit-counter';
+import { AsyncMethod, Method } from '../common/model/common.model';
 
 async function handleAsyncRateLimit<T, D>(
   target: T,
@@ -35,7 +35,7 @@ function handleRateLimit<T, D>(
   originalMethod: (...x: any[]) => D,
   args: any[],
 ): Promise<D> {
-  const {rateLimitCounter} = resolvedConfig;
+  const { rateLimitCounter } = resolvedConfig;
   const currentCount = rateLimitCounter.getCount(key);
 
   if (currentCount >= resolvedConfig.allowedCalls) {

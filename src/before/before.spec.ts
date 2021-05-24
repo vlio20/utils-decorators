@@ -1,9 +1,9 @@
-import {before} from './before';
+import { before } from './before';
 
 describe('before', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidBefore: any = before({func: null});
+      const nonValidBefore: any = before({ func: null });
 
       class T {
         @nonValidBefore

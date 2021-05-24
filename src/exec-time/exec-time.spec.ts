@@ -1,6 +1,6 @@
-import {execTime} from './exec-time';
-import {ExactTimeReportData} from './exec-time.model';
-import {sleep} from '../common/test-utils';
+import { execTime } from './exec-time';
+import { ExactTimeReportData } from './exec-time.model';
+import { sleep } from '../common/test-utils';
 
 describe('exec-time', () => {
   it('should make sure error thrown when decorator not set on method', () => {

@@ -1,6 +1,6 @@
-import {MemoizeConfig} from './memoize.model';
-import {TaskExec} from '../common/tesk-exec/task-exec';
-import {Method} from '../common/model/common.model';
+import { MemoizeConfig } from './memoize.model';
+import { TaskExec } from '../common/tesk-exec/task-exec';
+import { Method } from '../common/model/common.model';
 
 export function memoizify<D = any>(originalMethod: Method<D>): Method<D>;
 export function memoizify<D = any>(originalMethod: Method<D>, config: MemoizeConfig<any, D>): Method<D>;

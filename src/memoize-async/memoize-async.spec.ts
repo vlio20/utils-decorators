@@ -1,8 +1,6 @@
-import {memoizeAsync} from './memoize-async';
-import {AsyncCache} from './memoize-async.model';
-import {sleep} from '../common/test-utils';
-
-declare const window: any;
+import { memoizeAsync } from './memoize-async';
+import { AsyncCache } from './memoize-async.model';
+import { sleep } from '../common/test-utils';
 
 describe('memozie-async', () => {
   it('should verify memoize async caching original method', async (done) => {
@@ -60,7 +58,7 @@ describe('memozie-async', () => {
     const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
 
     class T {
-      @memoizeAsync<T, string>({expirationTimeMs: 10, keyResolver: mapper})
+      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: mapper })
       fooWithMapper(x: string, y: string): Promise<string> {
         return this.goo(x, y);
       }
@@ -90,7 +88,7 @@ describe('memozie-async', () => {
         return `${x}_${y}`;
       }
 
-      @memoizeAsync<T, string>({expirationTimeMs: 10, keyResolver: 'foo'})
+      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: 'foo' })
       fooWithMapper(x: string, y: string): Promise<string> {
         return this.goo(x, y);
       }
@@ -169,7 +167,7 @@ describe('memozie-async', () => {
     const cache = new Map<string, number>();
 
     class T {
-      @memoizeAsync<T, number>({expirationTimeMs: 30, cache})
+      @memoizeAsync<T, number>({ expirationTimeMs: 30, cache })
       foo(): Promise<number> {
         return this.goo();
       }
@@ -225,7 +223,7 @@ describe('memozie-async', () => {
     const cache = new Map();
 
     class T {
-      @memoizeAsync<T, number>({cache})
+      @memoizeAsync<T, number>({ cache })
       foo(): Promise<number> {
         return Promise.resolve(1);
       }

@@ -1,6 +1,6 @@
-import {AsyncMemoizeConfig} from './memoize-async.model';
-import {TaskExec} from '../common/tesk-exec/task-exec';
-import {AsyncMethod} from '../common/model/common.model';
+import { AsyncMemoizeConfig } from './memoize-async.model';
+import { TaskExec } from '../common/tesk-exec/task-exec';
+import { AsyncMethod } from '../common/model/common.model';
 
 export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>): AsyncMethod<D>;
 export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, config: AsyncMemoizeConfig<any, D>): AsyncMethod<D>;

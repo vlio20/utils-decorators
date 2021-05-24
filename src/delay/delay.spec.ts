@@ -1,5 +1,5 @@
-import {delay} from './delay';
-import {sleep} from '../common/test-utils';
+import { delay } from './delay';
+import { sleep } from '../common/test-utils';
 
 describe('delay', () => {
   it('should make sure error thrown when decorator not set on method', () => {

@@ -1,5 +1,5 @@
-import {multiDispatch} from './multi-dispatch';
-import {sleep} from '../common/utils/utils';
+import { multiDispatch } from './multi-dispatch';
+import { sleep } from '../common/utils/utils';
 
 describe('retry', () => {
   it('should make sure error thrown when decorator not set on method', () => {

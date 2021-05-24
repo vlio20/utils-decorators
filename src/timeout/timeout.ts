@@ -1,6 +1,6 @@
-import {AsyncMethod} from '../common/model/common.model';
-import {Timeoutable} from './timeout.model';
-import {timeoutify} from './timeoutify';
+import { AsyncMethod } from '../common/model/common.model';
+import { Timeoutable } from './timeout.model';
+import { timeoutify } from './timeoutify';
 
 export function timeout<T = any>(ms: number): Timeoutable<T> {
   return (

@@ -1,6 +1,6 @@
-import {Memoizable, MemoizeConfig} from './memoize.model';
-import {Method} from '../common/model/common.model';
-import {memoizify} from './memoizify';
+import { Memoizable, MemoizeConfig } from './memoize.model';
+import { Method } from '../common/model/common.model';
+import { memoizify } from './memoizify';
 
 export function memoize<T = any, D = any>(): Memoizable<T, D>;
 export function memoize<T = any, D = any>(config: MemoizeConfig<T, D>): Memoizable<T, D>;

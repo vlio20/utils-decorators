@@ -1,5 +1,5 @@
-import {AsyncMethod} from '../common/model/common.model';
-import {CanceledPromise} from './canceled-promise';
+import { AsyncMethod } from '../common/model/common.model';
+import { CanceledPromise } from './canceled-promise';
 
 export function cancelPreviousify<D>(originalMethod: AsyncMethod<D>): AsyncMethod<D> {
   let rej: (e: CanceledPromise) => void;

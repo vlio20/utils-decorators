@@ -1,7 +1,7 @@
-import {rateLimit} from './rate-limit';
-import {sleep} from '../common/test-utils';
-import {RateLimitAsyncCounter} from './rate-limit.model';
-import {SimpleRateLimitCounter} from './simple-rate-limit-counter';
+import { rateLimit } from './rate-limit';
+import { sleep } from '../common/test-utils';
+import { RateLimitAsyncCounter } from './rate-limit.model';
+import { SimpleRateLimitCounter } from './simple-rate-limit-counter';
 
 export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
   counterMap = new Map<string, number>();
@@ -39,7 +39,7 @@ describe('rate-limit', () => {
   class T {
     counter = 0;
 
-    @rateLimit({allowedCalls: 2, timeSpanMs: 200})
+    @rateLimit({ allowedCalls: 2, timeSpanMs: 200 })
     foo() {
       this.counter += 1;
 

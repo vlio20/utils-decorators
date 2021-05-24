@@ -1,5 +1,5 @@
-import {AsyncMethod} from '../common/model/common.model';
-import {TimeoutError} from './timeout-error';
+import { AsyncMethod } from '../common/model/common.model';
+import { TimeoutError } from './timeout-error';
 
 export function timeoutify<D>(originalMethod: AsyncMethod<D>, ms: number): AsyncMethod<D> {
   return function (...args: any[]): Promise<any> {

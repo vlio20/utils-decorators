@@ -1,6 +1,6 @@
-import {Method} from '../common/model/common.model';
-import {OnErrorable, OnErrorConfig} from './on-error.model';
-import {onErrorify} from './on-errorify';
+import { Method } from '../common/model/common.model';
+import { OnErrorable, OnErrorConfig } from './on-error.model';
+import { onErrorify } from './on-errorify';
 
 export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
   return (

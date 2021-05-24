@@ -1,6 +1,6 @@
-import {BeforeConfig} from './before.model';
-import {Decorator, Method} from '../common/model/common.model';
-import {beforify} from './beforify';
+import { BeforeConfig } from './before.model';
+import { Decorator, Method } from '../common/model/common.model';
+import { beforify } from './beforify';
 
 export function before<T = any>(config: BeforeConfig<T>): Decorator<T> {
   return (

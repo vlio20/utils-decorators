@@ -1,4 +1,4 @@
-import {RateLimitCounter} from './rate-limit.model';
+import { RateLimitCounter } from './rate-limit.model';
 
 export class SimpleRateLimitCounter implements RateLimitCounter {
   constructor(private readonly counterMap = new Map<string, number>()) {

@@ -1,6 +1,6 @@
-import {Method} from '../common/model/common.model';
-import {ExactTimeReportable, ReportFunction} from './exec-time.model';
-import {execTimify} from './exec-timify';
+import { Method } from '../common/model/common.model';
+import { ExactTimeReportable, ReportFunction } from './exec-time.model';
+import { execTimify } from './exec-timify';
 
 export function execTime<T = any>(arg?: ReportFunction | string): ExactTimeReportable<T> {
   return (
