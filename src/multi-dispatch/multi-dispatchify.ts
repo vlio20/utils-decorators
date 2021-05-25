@@ -1,4 +1,4 @@
-import {AsyncMethod} from '../common/model/common.model';
+import { AsyncMethod } from '../common/model/common.model';
 
 export function multiDispatchify<D>(originalMethod: AsyncMethod<D>, dispatchesAmount: number): AsyncMethod<D> {
   return function (...args: any[]): Promise<any> {

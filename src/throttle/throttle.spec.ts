@@ -1,5 +1,5 @@
-import {throttle} from './throttle';
-import {sleep} from '../common/test-utils';
+import { throttle } from './throttle';
+import { sleep } from '../common/test-utils';
 
 describe('throttle', () => {
   it('should make sure error thrown when decorator not set on method', () => {

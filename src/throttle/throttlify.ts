@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import { Method } from '../common/model/common.model';
 
 export function throttlify(originalMethod: Method<any>, delayMs: number): Method<any> {
   let throttling = false;

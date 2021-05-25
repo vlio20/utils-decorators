@@ -1,2 +1,2 @@
-export {delay} from './delay';
-export {delayfy} from './delayfy';
+export { delay } from './delay';
+export { delayfy } from './delayfy';

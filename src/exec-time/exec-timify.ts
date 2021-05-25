@@ -1,6 +1,6 @@
-import {Method} from '../common/model/common.model';
-import {ExactTimeReportData, ReportFunction} from './exec-time.model';
-import {isPromise} from '../common/utils/utils';
+import { Method } from '../common/model/common.model';
+import { ExactTimeReportData, ReportFunction } from './exec-time.model';
+import { isPromise } from '../common/utils/utils';
 
 const reporter: ReportFunction = function (data: ExactTimeReportData): void {
   console.info(data.execTime);

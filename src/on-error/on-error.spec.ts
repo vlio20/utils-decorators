@@ -1,9 +1,9 @@
-import {onError} from './on-error';
+import { onError } from './on-error';
 
 describe('onError', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidOnError: any = onError({func: null});
+      const nonValidOnError: any = onError({ func: null });
 
       class T {
         @nonValidOnError
@@ -22,7 +22,7 @@ describe('onError', () => {
     class T {
       prop = 3;
 
-      @onError<T>({func: 'onError'})
+      @onError<T>({ func: 'onError' })
       foo(x: number): any {
         return this.goo(x);
       }
@@ -55,7 +55,7 @@ describe('onError', () => {
     });
 
     class T {
-      @onError<T>({func: onErrorFunc})
+      @onError<T>({ func: onErrorFunc })
       foo(x: number): any {
         return this.goo(x);
       }
@@ -81,7 +81,7 @@ describe('onError', () => {
     });
 
     class T {
-      @onError<T>({func: onErrorFunc})
+      @onError<T>({ func: onErrorFunc })
       foo(x: number): Promise<void> {
         return Promise.reject(new Error('error'));
       }
@@ -98,7 +98,7 @@ describe('onError', () => {
     });
 
     class T {
-      @onError<T>({func: onErrorFunc})
+      @onError<T>({ func: onErrorFunc })
       foo(): Promise<void> {
         return Promise.resolve();
       }
@@ -117,7 +117,7 @@ describe('onError', () => {
     });
 
     class T {
-      @onError<T>({func: onErrorFunc})
+      @onError<T>({ func: onErrorFunc })
       foo(x: number): any {
         throw new Error('arr');
       }

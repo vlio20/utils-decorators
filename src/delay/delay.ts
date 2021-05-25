@@ -1,5 +1,5 @@
-import {Decorator, Method} from '../common/model/common.model';
-import {delayfy} from './delayfy';
+import { Decorator, Method } from '../common/model/common.model';
+import { delayfy } from './delayfy';
 
 export function delay<T = any>(delayMs: number): Decorator<T> {
   return (

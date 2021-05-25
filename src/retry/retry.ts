@@ -1,6 +1,6 @@
-import {AsyncMethod} from '../common/model/common.model';
-import {Retryable, RetryInput} from './retry.model';
-import {retryfy} from './retryfy';
+import { AsyncMethod } from '../common/model/common.model';
+import { Retryable, RetryInput } from './retry.model';
+import { retryfy } from './retryfy';
 
 export function retry<T = any>(input: RetryInput): Retryable<T> {
   return (

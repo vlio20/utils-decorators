@@ -1,10 +1,10 @@
-import {after} from './after';
-import {AfterFunc, AfterParams} from './after.model';
+import { after } from './after';
+import { AfterFunc, AfterParams } from './after.model';
 
 describe('after', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
-      const nonValidAfter: any = after({func: null});
+      const nonValidAfter: any = after({ func: null });
 
       class T {
         @nonValidAfter

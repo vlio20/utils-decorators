@@ -1,5 +1,5 @@
-import {AfterConfig, AfterFunc} from './after.model';
-import {Method} from '../common/model/common.model';
+import { AfterConfig, AfterFunc } from './after.model';
+import { Method } from '../common/model/common.model';
 
 export function afterify<D = any>(originalMethod: Method<D>, config: AfterConfig<any, D>): (...args: any[]) => void {
   const resolvedConfig: AfterConfig<any, D> = {

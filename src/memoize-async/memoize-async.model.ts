@@ -1,4 +1,4 @@
-import {Cache, KeyResolver, Memoizable} from '../memoize/memoize.model';
+import { Cache, KeyResolver, Memoizable } from '../memoize/memoize.model';
 
 export type AsyncMemoizable<T, D> = Memoizable<T, Promise<D>>;
 

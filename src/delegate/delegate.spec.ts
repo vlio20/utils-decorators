@@ -1,5 +1,5 @@
-import {delegate} from './delegate';
-import {sleep} from '../common/test-utils';
+import { delegate } from './delegate';
+import { sleep } from '../common/test-utils';
 
 describe('delegate', () => {
   it('should make sure error thrown when decorator not set on method', () => {

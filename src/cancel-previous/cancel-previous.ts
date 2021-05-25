@@ -1,6 +1,6 @@
-import {CancelPreviousable} from './cancel-previous.model';
-import {Method} from '../common/model/common.model';
-import {cancelPreviousify} from './cancel-previousify';
+import { CancelPreviousable } from './cancel-previous.model';
+import { Method } from '../common/model/common.model';
+import { cancelPreviousify } from './cancel-previousify';
 
 export function cancelPrevious<T = any, D = any>(): CancelPreviousable<T> {
   return (

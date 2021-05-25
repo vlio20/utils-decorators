@@ -1,5 +1,5 @@
-import {Decorator, Method} from '../common/model/common.model';
-import {throttlify} from './throttlify';
+import { Decorator, Method } from '../common/model/common.model';
+import { throttlify } from './throttlify';
 
 export function throttle<T = any>(delayMs: number): Decorator<T> {
   return (

@@ -1,6 +1,6 @@
-import {RateLimitable, RateLimitConfigs} from './rate-limit.model';
-import {Method} from '../common/model/common.model';
-import {rateLimitify} from './rate-limitify';
+import { RateLimitable, RateLimitConfigs } from './rate-limit.model';
+import { Method } from '../common/model/common.model';
+import { rateLimitify } from './rate-limitify';
 
 export function rateLimit<T = any, D = any>(config: RateLimitConfigs): RateLimitable<T, D> {
   return (

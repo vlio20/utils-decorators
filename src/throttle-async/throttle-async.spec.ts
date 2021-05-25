@@ -1,5 +1,5 @@
-import {sleep} from '../common/test-utils';
-import {throttleAsync} from './throttle-async';
+import { sleep } from '../common/test-utils';
+import { throttleAsync } from './throttle-async';
 
 describe('throttle-async', () => {
   it('should make sure error thrown when decorator not set on method', () => {

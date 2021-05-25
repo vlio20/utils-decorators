@@ -1,5 +1,5 @@
-import {BeforeConfig} from './before.model';
-import {Method} from '../common/model/common.model';
+import { BeforeConfig } from './before.model';
+import { Method } from '../common/model/common.model';
 
 export function beforify(originalMethod: Method<void>, config: BeforeConfig<any>): Method<void> {
   const resolvedConfig: BeforeConfig<any> = {

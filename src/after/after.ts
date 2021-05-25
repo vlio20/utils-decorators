@@ -1,6 +1,6 @@
-import {AfterConfig} from './after.model';
-import {Decorator, Method} from '../common/model/common.model';
-import {afterify} from './afterify';
+import { AfterConfig } from './after.model';
+import { Decorator, Method } from '../common/model/common.model';
+import { afterify } from './afterify';
 
 export function after<T = any, D = any>(config: AfterConfig<T, D>): Decorator<T> {
   return (

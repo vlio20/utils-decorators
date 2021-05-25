@@ -1,2 +1,2 @@
-export {debouncify} from './debouncify';
-export {debounce} from './debounce';
+export { debouncify } from './debouncify';
+export { debounce } from './debounce';

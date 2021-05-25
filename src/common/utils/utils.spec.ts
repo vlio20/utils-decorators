@@ -1,10 +1,10 @@
-import {isPromise} from './utils';
+import { isPromise } from './utils';
 
 describe('utils', () => {
   describe('isPromise', () => {
     it('should return true if a Promise or an object with then attribute', () => {
       expect(isPromise(Promise.resolve())).toBe(true);
-      expect(isPromise({then: () => null})).toBe(true);
+      expect(isPromise({ then: () => null })).toBe(true);
     });
 
     it('should return false if not a Promise and not an object with then', () => {

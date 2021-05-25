@@ -1,4 +1,4 @@
-import {Method} from '../common/model/common.model';
+import { Method } from '../common/model/common.model';
 
 export type ReportFunction = (data?: ExactTimeReportData) => any;
 

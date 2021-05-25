@@ -1,4 +1,4 @@
-import {AsyncMethod} from '../common/model/common.model';
+import { AsyncMethod } from '../common/model/common.model';
 
 export class ThrottleAsyncExecutor<D> {
   private onGoingCallsCount = 0;
@@ -7,7 +7,7 @@ export class ThrottleAsyncExecutor<D> {
 
   constructor(
     private readonly fun: AsyncMethod<D>,
-    private readonly parallelCalls,
+    private readonly parallelCalls: number,
   ) {
   }
 
