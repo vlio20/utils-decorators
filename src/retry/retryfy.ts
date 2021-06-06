@@ -1,5 +1,6 @@
+import { on } from 'cluster';
 import { AsyncMethod } from '../common/model/common.model';
-import { RetryInput } from './retry.model';
+import { OnRetry, RetryInput, RetryInputConfig } from './retry.model';
 import { sleep } from '../common/utils/utils';
 
 function getRetriesArray(input: RetryInput): number[] {
@@ -23,6 +24,7 @@ async function exec(
   args: any[],
   retriesArr: number[],
   retries = 0,
+  onRetry?: OnRetry,
 ): Promise<any> {
   try {
     const res = await originalMethod(...args);
@@ -30,9 +32,13 @@ async function exec(
     return res;
   } catch (e) {
     if (retries < retriesArr.length) {
+      if (onRetry) {
+        onRetry(e, retries);
+      }
+
       await sleep(retriesArr[retries]);
 
-      return exec(originalMethod, args, retriesArr, retries + 1);
+      return exec(originalMethod, args, retriesArr, retries + 1, onRetry);
     }
 
     throw e;
@@ -47,6 +53,8 @@ export function retryfy<D = any>(originalMethod: AsyncMethod<D>, input: RetryInp
       originalMethod.bind(this),
       args,
       retriesArray,
+      0,
+      typeof input === 'object' ? (input as RetryInputConfig).onRetry : undefined,
     );
   };
 }

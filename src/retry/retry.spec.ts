@@ -154,4 +154,40 @@ describe('retry', () => {
   it('should throw error when invalid input', async () => {
     expect(retryfy.bind(this, '6')).toThrow('invalid input');
   });
+
+  it('should invoke onRetry', async () => {
+    const onRetry = jest.fn();
+
+    class T {
+      counter = 0;
+
+      @retry({
+        retries: 3,
+        delay: 10,
+        onRetry,
+      })
+      foo(): Promise<string> {
+        this.counter += 1;
+
+        if (this.counter < 3) {
+          return Promise.reject(new Error(`no ${this.counter}`));
+        }
+
+        return Promise.resolve('yes');
+      }
+    }
+
+    const t = new T();
+    await t.foo();
+    await sleep(100);
+
+    expect(onRetry).toBeCalledTimes(2);
+    const argsFirstCall = onRetry.mock.calls[0];
+    expect(argsFirstCall[0].message).toEqual('no 1');
+    expect(argsFirstCall[1]).toEqual(0);
+
+    const argsSecondCall = onRetry.mock.calls[1];
+    expect(argsSecondCall[0].message).toEqual('no 2');
+    expect(argsSecondCall[1]).toEqual(1);
+  });
 });
