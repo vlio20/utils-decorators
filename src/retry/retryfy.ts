@@ -12,7 +12,17 @@ function getRetriesArray(input: RetryInput): number[] {
   }
 
   if (typeof input === 'object') {
-    return Array(input.retries).fill(1).map(() => input.delay);
+    const config = input as RetryInputConfig;
+
+    if (config.retries && config.delaysArray) {
+      throw new Error('You can not provide both retries and delaysArray');
+    }
+
+    if (config.delaysArray) {
+      return config.delaysArray;
+    }
+
+    return Array(input.retries).fill(1).map(() => input.delay ?? 1000);
   }
 
   throw new Error('invalid input');

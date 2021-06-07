@@ -1644,8 +1644,11 @@
           values) in the worst case (when all invocation failed).
           You can provide you own delay time (or delay times array) between the invocations - see details below. Note
           that the default delay between retries is 1000ms.
-          You can also provide an onRetry callback function (or name of the method in the decorated class). This callback
+          You can also provide an onRetry callback function (or name of the method in the decorated class). This
+          callback
           will be invoked before every retry call.
+          Note that if you are providing a RetryInputConfig, you can pass retries and delay (if not provided than will
+          use the default 1000ms delay) or delaysArray but not both.
         </p>
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
@@ -1654,7 +1657,8 @@
   type RetryInput = number | number[] | RetryInputConfig;
 
   export interface RetryInputConfig {
-    retries: number;
+    delaysArray?: number[];
+    retries?: number;
     delay: number;
     onRetry?: OnRetry;
   }
