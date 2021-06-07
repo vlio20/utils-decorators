@@ -212,4 +212,53 @@ describe('retry', () => {
 
     expect(t.decCounter).toEqual(3);
   });
+
+  it('should throw error when provided both retires and delaysArray', () => {
+    try {
+      class T {
+        @retry({
+          retries: 3,
+          delaysArray: [1, 2, 3],
+        })
+        boo(): Promise<void> {
+          return Promise.resolve();
+        }
+      }
+    } catch (e) {
+      expect('You can not provide both retries and delaysArray').toBe(e.message);
+
+      return;
+    }
+
+    throw new Error('should not reach this line');
+  });
+
+  it('should fill the delays with 1000ms by default', async () => {
+    class T {
+      counter = 0;
+
+      decCounter = 0;
+
+      @retry({
+        retries: 1,
+      })
+      foo(): Promise<string> {
+        this.counter += 1;
+
+        if (this.counter < 2) {
+          return Promise.reject(new Error(`no ${this.counter}`));
+        }
+
+        return Promise.resolve('yes');
+      }
+    }
+
+    const t = new T();
+
+    t.foo();
+    await sleep(500);
+    expect(t.counter).toEqual(1);
+    await sleep(600);
+    expect(t.counter).toEqual(2);
+  });
 });

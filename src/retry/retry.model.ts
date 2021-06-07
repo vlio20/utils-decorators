@@ -2,11 +2,12 @@ import { AsyncMethod } from '../common/model/common.model';
 
 export type RetryInput = number | number[] | RetryInputConfig;
 
-export interface RetryInputConfig {
-  retries: number;
-  delay: number;
+export type RetryInputConfig = {
+  delaysArray?: number[];
+  retries?: number;
+  delay?: number;
   onRetry?: OnRetry | string;
-}
+};
 
 export type Retryable<T> = (
   target: T,
