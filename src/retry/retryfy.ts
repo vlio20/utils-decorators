@@ -1,5 +1,5 @@
 import { AsyncMethod } from '../common/model/common.model';
-import { RetryInput } from './retry.model';
+import { OnRetry, RetryInput, RetryInputConfig } from './retry.model';
 import { sleep } from '../common/utils/utils';
 
 function getRetriesArray(input: RetryInput): number[] {
@@ -18,21 +18,38 @@ function getRetriesArray(input: RetryInput): number[] {
   throw new Error('invalid input');
 }
 
+function getOnRetry(input: RetryInput, context: any): OnRetry {
+  if (typeof input === 'object') {
+    if (typeof (input as RetryInputConfig).onRetry === 'string') {
+      return context[(input as RetryInputConfig).onRetry as string].bind(context);
+    }
+
+    return (input as RetryInputConfig).onRetry as OnRetry;
+  }
+
+  return undefined;
+}
+
 async function exec(
   originalMethod: (...x: any[]) => any,
   args: any[],
   retriesArr: number[],
-  retries = 0,
+  callsMadeSoFar: number,
+  onRetry: OnRetry,
 ): Promise<any> {
   try {
     const res = await originalMethod(...args);
 
     return res;
   } catch (e) {
-    if (retries < retriesArr.length) {
-      await sleep(retriesArr[retries]);
+    if (callsMadeSoFar < retriesArr.length) {
+      if (onRetry) {
+        onRetry(e, callsMadeSoFar);
+      }
 
-      return exec(originalMethod, args, retriesArr, retries + 1);
+      await sleep(retriesArr[callsMadeSoFar]);
+
+      return exec(originalMethod, args, retriesArr, callsMadeSoFar + 1, onRetry);
     }
 
     throw e;
@@ -43,10 +60,14 @@ export function retryfy<D = any>(originalMethod: AsyncMethod<D>, input: RetryInp
   const retriesArray = getRetriesArray(input);
 
   return function (...args: any[]): Promise<any> {
+    const onRetry = getOnRetry(input, this);
+
     return exec(
       originalMethod.bind(this),
       args,
       retriesArray,
+      0,
+      onRetry,
     );
   };
 }
