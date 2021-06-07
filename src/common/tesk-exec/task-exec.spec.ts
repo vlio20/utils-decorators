@@ -12,24 +12,24 @@ describe('utils', () => {
       val += 'B';
     });
 
-    runner.exec(funA, 50);
-
-    await sleep(10);
-
-    expect(funA).not.toBeCalled();
-    runner.exec(funB, 20);
-
-    await sleep(10);
-
-    expect(funA).not.toBeCalled();
-    expect(funB).not.toBeCalled();
+    runner.exec(funA, 100);
 
     await sleep(20);
 
     expect(funA).not.toBeCalled();
+    runner.exec(funB, 40);
+
+    await sleep(20);
+
+    expect(funA).not.toBeCalled();
+    expect(funB).not.toBeCalled();
+
+    await sleep(40);
+
+    expect(funA).not.toBeCalled();
     expect(funB).toBeCalledTimes(1);
 
-    await sleep(50);
+    await sleep(100);
 
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
