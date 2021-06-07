@@ -1644,15 +1644,22 @@
           values) in the worst case (when all invocation failed).
           You can provide you own delay time (or delay times array) between the invocations - see details below. Note
           that the default delay between retries is 1000ms.
+          You can also provide an onRetry callback function (or name of the method in the decorated class). This callback
+          will be invoked before every retry call.
         </p>
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  type RetryInput = number | number[] | {
+  type RetryInput = number | number[] | RetryInputConfig;
+
+  export interface RetryInputConfig {
     retries: number;
     delay: number;
-  };
+    onRetry?: OnRetry;
+  }
+
+  export type OnRetry = (error: Error, retriesCount: number) => void | string;
             </pre>
           </div>
         </div>
@@ -1727,9 +1734,14 @@
     @retry({
       retries: 3,
       delay: 1500,
+      onError: (e, retriesCount) => console.log(e, retriesCount),
     })
     getData: number): DataDto {
       return this.dataProvider.getData();
+    }
+
+    onRetry(e: Error, retriesCount: number) {
+      console.log(e, retriesCount)
     }
   }</pre>
           </div>
@@ -1743,6 +1755,7 @@
   const debouncedFoo = retrify(getData, {
     retries: 3,
     delay: 1500,
+    onError: (e, retriesCount) => console.log(e, retriesCount),
   });</pre>
           </div>
         </div>

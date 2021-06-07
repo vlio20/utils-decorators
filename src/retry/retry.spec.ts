@@ -161,6 +161,8 @@ describe('retry', () => {
     class T {
       counter = 0;
 
+      decCounter = 0;
+
       @retry({
         retries: 3,
         delay: 10,
@@ -175,10 +177,28 @@ describe('retry', () => {
 
         return Promise.resolve('yes');
       }
+
+      @retry({
+        retries: 3,
+        delay: 10,
+        onRetry: 'retry',
+      })
+      goo(): Promise<void> {
+        if (this.decCounter < 3) {
+          return Promise.reject(new Error(`no ${this.decCounter}`));
+        }
+
+        return Promise.resolve();
+      }
+
+      retry(e, c): void {
+        this.decCounter += 1;
+      }
     }
 
     const t = new T();
     await t.foo();
+    await t.goo();
     await sleep(100);
 
     expect(onRetry).toBeCalledTimes(2);
@@ -189,5 +209,7 @@ describe('retry', () => {
     const argsSecondCall = onRetry.mock.calls[1];
     expect(argsSecondCall[0].message).toEqual('no 2');
     expect(argsSecondCall[1]).toEqual(1);
+
+    expect(t.decCounter).toEqual(3);
   });
 });

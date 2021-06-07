@@ -5,7 +5,7 @@ export type RetryInput = number | number[] | RetryInputConfig;
 export interface RetryInputConfig {
   retries: number;
   delay: number;
-  onRetry?: OnRetry;
+  onRetry?: OnRetry | string;
 }
 
 export type Retryable<T> = (
@@ -14,4 +14,4 @@ export type Retryable<T> = (
   descriptor: TypedPropertyDescriptor<AsyncMethod<any>>
 ) => TypedPropertyDescriptor<AsyncMethod<any>>;
 
-export type OnRetry = (error: Error, retry: number) => void;
+export type OnRetry = (error: Error, retriesCount: number) => void;
