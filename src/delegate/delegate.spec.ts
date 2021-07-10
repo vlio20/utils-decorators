@@ -114,4 +114,23 @@ describe('delegate', () => {
     expect(res).toEqual([2, 3, 2]);
     expect(counter).toEqual(2);
   });
+
+  it('should have the correct context', async () => {
+    class Example {
+      @delegate()
+      async ex1() {
+        return this.ex2();
+      }
+
+      @delegate()
+      async ex2() {
+        return 2;
+      }
+    }
+
+    const ex = new Example();
+    const result = await ex.ex1();
+
+    expect(result).toEqual(2);
+  });
 });

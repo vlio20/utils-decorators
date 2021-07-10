@@ -11,7 +11,7 @@ export function delegatify<D>(
     const key = keyGenerator(...args);
 
     if (!delegatedKeysMap.has(key)) {
-      delegatedKeysMap.set(key, originalMethod(...args).finally(() => delegatedKeysMap.delete(key)));
+      delegatedKeysMap.set(key, originalMethod.apply(this, args).finally(() => delegatedKeysMap.delete(key)));
     }
 
     return delegatedKeysMap.get(key);
