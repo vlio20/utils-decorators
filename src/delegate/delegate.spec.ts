@@ -118,14 +118,11 @@ describe('delegate', () => {
   it('should have the correct context', async () => {
     class Example {
       @delegate()
-      async ex1() {
+      async ex1(): Promise<number> {
         return this.ex2();
       }
 
-      @delegate()
-      async ex2() {
-        return 2;
-      }
+      ex2 = (): Promise<number> => Promise.resolve(2);
     }
 
     const ex = new Example();
