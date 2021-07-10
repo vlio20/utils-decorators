@@ -48,7 +48,7 @@ async function exec(
   onRetry: OnRetry,
 ): Promise<any> {
   try {
-    const res = await originalMethod(...args);
+    const res = await originalMethod.apply(this, args);
 
     return res;
   } catch (e) {
