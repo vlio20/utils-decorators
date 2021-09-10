@@ -17,12 +17,14 @@ export function afterify<D = any>(originalMethod: Method<D>, config: AfterConfig
         args,
         response,
       });
-    } else {
-      const response = originalMethod.apply(this, args);
-      afterFunc({
-        args,
-        response,
-      });
+      return response;
     }
+
+    const response = originalMethod.apply(this, args);
+    afterFunc({
+      args,
+      response,
+    });
+    return response;
   };
 }
