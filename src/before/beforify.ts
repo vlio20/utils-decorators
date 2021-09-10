@@ -14,10 +14,10 @@ export function beforify(originalMethod: Method<void>, config: BeforeConfig<any>
 
     if (resolvedConfig.wait) {
       await beforeFunc();
-      originalMethod.apply(this, args);
-    } else {
-      beforeFunc();
-      originalMethod.apply(this, args);
+      return originalMethod.apply(this, args);
     }
+
+    beforeFunc();
+    return originalMethod.apply(this, args);
   };
 }

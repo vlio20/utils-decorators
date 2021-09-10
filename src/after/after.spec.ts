@@ -195,4 +195,25 @@ describe('after', () => {
     const t = new T();
     await t.foo(testable1, testable2);
   });
+
+  it('should returned result of method', async () => {
+    const value = 42;
+
+    const afterFunc: AfterFunc<number> = jest.fn((x: AfterParams<number>) => {
+      expect(x.response).toBe(value);
+    });
+
+    class T {
+      @after<T>({
+        func: afterFunc,
+      })
+      foo(x: number): number {
+        return x;
+      }
+    }
+
+    const t = new T();
+    const result = await t.foo(value);
+    expect(result).toBe(value);
+  });
 });

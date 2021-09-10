@@ -142,4 +142,27 @@ describe('before', () => {
     const t = new T();
     t.foo(1);
   });
+
+  it('should returned result of method', async () => {
+    let counter = 0;
+
+    const beforeFunc = jest.fn(() => {
+      expect(counter).toBe(0);
+      counter += 1;
+    });
+
+    class T {
+      @before<T>({
+        func: beforeFunc,
+      })
+      foo(x: number): number {
+        return x;
+      }
+    }
+
+    const t = new T();
+    const value = 42;
+    const result = await t.foo(value);
+    expect(result).toBe(value);
+  });
 });
