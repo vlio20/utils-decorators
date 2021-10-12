@@ -1,14 +1,10 @@
 {
   "name": "utils-decorators",
-  "version": "1.10.3-rc1",
+  "version": "1.10.3-rc6",
   "description": "decorators for reducing repetitive code",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
-  "exports": {
-    "require": "./dist/cjs/index.js",
-    "import": "./dist/esm/index.js"
-  },
   "devDependencies": {
     "@babel/core": "^7.14.3",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
@@ -61,5 +57,6 @@
   "homepage": "https://github.com/vlio20/utils-decorators#readme",
   "dependencies": {
     "tinyqueue": "^2.0.3"
-  }
+  },
+  "sideEffects": false
 }
