@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.10.3] - 2021-10-12
+
+### Fixed
+
+- Moving build target to es6 [8b89113](https://github.com/vlio20/utils-decorators/commit/8b891138c50f0a0ec510fa9d6caaca98258d8130) closes [#122](https://github.com/vlio20/utils-decorators/issues/122).
+- Bump tmpl from 1.0.4 to 1.0.5 (Security fix) [8afe88d](https://github.com/vlio20/utils-decorators/commit/8afe88dd0012c7badb6e91d764ff4ecf39102a6a).
+
 ## [1.10.2] - 2021-09-10
 
 ### Fixed
