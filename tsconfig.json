@@ -6,13 +6,13 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": [
-      "es2017"
+      "ES2018"
     ],
     "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./dist/esm",
     "sourceMap": true,
-    "target": "es6",
+    "target": "ES6",
     "typeRoots": [
       "./node_modules/@types"
     ]
