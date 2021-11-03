@@ -1,6 +1,6 @@
 import { Method } from '../common/model/common.model';
 
-export function debouncify(originalMethod: Method<any>, delayMs: number): Method<any> {
+export function debouncify<M extends Method<any>>(originalMethod: M, delayMs: number): M {
   let handler: any;
 
   return function (...args: any[]): any {
@@ -9,5 +9,5 @@ export function debouncify(originalMethod: Method<any>, delayMs: number): Method
     handler = setTimeout(() => {
       originalMethod.apply(this, args);
     }, delayMs);
-  };
+  } as M;
 }

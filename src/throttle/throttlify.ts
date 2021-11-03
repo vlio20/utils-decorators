@@ -1,6 +1,6 @@
 import { Method } from '../common/model/common.model';
 
-export function throttlify(originalMethod: Method<any>, delayMs: number): Method<any> {
+export function throttlify<M extends Method<any>>(originalMethod: M, delayMs: number): M {
   let throttling = false;
   return function (...args: any[]): any {
     if (!throttling) {
@@ -11,5 +11,5 @@ export function throttlify(originalMethod: Method<any>, delayMs: number): Method
         throttling = false;
       }, delayMs);
     }
-  };
+  } as M;
 }

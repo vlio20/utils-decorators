@@ -1,5 +1,5 @@
-import { Memoizable, MemoizeConfig } from './memoize.model';
 import { Method } from '../common/model/common.model';
+import { Memoizable, MemoizeConfig } from './memoize.model';
 import { memoizify } from './memoizify';
 
 export function memoize<T = any, D = any>(): Memoizable<T, D>;
@@ -12,7 +12,7 @@ export function memoize<T = any, D = any>(input?: MemoizeConfig<T, D> | number):
     descriptor: TypedPropertyDescriptor<Method<D>>,
   ): TypedPropertyDescriptor<Method<D>> => {
     if (descriptor.value) {
-      descriptor.value = memoizify<D>(descriptor.value, input as any);
+      descriptor.value = memoizify(descriptor.value, input as any);
 
       return descriptor;
     }

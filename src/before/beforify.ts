@@ -1,7 +1,8 @@
-import { BeforeConfig } from './before.model';
 import { Method } from '../common/model/common.model';
+import { BeforeConfig } from './before.model';
 
-export function beforify(originalMethod: Method<void>, config: BeforeConfig<any>): Method<void> {
+export function beforify<M extends Method<any>>
+  (originalMethod: M, config: BeforeConfig<any>): M {
   const resolvedConfig: BeforeConfig<any> = {
     wait: false,
     ...config,
@@ -19,5 +20,5 @@ export function beforify(originalMethod: Method<void>, config: BeforeConfig<any>
 
     beforeFunc();
     return originalMethod.apply(this, args);
-  };
+  } as M;
 }

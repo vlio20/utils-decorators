@@ -1,8 +1,8 @@
 import { AsyncMethod } from '../common/model/common.model';
 import { OnErrorConfig, OnErrorHandler } from './on-error.model';
 
-export function onErrorify<D>(originalMethod: AsyncMethod<D>, config: OnErrorConfig<any>): AsyncMethod<D> {
-  return async function (...args: any[]): Promise<D> {
+export function onErrorify<M extends AsyncMethod<any>>(originalMethod: M, config: OnErrorConfig<any>): M {
+  return async function (...args: any[]): Promise<any> {
     const onErrorFunc: OnErrorHandler = typeof config.func === 'string'
       ? this[config.func].bind(this) : config.func;
 
@@ -12,5 +12,5 @@ export function onErrorify<D>(originalMethod: AsyncMethod<D>, config: OnErrorCon
     } catch (e) {
       return onErrorFunc(e, args);
     }
-  };
+  } as M;
 }
