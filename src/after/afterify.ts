@@ -2,7 +2,7 @@ import { Method } from '../common/model/common.model';
 import { AfterConfig, AfterFunc } from './after.model';
 
 export function afterify<M extends Method<any>>(
-  originalMethod: M, config: AfterConfig<any, ReturnType<typeof originalMethod>>
+  originalMethod: M, config: AfterConfig<any, ReturnType<typeof originalMethod>>,
 ): (...args: any[]) => void {
   const resolvedConfig: AfterConfig<any, ReturnType<typeof originalMethod>> = {
     wait: false,
