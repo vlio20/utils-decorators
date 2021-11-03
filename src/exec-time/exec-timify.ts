@@ -1,12 +1,12 @@
-import { Method } from '../common/model/common.model';
-import { ExactTimeReportData, ReportFunction } from './exec-time.model';
+import { AsyncMethod, Method } from '../common/model/common.model';
 import { isPromise } from '../common/utils/utils';
+import { ExactTimeReportData, ReportFunction } from './exec-time.model';
 
 const reporter: ReportFunction = function (data: ExactTimeReportData): void {
   console.info(data.execTime);
 };
 
-export function execTimify(originalMethod: Method<void>, arg?: ReportFunction | string): Method<void> {
+export function execTimify(originalMethod: Method<void> | AsyncMethod<void>, arg?: ReportFunction | string): Method<void> {
   const input: ReportFunction | string = arg ?? reporter;
 
   return async function (...args: any[]): Promise<void> {

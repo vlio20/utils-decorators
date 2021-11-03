@@ -1,19 +1,19 @@
-import { AsyncMemoizeConfig } from './memoize-async.model';
+import { AsyncMethod, UnboxPromise } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
-import { AsyncMethod } from '../common/model/common.model';
+import { AsyncMemoizeConfig } from './memoize-async.model';
 
-export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>): AsyncMethod<D>;
-export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, config: AsyncMemoizeConfig<any, D>): AsyncMethod<D>;
-export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, expirationTimeMs: number): AsyncMethod<D>;
-export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, input?: AsyncMemoizeConfig<any, D> | number): AsyncMethod<D> {
-  const defaultConfig: AsyncMemoizeConfig<any, D> = {
-    cache: new Map<string, D>(),
+export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M): M;
+export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, config: AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>>): M;
+export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, expirationTimeMs: number): M;
+export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, input?: AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>> | number): M {
+  const defaultConfig: AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>> = {
+    cache: new Map<string, UnboxPromise<ReturnType<M>>>(),
   };
   const runner = new TaskExec();
-  const promCache = new Map<string, Promise<D>>();
+  const promCache = new Map<string, Promise<any>>();
   let resolvedConfig = {
     ...defaultConfig,
-  } as AsyncMemoizeConfig<any, D>;
+  } as AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>>;
 
   if (typeof input === 'number') {
     resolvedConfig.expirationTimeMs = input;
@@ -24,7 +24,7 @@ export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, input?:
     };
   }
 
-  return async function (...args: any[]): Promise<D> {
+  return async function (...args: any[]): Promise<any> {
     const keyResolver = typeof resolvedConfig.keyResolver === 'string'
       ? this[resolvedConfig.keyResolver].bind(this)
       : resolvedConfig.keyResolver;
@@ -41,7 +41,7 @@ export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, input?:
       return promCache.get(key);
     }
 
-    const prom = new Promise<D>(async (resolve, reject) => {
+    const prom = new Promise<any>(async (resolve, reject) => {
       let inCache: boolean;
 
       try {
@@ -53,7 +53,7 @@ export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, input?:
       }
 
       if (inCache) {
-        let data: D;
+        let data: any;
         try {
           data = await resolvedConfig.cache.get(key);
         } catch (e) {
@@ -86,5 +86,5 @@ export function memoizeAsyncify<D = any>(originalMethod: AsyncMethod<D>, input?:
     promCache.set(key, prom);
 
     return prom;
-  };
+  } as M;
 }

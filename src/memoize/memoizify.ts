@@ -1,18 +1,18 @@
-import { MemoizeConfig } from './memoize.model';
-import { TaskExec } from '../common/tesk-exec/task-exec';
 import { Method } from '../common/model/common.model';
+import { TaskExec } from '../common/tesk-exec/task-exec';
+import { MemoizeConfig } from './memoize.model';
 
-export function memoizify<D = any>(originalMethod: Method<D>): Method<D>;
-export function memoizify<D = any>(originalMethod: Method<D>, config: MemoizeConfig<any, D>): Method<D>;
-export function memoizify<D = any>(originalMethod: Method<D>, expirationTimeMs: number): Method<D>;
-export function memoizify<D = any>(originalMethod: Method<D>, input?: MemoizeConfig<any, D> | number): Method<D> {
-  const defaultConfig: MemoizeConfig<any, D> = {
-    cache: new Map<string, D>(),
+export function memoizify<M extends Method<any>>(originalMethod: M): M;
+export function memoizify<M extends Method<any>>(originalMethod: M, config: MemoizeConfig<any, ReturnType<M>>): M;
+export function memoizify<M extends Method<any>>(originalMethod: M, expirationTimeMs: number): M;
+export function memoizify<M extends Method<any>>(originalMethod: M, input?: MemoizeConfig<any, ReturnType<M>> | number): M {
+  const defaultConfig: MemoizeConfig<any, ReturnType<M>> = {
+    cache: new Map<string, ReturnType<M>>(),
   };
   const runner = new TaskExec();
   let resolvedConfig = {
     ...defaultConfig,
-  } as MemoizeConfig<any, D>;
+  } as MemoizeConfig<any, ReturnType<M>>;
 
   if (typeof input === 'number') {
     resolvedConfig.expirationTimeMs = input;
@@ -23,7 +23,7 @@ export function memoizify<D = any>(originalMethod: Method<D>, input?: MemoizeCon
     };
   }
 
-  return function (...args: any[]): D {
+  return function (...args: any[]): any {
     let key;
     const keyResolver = typeof resolvedConfig.keyResolver === 'string'
       ? this[resolvedConfig.keyResolver].bind(this)
@@ -48,5 +48,5 @@ export function memoizify<D = any>(originalMethod: Method<D>, input?: MemoizeCon
     }
 
     return resolvedConfig.cache.get(key);
-  };
+  } as M;
 }
