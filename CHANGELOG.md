@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.10.4] - 2021-10-22
+
+### Fixed
+
+- Fixing delegatify export [a8f3d74](https://github.com/vlio20/utils-decorators/commit/a8f3d74886091f4a36c653e2c9d2a8454cf38ef4) closes [#125](https://github.com/vlio20/utils-decorators/issues/125) - Kudos to [tripodsgames](https://github.com/tripodsgames) for reporting and fixing.
+- Bump ansi-regex from 5.0.0 to 5.0.1 (Security fix) [c0ce96a](https://github.com/vlio20/utils-decorators/commit/c0ce96a285781672c3dfb6bf97992acd5584aed7).
+
 ## [1.10.3] - 2021-10-12
 
 ### Fixed
