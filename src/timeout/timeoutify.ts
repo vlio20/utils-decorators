@@ -1,8 +1,8 @@
 import { AsyncMethod } from '../common/model/common.model';
 import { TimeoutError } from './timeout-error';
 
-export function timeoutify<M extends AsyncMethod<any>>(originalMethod: M, ms: number): M {
-  return function (...args: any[]): Promise<any> {
+export function timeoutify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, ms: number): AsyncMethod<D, A> {
+  return function (...args: A): Promise<D> {
     return new Promise((resolve, reject) => {
       originalMethod.apply(this, args).then((data: any) => {
         resolve(data);
@@ -12,5 +12,5 @@ export function timeoutify<M extends AsyncMethod<any>>(originalMethod: M, ms: nu
         reject(new TimeoutError(ms));
       }, ms);
     });
-  } as M;
+  };
 }

@@ -66,10 +66,10 @@ async function exec(
   }
 }
 
-export function retryfy<D = any>(originalMethod: AsyncMethod<D>, input: RetryInput): AsyncMethod<D> {
+export function retryfy<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, input: RetryInput): AsyncMethod<D, A> {
   const retriesArray = getRetriesArray(input);
 
-  return function (...args: any[]): Promise<any> {
+  return function (...args: A): Promise<D> {
     const onRetry = getOnRetry(input, this);
 
     return exec(

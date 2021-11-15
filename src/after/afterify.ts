@@ -1,15 +1,15 @@
 import { Method } from '../common/model/common.model';
 import { AfterConfig, AfterFunc } from './after.model';
 
-export function afterify<M extends Method<any>>(
-  originalMethod: M, config: AfterConfig<any, ReturnType<typeof originalMethod>>,
+export function afterify<D = any, A extends any[] = any[]>(
+  originalMethod: Method<D, A>, config: AfterConfig<any, ReturnType<typeof originalMethod>>,
 ): (...args: any[]) => void {
   const resolvedConfig: AfterConfig<any, ReturnType<typeof originalMethod>> = {
     wait: false,
     ...config,
   };
 
-  return async function (...args: any[]): Promise<void> {
+  return async function (...args: A): Promise<D> {
     const afterFunc: AfterFunc<ReturnType<typeof originalMethod>> = typeof resolvedConfig.func === 'string'
       ? this[resolvedConfig.func].bind(this)
       : resolvedConfig.func;

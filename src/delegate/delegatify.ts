@@ -1,13 +1,13 @@
-import { AsyncMethod, UnboxPromise } from '../common/model/common.model';
+import { AsyncMethod } from '../common/model/common.model';
 
-export function delegatify<M extends AsyncMethod<any>, D = UnboxPromise<ReturnType<M>>>(
-  originalMethod: M,
-  keyResolver?: (...args: any[]) => string,
-): AsyncMethod<D, Parameters<typeof originalMethod>> {
+export function delegatify<D = any, A extends any[] = any[]>(
+  originalMethod: AsyncMethod<D, A>,
+  keyResolver?: (...args: A) => string,
+): AsyncMethod<D, A> {
   const delegatedKeysMap = new Map<string, Promise<any>>();
   const keyGenerator: (...args: any[]) => string = keyResolver ?? JSON.stringify;
 
-  return function (...args: any[]): Promise<D> {
+  return function (...args: A): Promise<D> {
     const key = keyGenerator(...args);
 
     if (!delegatedKeysMap.has(key)) {

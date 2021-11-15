@@ -1,19 +1,23 @@
-import { AsyncMethod, UnboxPromise } from '../common/model/common.model';
+import { AsyncMethod } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
 import { AsyncMemoizeConfig } from './memoize-async.model';
 
-export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M): M;
-export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, config: AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>>): M;
-export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, expirationTimeMs: number): M;
-export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, input?: AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>> | number): M {
-  const defaultConfig: AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>> = {
-    cache: new Map<string, UnboxPromise<ReturnType<M>>>(),
+export function memoizeAsyncify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>): AsyncMethod<D, A>;
+export function memoizeAsyncify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, config: AsyncMemoizeConfig<any, D>): AsyncMethod<D, A>;
+export function memoizeAsyncify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, expirationTimeMs: number): AsyncMethod<D, A>;
+
+export function memoizeAsyncify<D = any, A extends any[] = any[]>(
+  originalMethod: AsyncMethod<D, A>,
+  input?: AsyncMemoizeConfig<any, D> | number,
+): AsyncMethod<D, A> {
+  const defaultConfig: AsyncMemoizeConfig<any, D> = {
+    cache: new Map<string, D>(),
   };
   const runner = new TaskExec();
   const promCache = new Map<string, Promise<any>>();
   let resolvedConfig = {
     ...defaultConfig,
-  } as AsyncMemoizeConfig<any, UnboxPromise<ReturnType<M>>>;
+  } as AsyncMemoizeConfig<any, D>;
 
   if (typeof input === 'number') {
     resolvedConfig.expirationTimeMs = input;
@@ -24,7 +28,7 @@ export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, i
     };
   }
 
-  return async function (...args: any[]): Promise<any> {
+  return async function (...args: A): Promise<D> {
     const keyResolver = typeof resolvedConfig.keyResolver === 'string'
       ? this[resolvedConfig.keyResolver].bind(this)
       : resolvedConfig.keyResolver;
@@ -86,5 +90,5 @@ export function memoizeAsyncify<M extends AsyncMethod<any>>(originalMethod: M, i
     promCache.set(key, prom);
 
     return prom;
-  } as M;
+  };
 }

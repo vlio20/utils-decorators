@@ -2,17 +2,18 @@ import { Method } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
 import { MemoizeConfig } from './memoize.model';
 
-export function memoizify<M extends Method<any>>(originalMethod: M): M;
-export function memoizify<M extends Method<any>>(originalMethod: M, config: MemoizeConfig<any, ReturnType<M>>): M;
-export function memoizify<M extends Method<any>>(originalMethod: M, expirationTimeMs: number): M;
-export function memoizify<M extends Method<any>>(originalMethod: M, input?: MemoizeConfig<any, ReturnType<M>> | number): M {
-  const defaultConfig: MemoizeConfig<any, ReturnType<M>> = {
-    cache: new Map<string, ReturnType<M>>(),
+export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>): Method<D, A>;
+export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, config: MemoizeConfig<any, D>): Method<D, A>;
+export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, expirationTimeMs: number): Method<D, A>;
+export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, input?: MemoizeConfig<any, D> | number): Method<D, A> {
+  const defaultConfig: MemoizeConfig<any, D> = {
+    cache: new Map<string, D>(),
   };
+
   const runner = new TaskExec();
   let resolvedConfig = {
     ...defaultConfig,
-  } as MemoizeConfig<any, ReturnType<M>>;
+  } as MemoizeConfig<any, D>;
 
   if (typeof input === 'number') {
     resolvedConfig.expirationTimeMs = input;
@@ -23,17 +24,14 @@ export function memoizify<M extends Method<any>>(originalMethod: M, input?: Memo
     };
   }
 
-  return function (...args: any[]): any {
-    let key;
+  return function (...args: A): D {
     const keyResolver = typeof resolvedConfig.keyResolver === 'string'
       ? this[resolvedConfig.keyResolver].bind(this)
       : resolvedConfig.keyResolver;
 
-    if (keyResolver) {
-      key = keyResolver(...args);
-    } else {
-      key = JSON.stringify(args);
-    }
+    const key = keyResolver
+      ? keyResolver(...args)
+      : JSON.stringify(args);
 
     if (!resolvedConfig.cache.has(key)) {
       const response = originalMethod.apply(this, args);
@@ -48,5 +46,5 @@ export function memoizify<M extends Method<any>>(originalMethod: M, input?: Memo
     }
 
     return resolvedConfig.cache.get(key);
-  } as M;
+  };
 }

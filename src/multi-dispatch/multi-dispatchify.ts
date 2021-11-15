@@ -1,7 +1,7 @@
 import { AsyncMethod } from '../common/model/common.model';
 
-export function multiDispatchify<M extends AsyncMethod<any>>(originalMethod: M, dispatchesAmount: number): M {
-  return function (...args: any[]): Promise<any> {
+export function multiDispatchify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, dispatchesAmount: number): AsyncMethod<D, A> {
+  return function (...args: A): Promise<D> {
     return new Promise((resolve, reject) => {
       let rejectionsAmount = 0;
 
@@ -19,5 +19,5 @@ export function multiDispatchify<M extends AsyncMethod<any>>(originalMethod: M, 
           .catch(catchHandler);
       }
     });
-  } as M;
+  };
 }
