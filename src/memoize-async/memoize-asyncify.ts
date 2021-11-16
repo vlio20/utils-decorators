@@ -14,7 +14,7 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
     cache: new Map<string, D>(),
   };
   const runner = new TaskExec();
-  const promCache = new Map<string, Promise<any>>();
+  const promCache = new Map<string, Promise<D>>();
   let resolvedConfig = {
     ...defaultConfig,
   } as AsyncMemoizeConfig<any, D>;
