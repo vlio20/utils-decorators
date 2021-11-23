@@ -122,13 +122,12 @@ describe('delegate', () => {
       }
 
       @delegate()
-      async ex1(): Promise<number> {
+      static async ex1(): Promise<number> {
         return Example.ex2();
       }
     }
 
-    const ex = new Example();
-    const result = await ex.ex1();
+    const result = await Example.ex1();
 
     expect(result).toEqual(2);
   });
