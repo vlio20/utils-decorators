@@ -56,7 +56,7 @@ describe('rate-limit', () => {
 
       class TT {
         @nonValidRateLimit
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@rateLimit is applicable only on a method.').toBe(e.message);

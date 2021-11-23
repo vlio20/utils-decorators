@@ -7,7 +7,7 @@ describe('before', () => {
 
       class T {
         @nonValidBefore
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@before is applicable only on a methods.').toBe(e.message);

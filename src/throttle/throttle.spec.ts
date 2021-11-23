@@ -8,7 +8,7 @@ describe('throttle', () => {
 
       class T {
         @nonValidThrottle
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@throttle is applicable only on a methods.').toBe(e.message);

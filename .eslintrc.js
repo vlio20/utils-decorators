@@ -23,5 +23,7 @@ module.exports = {
     'no-async-promise-executor': ['off'],
     '@typescript-eslint/no-explicit-any': ['off'],
     'func-names': ['off'],
+    'import/extensions': ['off'],
+    'import/no-extraneous-dependencies': ['off'],
   }
 };

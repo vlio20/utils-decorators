@@ -8,7 +8,7 @@ describe('retry', () => {
 
       class T {
         @nonValidMultiDispatch
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@multiDispatch is applicable only on a methods.').toBe(e.message);

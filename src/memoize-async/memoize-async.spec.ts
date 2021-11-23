@@ -120,7 +120,7 @@ describe('memozie-async', () => {
 
       class T {
         @nonValidMemoizeAsync
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@memoizeAsync is applicable only on a methods.').toBe(e.message);

@@ -4,7 +4,7 @@ describe('readonly', () => {
   it('should verify readonly throws exception when trying to write to it', () => {
     class T {
       @readonly()
-      prop = 2;
+        prop = 2;
     }
 
     const t = new T();

@@ -51,7 +51,7 @@ describe('memozie', () => {
 
       class T {
         @nonValidMemoize
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@memoize is applicable only on a methods.').toBe(e.message);

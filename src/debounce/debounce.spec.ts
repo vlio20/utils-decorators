@@ -8,7 +8,7 @@ describe('debounce', () => {
 
       class T {
         @nonValidDebounce
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@debounce is applicable only on a methods.').toBe(e.message);

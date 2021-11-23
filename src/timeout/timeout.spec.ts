@@ -9,7 +9,7 @@ describe('timeout', () => {
 
       class T {
         @nonValidTimeout
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@timeout is applicable only on a methods.').toBe(e.message);

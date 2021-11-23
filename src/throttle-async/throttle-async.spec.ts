@@ -8,7 +8,7 @@ describe('throttle-async', () => {
 
       class T {
         @nonThrottleAsync
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@throttleAsync is applicable only on a methods.').toBe(e.message);

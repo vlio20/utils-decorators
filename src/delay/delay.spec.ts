@@ -8,7 +8,7 @@ describe('delay', () => {
 
       class T {
         @nonValidDelay
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@delay is applicable only on a methods.').toBe(e.message);

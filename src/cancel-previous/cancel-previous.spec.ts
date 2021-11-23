@@ -8,7 +8,7 @@ describe('cancelPrevious', () => {
 
       class T {
         @nonValidCancelPrevious
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@cancelPrevious is applicable only on a methods.').toBe(e.message);
