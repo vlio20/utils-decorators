@@ -19,7 +19,7 @@ describe('throttle-async', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify method invocation is throttled 1', async (done) => {
+  it('should verify method invocation is throttled 1', async () => {
     class T {
       prop = 0;
 
@@ -32,28 +32,30 @@ describe('throttle-async', () => {
       }
     }
 
-    const t = new T();
+    return new Promise(async (resolve) => {
+      const t = new T();
 
-    expect(t.prop).toEqual(0);
-    t.foo('a').then((res) => {
-      expect(res).toEqual('a');
+      expect(t.prop).toEqual(0);
+      t.foo('a').then((res) => {
+        expect(res).toEqual('a');
+      });
+      expect(t.prop).toEqual(1);
+
+      t.foo('b').then((res) => {
+        expect(res).toEqual('b');
+        resolve(null);
+      });
+
+      expect(t.prop).toEqual(1);
+      await sleep(20);
+      expect(t.prop).toEqual(1);
+
+      await sleep(50);
+      expect(t.prop).toEqual(2);
     });
-    expect(t.prop).toEqual(1);
-
-    t.foo('b').then((res) => {
-      expect(res).toEqual('b');
-      done();
-    });
-
-    expect(t.prop).toEqual(1);
-    await sleep(20);
-    expect(t.prop).toEqual(1);
-
-    await sleep(50);
-    expect(t.prop).toEqual(2);
   });
 
-  it('should verify method invocation is throttled 2', async (done) => {
+  it('should verify method invocation is throttled 2', async () => {
     class T {
       prop = 0;
 
@@ -66,21 +68,23 @@ describe('throttle-async', () => {
       }
     }
 
-    const t = new T();
+    return new Promise((resolve) => {
+      const t = new T();
 
-    t.foo().then((res) => {
-      expect(res).toEqual(2);
-      expect(t.prop).toEqual(2);
-    });
+      t.foo().then((res) => {
+        expect(res).toEqual(2);
+        expect(t.prop).toEqual(2);
+      });
 
-    t.foo().then((res) => {
-      expect(res).toEqual(2);
-      expect(t.prop).toEqual(2);
-      done();
+      t.foo().then((res) => {
+        expect(res).toEqual(2);
+        expect(t.prop).toEqual(2);
+        resolve(null);
+      });
     });
   });
 
-  it('should work also with exceptions', async (done) => {
+  it('should work also with exceptions', async () => {
     class T {
       prop = 0;
 
@@ -97,21 +101,23 @@ describe('throttle-async', () => {
       }
     }
 
-    const t = new T();
+    return new Promise((resolve) => {
+      const t = new T();
 
-    t.foo('a')
-      .then(() => {
-        throw new Error('should get to this point');
-      })
-      .catch((e: Error) => {
-        expect(e.message).toEqual('blarg');
-      });
+      t.foo('a')
+        .then(() => {
+          throw new Error('should get to this point');
+        })
+        .catch((e: Error) => {
+          expect(e.message).toEqual('blarg');
+        });
 
-    t.foo('b')
-      .then((res) => {
-        expect(res).toEqual('b');
-        done();
-      });
+      t.foo('b')
+        .then((res) => {
+          expect(res).toEqual('b');
+          resolve(null);
+        });
+    });
   });
 
   it('should validate methods invoked in time', async () => {

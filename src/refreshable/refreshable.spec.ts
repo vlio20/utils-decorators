@@ -27,7 +27,7 @@ describe('refreshable', () => {
     expect(unrefMock).toBeCalled();
   });
 
-  it('should populate refreshable property', async (done) => {
+  it('should populate refreshable property', async () => {
     let fooCtr = 0;
     let gooCtr = 0;
 
@@ -75,7 +75,5 @@ describe('refreshable', () => {
 
     expect(t.prop).toBe(1);
     expect(t.proop).toBe(2);
-
-    done();
   });
 });

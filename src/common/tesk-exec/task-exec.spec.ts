@@ -2,7 +2,7 @@ import { TaskExec } from './task-exec';
 import { sleep } from '../test-utils';
 
 describe('utils', () => {
-  it('should verify task executed in time - A:40, B:20 -> B, A', async (done) => {
+  it('should verify task executed in time - A:40, B:20 -> B, A', async () => {
     const runner = new TaskExec();
     let val = '';
     const funA = jest.fn().mockImplementation(() => {
@@ -34,10 +34,9 @@ describe('utils', () => {
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
     expect(val).toBe('BA');
-    done();
   });
 
-  it('should verify task executed in time - A:20, B:40 -> A, B', async (done) => {
+  it('should verify task executed in time - A:20, B:40 -> A, B', async () => {
     const runner = new TaskExec();
     let val = '';
     const funA = jest.fn().mockImplementation(() => {
@@ -65,10 +64,9 @@ describe('utils', () => {
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
     expect(val).toBe('AB');
-    done();
   });
 
-  it('should verify task executed in time -  - A:20, B:20, C:10 -> A, B, C', async (done) => {
+  it('should verify task executed in time -  - A:20, B:20, C:10 -> A, B, C', async () => {
     const runner = new TaskExec();
     const funA = jest.fn();
     const funB = jest.fn();
@@ -88,6 +86,5 @@ describe('utils', () => {
     expect(funA).toBeCalledTimes(1);
     expect(funB).toBeCalledTimes(1);
     expect(funC).toBeCalledTimes(1);
-    done();
   });
 });

@@ -3,7 +3,7 @@ import { AsyncCache } from './memoize-async.model';
 import { sleep } from '../common/test-utils';
 
 describe('memozie-async', () => {
-  it('should verify memoize async caching original method', async (done) => {
+  it('should verify memoize async caching original method', async () => {
     class T {
       prop: number;
 
@@ -19,42 +19,44 @@ describe('memozie-async', () => {
       }
     }
 
-    const t = new T();
-    t.prop = 3;
-    const spy = jest.spyOn(T.prototype, 'goo');
-    const resp1 = t.foo(1, 2);
-    const resp2 = t.foo(1, 2);
-
-    setTimeout(() => {
-      expect(spy).toHaveBeenCalledWith(1, 2);
-      expect(spy).toBeCalledTimes(1);
-
-      const resp01 = t.foo(1, 3);
+    return new Promise((res) => {
+      const t = new T();
+      t.prop = 3;
+      const spy = jest.spyOn(T.prototype, 'goo');
+      const resp1 = t.foo(1, 2);
+      const resp2 = t.foo(1, 2);
 
       setTimeout(() => {
-        expect(spy).toHaveBeenCalledWith(1, 3);
-        expect(spy).toBeCalledTimes(2);
-      }, 0);
+        expect(spy).toHaveBeenCalledWith(1, 2);
+        expect(spy).toBeCalledTimes(1);
 
-      setTimeout(async () => {
-        const resp3 = t.foo(1, 2);
+        const resp01 = t.foo(1, 3);
+
+        setTimeout(() => {
+          expect(spy).toHaveBeenCalledWith(1, 3);
+          expect(spy).toBeCalledTimes(2);
+        }, 0);
 
         setTimeout(async () => {
-          expect(spy).toHaveBeenCalledWith(1, 2);
+          const resp3 = t.foo(1, 2);
 
-          expect(spy).toBeCalledTimes(3);
+          setTimeout(async () => {
+            expect(spy).toHaveBeenCalledWith(1, 2);
 
-          expect(await resp1).toBe(3);
-          expect(await resp2).toBe(3);
-          expect(await resp3).toBe(3);
-          expect(await resp01).toBe(4);
-          done();
-        }, 0);
-      }, 20);
-    }, 0);
+            expect(spy).toBeCalledTimes(3);
+
+            expect(await resp1).toBe(3);
+            expect(await resp2).toBe(3);
+            expect(await resp3).toBe(3);
+            expect(await resp01).toBe(4);
+            res(null);
+          }, 0);
+        }, 20);
+      }, 0);
+    });
   });
 
-  it('should verify memoize key foo', async (done) => {
+  it('should verify memoize key foo', async () => {
     const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
 
     class T {
@@ -68,21 +70,23 @@ describe('memozie-async', () => {
       }
     }
 
-    const t = new T();
-    const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
+    return new Promise((resolve) => {
+      const t = new T();
+      const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
 
-    t.fooWithMapper('x', 'y');
-    t.fooWithMapper('x', 'y');
+      t.fooWithMapper('x', 'y');
+      t.fooWithMapper('x', 'y');
 
-    setTimeout(() => {
-      expect(mapper.mock.calls.length).toBe(2);
-      expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
-      expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
-      done();
-    }, 0);
+      setTimeout(() => {
+        expect(mapper.mock.calls.length).toBe(2);
+        expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
+        expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
+        resolve(null);
+      }, 0);
+    });
   });
 
-  it('should verify memoize key foo as string - target method', async (done) => {
+  it('should verify memoize key foo as string - target method', async () => {
     class T {
       foo(x: string, y: string): string {
         return `${x}_${y}`;
@@ -98,20 +102,22 @@ describe('memozie-async', () => {
       }
     }
 
-    const t = new T();
-    const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
-    const mapper = jest.spyOn(T.prototype, 'foo');
+    return new Promise((resolve) => {
+      const t = new T();
+      const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
+      const mapper = jest.spyOn(T.prototype, 'foo');
 
-    t.fooWithMapper('x', 'y');
-    t.fooWithMapper('x', 'y');
+      t.fooWithMapper('x', 'y');
+      t.fooWithMapper('x', 'y');
 
-    setTimeout(() => {
-      expect(mapper).toHaveBeenCalledTimes(2);
-      expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
-      expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
-      expect(mapper).toHaveBeenCalledWith('x', 'y');
-      done();
-    }, 0);
+      setTimeout(() => {
+        expect(mapper).toHaveBeenCalledTimes(2);
+        expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
+        expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
+        expect(mapper).toHaveBeenCalledWith('x', 'y');
+        resolve(null);
+      }, 0);
+    });
   });
 
   it('should make sure error thrown when decorator not set on method', () => {
@@ -238,7 +244,7 @@ describe('memozie-async', () => {
     expect(cache.size).toEqual(1);
   });
 
-  it('should verify usage of async cache', async (done) => {
+  it('should verify usage of async cache', async () => {
     const map = new Map<string, number>();
 
     const cache: AsyncCache<number> = {
@@ -266,25 +272,27 @@ describe('memozie-async', () => {
       }
     }
 
-    const spy = jest.spyOn(T.prototype, 'goo');
+    return new Promise((resolve) => {
+      const spy = jest.spyOn(T.prototype, 'goo');
 
-    const t = new T();
-    t.foo();
-
-    setTimeout(() => {
+      const t = new T();
       t.foo();
+
       setTimeout(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-
-        cache.delete('[]');
         t.foo();
-
         setTimeout(() => {
-          expect(spy).toHaveBeenCalledTimes(2);
-          done();
+          expect(spy).toHaveBeenCalledTimes(1);
+
+          cache.delete('[]');
+          t.foo();
+
+          setTimeout(() => {
+            expect(spy).toHaveBeenCalledTimes(2);
+            resolve(null);
+          }, 0);
         }, 0);
-      }, 0);
-    }, 10);
+      }, 10);
+    });
   });
 
   it('should throw exception when async has method throws an exception', async () => {
