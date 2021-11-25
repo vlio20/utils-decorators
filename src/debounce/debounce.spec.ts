@@ -8,7 +8,7 @@ describe('debounce', () => {
 
       class T {
         @nonValidDebounce
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@debounce is applicable only on a methods.').toBe(e.message);
@@ -19,7 +19,7 @@ describe('debounce', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify method invocation is debounced', async (done) => {
+  it('should verify method invocation is debounced', async () => {
     class T {
       prop: number;
 
@@ -49,7 +49,6 @@ describe('debounce', () => {
 
     await sleep(40);
     expect(spy).toBeCalledTimes(1);
-    done();
   });
 
   it('should verify method params are passed', (done) => {

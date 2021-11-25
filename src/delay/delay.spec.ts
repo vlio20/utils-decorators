@@ -8,7 +8,7 @@ describe('delay', () => {
 
       class T {
         @nonValidDelay
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@delay is applicable only on a methods.').toBe(e.message);
@@ -19,7 +19,7 @@ describe('delay', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify method invocation is delayed', async (done) => {
+  it('should verify method invocation is delayed', async () => {
     class T {
       prop: number;
 
@@ -50,6 +50,5 @@ describe('delay', () => {
     await sleep(75);
 
     expect(spy).toBeCalledTimes(2);
-    done();
   });
 });

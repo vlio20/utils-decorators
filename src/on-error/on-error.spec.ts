@@ -7,7 +7,7 @@ describe('onError', () => {
 
       class T {
         @nonValidOnError
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@onError is applicable only on a methods.').toBe(e.message);

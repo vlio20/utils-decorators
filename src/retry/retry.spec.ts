@@ -9,7 +9,7 @@ describe('retry', () => {
 
       class T {
         @nonValidRetry
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@retry is applicable only on a methods.').toBe(e.message);

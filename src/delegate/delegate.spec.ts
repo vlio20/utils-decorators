@@ -8,7 +8,7 @@ describe('delegate', () => {
 
       class T {
         @nonValidDelegate
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@delegate is applicable only on a methods.').toBe(e.message);
@@ -117,16 +117,17 @@ describe('delegate', () => {
 
   it('should have the correct context', async () => {
     class Example {
-      @delegate()
-      async ex1(): Promise<number> {
-        return this.ex2();
+      static ex2(): Promise<number> {
+        return Promise.resolve(2);
       }
 
-      ex2 = (): Promise<number> => Promise.resolve(2);
+      @delegate()
+      static async ex1(): Promise<number> {
+        return Example.ex2();
+      }
     }
 
-    const ex = new Example();
-    const result = await ex.ex1();
+    const result = await Example.ex1();
 
     expect(result).toEqual(2);
   });

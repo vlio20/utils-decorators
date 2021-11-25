@@ -9,7 +9,7 @@ describe('exec-time', () => {
 
       class T {
         @nonValidExecTime
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@execTime is applicable only on a methods.').toBe(e.message);

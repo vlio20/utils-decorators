@@ -8,7 +8,7 @@ describe('throttle', () => {
 
       class T {
         @nonValidThrottle
-        boo: string;
+          boo: string;
       }
     } catch (e) {
       expect('@throttle is applicable only on a methods.').toBe(e.message);
@@ -19,7 +19,7 @@ describe('throttle', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify method invocation is throttled', async (done) => {
+  it('should verify method invocation is throttled', async () => {
     class T {
       prop: number;
 
@@ -52,7 +52,5 @@ describe('throttle', () => {
 
     expect(spy).toBeCalledTimes(2);
     expect(spy).lastCalledWith(3);
-
-    done();
   });
 });
