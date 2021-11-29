@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2021-11-26
+
+### Enchantments
+
+- Support better types [131](https://github.com/vlio20/utils-decorators/pull/131) - Kudos to [tripodsgames](https://github.com/tripodsgames) for reporting and adding
+
 ## [1.10.4] - 2021-10-22
 
 ### Fixed
