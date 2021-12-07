@@ -35,7 +35,8 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "clean": "rm -rf dist .stryker-tmp",
-    "release": "npm run clean && npm run test:unit && npm run build && npm publish"
+    "release": "npm run clean && npm run test:unit && npm run build && npm publish",
+    "release:ec": "npm run clean && npm run build && npm publish"
   },
   "files": [
     "dist/"
