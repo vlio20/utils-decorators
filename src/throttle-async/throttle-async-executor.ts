@@ -4,7 +4,7 @@ import { Queue } from '../common/data-stractures/queue';
 export class ThrottleAsyncExecutor<D> {
   private onGoingCallsCount = 0;
 
-  private callsToRun = new Queue<any>();
+  private callsToRun = new Queue<CallArgs<D>>();
 
   constructor(
     private readonly fun: AsyncMethod<D>,
@@ -43,9 +43,9 @@ export class ThrottleAsyncExecutor<D> {
   }
 }
 
-interface CallArgs<D> {
+interface CallArgs<T> {
   context: any;
   args: any[];
-  resolve: (value?: D) => void;
+  resolve: (value?: T) => void;
   reject: (error?: Error) => void;
 }

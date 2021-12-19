@@ -148,4 +148,35 @@ describe('throttle-async', () => {
     expect(t.prop).toEqual(4);
     expect(val).toEqual('d');
   });
+
+  it('should validate methods invoked between times', async () => {
+    class T {
+      prop = 0;
+
+      @throttleAsync(2)
+      async foo(x: string): Promise<string> {
+        this.prop += 1;
+        await sleep(100);
+
+        return x;
+      }
+    }
+
+    const start = new Date();
+    const t = new T();
+    t.foo('a');
+    t.foo('b');
+    t.foo('c');
+    t.foo('d');
+    t.foo('e');
+    t.foo('f');
+    t.foo('g');
+    t.foo('h');
+    t.foo('j');
+
+    await t.foo('k');
+    const seconds = (new Date().getTime() - start.getTime()) / 1000;
+    expect(seconds).toBeGreaterThanOrEqual(0.5);
+    expect(seconds).toBeLessThan(0.6);
+  });
 });
