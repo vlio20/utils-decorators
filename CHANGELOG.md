@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2021-12-20
+
+### Bug Fixes
+
+- `throttle-async` is not functioning as expected [132](https://github.com/vlio20/utils-decorators/pull/132) closes [#133](https://github.com/vlio20/utils-decorators/issues/133)
+
 ## [2.0.0] - 2021-12-07
 
 ### Enchantments
