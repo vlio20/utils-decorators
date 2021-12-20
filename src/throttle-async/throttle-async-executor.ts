@@ -1,9 +1,10 @@
 import { AsyncMethod } from '../common/model/common.model';
+import { Queue } from '../common/data-stractures/queue';
 
 export class ThrottleAsyncExecutor<D> {
   private onGoingCallsCount = 0;
 
-  private lastProm: Promise<D> = Promise.resolve(null);
+  private callsToRun = new Queue<CallArgs<D>>();
 
   constructor(
     private readonly fun: AsyncMethod<D>,
@@ -11,24 +12,40 @@ export class ThrottleAsyncExecutor<D> {
   ) {
   }
 
-  async exec(context: any, args: any[]): Promise<D> {
-    if (this.onGoingCallsCount < this.parallelCalls) {
-      this.lastProm = this.handlePromise(this.fun.apply(context, args));
-    } else {
-      this.lastProm = this.lastProm
-        .then(() => this.handlePromise(this.fun.apply(context, args)))
-        .catch(() => this.handlePromise(this.fun.apply(context, args)));
+  exec(context: any, args: any[]): Promise<D> {
+    const callArgs: CallArgs<D> = { context, args, resolve: null, reject: null };
+    this.callsToRun.enqueue(callArgs);
+
+    const proms = new Promise<D>((resolve, reject) => {
+      callArgs.resolve = resolve;
+      callArgs.reject = reject;
+    });
+
+    this.tryCall();
+
+    (proms as any).hell = args[0];
+
+    return proms;
+  }
+
+  private tryCall(): void {
+    if (this.callsToRun.getSize() > 0 && this.onGoingCallsCount < this.parallelCalls) {
+      const { context, args, resolve, reject } = this.callsToRun.dequeue();
+      this.onGoingCallsCount += 1;
+      this.fun.apply(context, args)
+        .then(resolve)
+        .catch(reject)
+        .finally(() => {
+          this.onGoingCallsCount -= 1;
+          this.tryCall();
+        });
     }
-
-    return this.lastProm;
   }
+}
 
-  private async handlePromise(promise: Promise<D>): Promise<D> {
-    this.onGoingCallsCount += 1;
-
-    return promise
-      .finally(() => {
-        this.onGoingCallsCount -= 1;
-      });
-  }
+interface CallArgs<T> {
+  context: any;
+  args: any[];
+  resolve: (value?: T) => void;
+  reject: (error?: Error) => void;
 }

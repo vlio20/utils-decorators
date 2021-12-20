@@ -7,7 +7,7 @@ module.exports = function (config) {
     coverageAnalysis: 'off',
     mutate: ['src/**/*.ts', '!src/**/*.spec.ts'],
     thresholds: {
-      break: 99
+      break: 95
     }
   });
 };
