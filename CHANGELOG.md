@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.0.3] - 2022-04-13
+
+### Fixed 
+- Bump minimist from 1.2.5 to 1.2.6 (Security fix) [#140](https://github.com/vlio20/utils-decorators/pull/140)
+
 ## [2.0.2] - 2022-02-11
 
 ### Enchantments
