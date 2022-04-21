@@ -6,7 +6,7 @@ export function timeoutify<D = any, A extends any[] = any[]>(originalMethod: Asy
     return new Promise((resolve, reject) => {
       originalMethod.apply(this, args).then((data: any) => {
         resolve(data);
-      });
+      }).catch(reject);
 
       setTimeout(() => {
         reject(new TimeoutError(ms));
