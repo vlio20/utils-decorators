@@ -56,4 +56,24 @@ describe('timeout', () => {
     const t = new T();
     expect(await t.foo()).toEqual(1);
   });
+
+  it('should catch original exception after the method throw an error within provided ms', async () => {
+    const ms = 50;
+
+    class T {
+      @timeout(ms)
+      async foo() {
+        await Promise.reject(1);
+        await sleep(100);
+      }
+    }
+
+    const t = new T();
+
+    try {
+      await t.foo();
+    } catch (e) {
+      expect(e).toEqual(1);
+    }
+  });
 });
