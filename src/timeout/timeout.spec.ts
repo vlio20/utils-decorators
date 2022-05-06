@@ -76,4 +76,24 @@ describe('timeout', () => {
       expect(e).toEqual(1);
     }
   });
+
+  it('should catch timeout exception if the method throw an error after provided ms', async () => {
+    const ms = 50;
+
+    class T {
+      @timeout(ms)
+      async foo() {
+        await sleep(100);
+        await Promise.reject(1);
+      }
+    }
+
+    const t = new T();
+
+    try {
+      await t.foo();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TimeoutError);
+    }
+  });
 });
