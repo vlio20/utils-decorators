@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.0.4] - 2022-05-13
+
+### Fixed 
+- `timeout`: error doesn't catch correctly [142](https://github.com/vlio20/utils-decorators/pull/142) closes [#143](https://github.com/vlio20/utils-decorators/issues/143) - Kudos to [gongpeione](https://github.com/gongpeione) for reporting and adding fixing.
+
 ## [2.0.3] - 2022-04-13
 
 ### Fixed 
@@ -21,7 +26,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enchantments
 
-- Support better types [131](https://github.com/vlio20/utils-decorators/pull/131) - Kudos to [tripodsgames](https://github.com/tripodsgames) for reporting and adding
+- Support better types [131](https://github.com/vlio20/utils-decorators/pull/131) - Kudos to [tripodsgames](https://github.com/tripodsgames) for reporting and fixing.
 
 ## [1.10.4] - 2021-10-22
 
