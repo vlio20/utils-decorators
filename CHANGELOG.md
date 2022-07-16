@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [2.0.5] - 2022-07-??
-- Debounce should support multi instances [???](https://github.com/vlio20/utils-decorators/commit/???) closes [#145](https://github.com/vlio20/utils-decorators/issues/122).
+- Debounce should support multi instances [709310d](https://github.com/vlio20/utils-decorators/commit/709310d) closes [#145](https://github.com/vlio20/utils-decorators/issues/122).
 
 ## [2.0.4] - 2022-05-13
 
