@@ -8,7 +8,16 @@ export function debounce<T = any>(delayMs: number): Decorator<T> {
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
     if (descriptor.value) {
-      descriptor.value = debouncify(descriptor.value, delayMs);
+      const methodsMap = new WeakMap<any, Method<any>>();
+      const originalMethod = descriptor.value;
+
+      descriptor.value = function (...args: any[]) {
+        if (!methodsMap.has(this)) {
+          methodsMap.set(this, debouncify(originalMethod, delayMs).bind(this));
+        }
+
+        methodsMap.get(this)(...args);
+      };
 
       return descriptor;
     }

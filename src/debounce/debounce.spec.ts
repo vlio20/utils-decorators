@@ -72,4 +72,37 @@ describe('debounce', () => {
       done();
     }, 10);
   });
+
+  it('should multi instances working', async () => {
+    class T {
+
+      @debounce<T>(30)
+      foo(): void {
+        return this.goo();
+      }
+
+      goo(): void {
+      }
+    }
+
+    const t1 = new T();
+    const t2 = new T();
+    const spy1 = jest.spyOn(t1, 'goo');
+    const spy2 = jest.spyOn(t1, 'goo');
+    t1.foo();
+
+    expect(spy1).not.toBeCalled();
+    expect(spy2).not.toBeCalled();
+
+    await sleep(10);
+    expect(spy1).not.toBeCalled();
+    t2.foo(); // 20
+
+    await sleep(30); // 40
+    expect(spy1).toBeCalledTimes(1);
+
+    await sleep(30); // 70
+    expect(spy1).toBeCalledTimes(1);
+    expect(spy2).toBeCalledTimes(1);
+  });
 });
