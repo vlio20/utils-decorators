@@ -1,9 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [2.0.5] - 2022-07-??
-- Debounce should support multi instances [709310d](https://github.com/vlio20/utils-decorators/commit/709310d) closes [#145](https://github.com/vlio20/utils-decorators/issues/122).
+## [2.0.5] - 2022-07-17
 
+### Enchantments
+- Update dependencies [5817e55](https://github.com/vlio20/utils-decorators/commit/5817e55) closes [#148](https://github.com/vlio20/utils-decorators/issues/148)
+
+### Fixed
+- Debounce should support multi instances [709310d](https://github.com/vlio20/utils-decorators/commit/709310d) closes [#145](https://github.com/vlio20/utils-decorators/issues/145) - Kudos to [gongpeione](https://github.com/gongpeione) for reporting.
+ 
 ## [2.0.4] - 2022-05-13
 
 ### Fixed 
