@@ -1,5 +1,4 @@
-module.exports = function (config) {
-  config.set({
+module.exports = {
     mutator: 'typescript',
     packageManager: 'npm',
     reporters: ['progress', 'html', 'dashboard'],
@@ -9,5 +8,4 @@ module.exports = function (config) {
     thresholds: {
       break: 95
     }
-  });
-};
+}
