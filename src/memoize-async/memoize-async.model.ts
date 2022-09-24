@@ -13,4 +13,5 @@ export interface AsyncMemoizeConfig<T, D> {
   cache?: Cache<D> | AsyncCache<D>;
   keyResolver?: KeyResolver | keyof T;
   expirationTimeMs?: number;
+  hotCache?: boolean;
 }

@@ -1,6 +1,6 @@
+import { sleep } from '../common/test-utils';
 import { memoizeAsync } from './memoize-async';
 import { AsyncCache } from './memoize-async.model';
-import { sleep } from '../common/test-utils';
 
 describe('memozie-async', () => {
   it('should verify memoize async caching original method', async () => {
@@ -125,8 +125,7 @@ describe('memozie-async', () => {
       const nonValidMemoizeAsync: any = memoizeAsync<T, string>(50);
 
       class T {
-        @nonValidMemoizeAsync
-          boo: string;
+        @nonValidMemoizeAsync boo: string;
       }
     } catch (e) {
       expect('@memoizeAsync is applicable only on a methods.').toBe(e.message);
@@ -292,6 +291,61 @@ describe('memozie-async', () => {
           }, 0);
         }, 0);
       }, 10);
+    });
+  });
+
+  it('should use hotCache', async () => {
+    class T {
+      prop: number;
+
+      counter = 0;
+
+      @memoizeAsync<T, number>({ expirationTimeMs: 5, hotCache: true })
+      foo(x: number): Promise<number> {
+        return this.goo(x);
+      }
+
+      goo(x: number): Promise<number> {
+        expect(this.prop).toBe(3);
+
+        return new Promise<number>((resolve) => setTimeout(() => resolve((this.counter++) + x), 2));
+      }
+    }
+
+    return new Promise((res) => {
+      const t = new T();
+      t.prop = 3;
+      const spy = jest.spyOn(T.prototype, 'goo');
+      const resp1 = t.foo(1);
+      const resp2 = t.foo(1);
+
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledWith(1);
+        expect(spy).toBeCalledTimes(1);
+
+        const resp3 = t.foo(1);
+
+        setTimeout(() => {
+          expect(spy).toHaveBeenCalledWith(1);
+          expect(spy).toBeCalledTimes(1);
+        }, 0);
+
+        setTimeout(async () => {
+          const resp4 = t.foo(1);
+
+          setTimeout(async () => {
+            expect(spy).toHaveBeenCalledWith(1);
+
+            expect(spy).toBeCalledTimes(2);
+
+            expect(await resp1).toBe(1);
+            expect(await resp2).toBe(1);
+            expect(await resp3).toBe(1);
+            expect(await resp4).toBe(2);
+            res(null);
+          }, 0);
+        }, 5);
+      }, 5);
     });
   });
 
