@@ -300,7 +300,7 @@ describe('memozie-async', () => {
 
       counter = 0;
 
-      @memoizeAsync<T, number>({ expirationTimeMs: 5, hotCache: true })
+      @memoizeAsync<T, number>({ expirationTimeMs: 10, hotCache: true })
       foo(x: number): Promise<number> {
         return this.goo(x);
       }
@@ -324,27 +324,23 @@ describe('memozie-async', () => {
         expect(spy).toBeCalledTimes(1);
 
         const resp3 = t.foo(1);
-
-        setTimeout(() => {
-          expect(spy).toHaveBeenCalledWith(1);
-          expect(spy).toBeCalledTimes(1);
-        }, 0);
+        expect(spy).toHaveBeenCalledWith(1);
+        expect(spy).toBeCalledTimes(1);
 
         setTimeout(async () => {
           const resp4 = t.foo(1);
 
-          setTimeout(async () => {
-            expect(spy).toHaveBeenCalledWith(1);
+          expect(spy).toHaveBeenCalledWith(1);
 
-            expect(spy).toBeCalledTimes(2);
+          expect(spy).toBeCalledTimes(2);
 
-            expect(await resp1).toBe(1);
-            expect(await resp2).toBe(1);
-            expect(await resp3).toBe(1);
-            expect(await resp4).toBe(2);
-            res(null);
-          }, 0);
-        }, 5);
+          expect(await resp1).toBe(1);
+          expect(await resp2).toBe(1);
+          expect(await resp3).toBe(1);
+          expect(await resp4).toBe(2);
+          res(null);
+
+        }, 15);
       }, 5);
     });
   });

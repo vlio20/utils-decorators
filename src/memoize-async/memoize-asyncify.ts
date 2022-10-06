@@ -75,7 +75,8 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
           if (resolvedConfig.expirationTimeMs !== undefined) {
             const refreshCache = () => {
               if (resolvedConfig.hotCache && resolvedConfig.cache.has(key)) {
-                Promise.resolve(originalMethod.apply(this, args))
+                Promise.resolve()
+                  .then(() => originalMethod.apply(this, args))
                   .then(res => {
                     runner.exec(refreshCache, resolvedConfig.expirationTimeMs);
                     promCache.set(key, Promise.resolve(res));
