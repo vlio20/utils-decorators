@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": [
-      "ES2018"
+      "ESNext"
     ],
     "module": "ESNext",
     "moduleResolution": "node",
