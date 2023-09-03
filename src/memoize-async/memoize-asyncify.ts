@@ -70,7 +70,7 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
       } else {
         try {
           const data = await originalMethod.apply(this, args);
-          resolvedConfig.cache.set(key, data);
+          await resolvedConfig.cache.set(key, data);
 
           if (resolvedConfig.expirationTimeMs !== undefined) {
             runner.exec(() => {
