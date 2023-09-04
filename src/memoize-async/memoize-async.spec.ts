@@ -403,6 +403,44 @@ describe('memozie-async', () => {
     throw new Error('shouldn\'t get to here');
   });
 
+  it('should throw exception when async set method throws an exception', async () => {
+    const map = new Map<string, number>();
+
+    const cache: AsyncCache<number> = {
+      delete: async (p1: string) => {
+        map.delete(p1);
+      },
+      get: async (p1: string) => map.get(p1),
+      has: async (p1: string) => map.has(p1),
+      set: async (p1: string, p2: number) => new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error('error'));
+        });
+      }),
+    };
+
+    class T {
+      @memoizeAsync<T, number>({
+        expirationTimeMs: 30,
+        cache,
+      })
+      foo(): Promise<number> {
+        return Promise.resolve(1);
+      }
+    }
+
+    const t = new T();
+    try {
+      await t.foo();
+    } catch (e) {
+      expect(e.message).toBe('error');
+
+      return;
+    }
+
+    throw new Error('shouldn\'t get to here');
+  });
+
   it('should throw exception when original method is broken', async () => {
     const map = new Map<string, number>();
 
