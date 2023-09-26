@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [2.0.7] - 2023-09-26
 
 ### Fixed
-- Fixing missing await on memoizeAsync [161](https://github.com/vlio20/utils-decorators/commit/161) closes [#161](https://github.com/vlio20/utils-decorators/issues/161) - Kudos to [maormoshe](https://github.com/maormoshe) for reporting and fixing.
+- Fixing missing await on memoizeAsync [161](https://github.com/vlio20/utils-decorators/pull/160) closes [#161](https://github.com/vlio20/utils-decorators/issues/161) - Kudos to [maormoshe](https://github.com/maormoshe) for reporting and fixing.
 
 
 ## [2.0.6] - 2023-05-12
