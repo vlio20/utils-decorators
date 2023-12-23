@@ -25,5 +25,11 @@ module.exports = {
     'func-names': ['off'],
     'import/extensions': ['off'],
     'import/no-extraneous-dependencies': ['off'],
-  }
+  },
+  overrides: [{
+    files: [ '*.spec.ts' ],
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['off']
+    }
+  }]
 };

@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.0.8] - 2023-12-23
+
+### Enchantments
+- Update dependencies [???](https://github.com/vlio20/utils-decorators/commit/???)
+
 ## [2.0.7] - 2023-09-26
 
 ### Fixed
