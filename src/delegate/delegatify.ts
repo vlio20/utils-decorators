@@ -5,7 +5,7 @@ export function delegatify<D = any, A extends any[] = any[]>(
   keyResolver?: (...args: A) => string,
 ): AsyncMethod<D, A> {
   const delegatedKeysMap = new Map<string, Promise<any>>();
-  const keyGenerator: (...args: any[]) => string = keyResolver ?? JSON.stringify;
+  const keyGenerator: (...args: any[]) => string = keyResolver ?? ((...args) => JSON.stringify(args));
 
   return function (...args: A): Promise<D> {
     const key = keyGenerator(...args);
