@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.0.9] - 2024-08-11
+
+### Fixed
+- Fix delegate default serialization with many args [165](https://github.com/vlio20/utils-decorators/pull/165) closes [#166](https://github.com/vlio20/utils-decorators/issues/166) - Kudos to [masoud-msk](https://github.com/masoud-msk) for reporting and fixing.
+
 ## [2.0.8] - 2023-12-23
 
 ### Enchantments
