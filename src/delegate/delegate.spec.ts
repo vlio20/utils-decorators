@@ -95,6 +95,30 @@ describe('delegate', () => {
     expect(counter).toEqual(2);
   });
 
+  it('should delegate method with same key invocation - default key serialization - many args', async () => {
+    let counter = 0;
+
+    class T {
+      @delegate()
+      async foo(...args: number[]): Promise<number> {
+        counter += 1;
+        await sleep(20);
+
+        return Promise.resolve(args.reduce((a, b) => a + b));
+      }
+    }
+
+    const t = new T();
+
+    const res = await Promise.all([
+      t.foo(1, 1, 1, 1),
+      t.foo(1, 1, 1, 2),
+      t.foo(1, 1, 1, 1),
+    ]);
+    expect(res).toEqual([4, 5, 4]);
+    expect(counter).toEqual(2);
+  });
+
   it('should delegate method with same key invocation - custom serialization', async () => {
     let counter = 0;
 
