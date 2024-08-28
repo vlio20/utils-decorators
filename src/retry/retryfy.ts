@@ -8,21 +8,21 @@ function getRetriesArray(input: RetryInput): number[] {
   }
 
   if (!Number.isNaN(input as number) && Number.isInteger(input as number)) {
-    return Array(input as number).fill(1).map(() => 1000);
+    return Array(input as number).fill(1000);
   }
 
   if (typeof input === 'object') {
-    const config = input as RetryInputConfig;
+    const { retries, delaysArray, delay } = input;
 
-    if (config.retries && config.delaysArray) {
+    if (retries && delaysArray) {
       throw new Error('You can not provide both retries and delaysArray');
     }
 
-    if (config.delaysArray) {
-      return config.delaysArray;
+    if (delaysArray) {
+      return delaysArray;
     }
 
-    return Array(input.retries).fill(1).map(() => input.delay ?? 1000);
+    return Array(retries).fill(delay ?? 1000);
   }
 
   throw new Error('invalid input');
@@ -30,11 +30,12 @@ function getRetriesArray(input: RetryInput): number[] {
 
 function getOnRetry(input: RetryInput, context: any): OnRetry {
   if (typeof input === 'object') {
-    if (typeof (input as RetryInputConfig).onRetry === 'string') {
-      return context[(input as RetryInputConfig).onRetry as string].bind(context);
+    const { onRetry } = (input as RetryInputConfig);
+    if (typeof onRetry === 'string') {
+      return context[onRetry].bind(context);
     }
 
-    return (input as RetryInputConfig).onRetry as OnRetry;
+    return onRetry;
   }
 
   return undefined;
