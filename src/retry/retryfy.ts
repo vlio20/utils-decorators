@@ -2,27 +2,29 @@ import { AsyncMethod } from '../common/model/common.model';
 import { sleep } from '../common/utils/utils';
 import { OnRetry, RetryInput, RetryInputConfig } from './retry.model';
 
+const DEFAULT_DELAY = 1000;
+
 function getRetriesArray(input: RetryInput): number[] {
   if (Array.isArray(input)) {
     return input;
   }
 
   if (!Number.isNaN(input as number) && Number.isInteger(input as number)) {
-    return Array(input as number).fill(1).map(() => 1000);
+    return Array(input as number).fill(DEFAULT_DELAY);
   }
 
   if (typeof input === 'object') {
-    const config = input as RetryInputConfig;
+    const { retries, delaysArray, delay } = input;
 
-    if (config.retries && config.delaysArray) {
+    if (retries && delaysArray) {
       throw new Error('You can not provide both retries and delaysArray');
     }
 
-    if (config.delaysArray) {
-      return config.delaysArray;
+    if (delaysArray) {
+      return delaysArray;
     }
 
-    return Array(input.retries).fill(1).map(() => input.delay ?? 1000);
+    return Array(retries).fill(delay ?? DEFAULT_DELAY);
   }
 
   throw new Error('invalid input');
@@ -30,11 +32,12 @@ function getRetriesArray(input: RetryInput): number[] {
 
 function getOnRetry(input: RetryInput, context: any): OnRetry {
   if (typeof input === 'object') {
-    if (typeof (input as RetryInputConfig).onRetry === 'string') {
-      return context[(input as RetryInputConfig).onRetry as string].bind(context);
+    const { onRetry } = (input as RetryInputConfig);
+    if (typeof onRetry === 'string') {
+      return context[onRetry].bind(context);
     }
 
-    return (input as RetryInputConfig).onRetry as OnRetry;
+    return onRetry;
   }
 
   return undefined;
