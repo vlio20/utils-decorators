@@ -2,13 +2,15 @@ import { AsyncMethod } from '../common/model/common.model';
 import { sleep } from '../common/utils/utils';
 import { OnRetry, RetryInput, RetryInputConfig } from './retry.model';
 
+const DEFAULT_DELAY = 1000;
+
 function getRetriesArray(input: RetryInput): number[] {
   if (Array.isArray(input)) {
     return input;
   }
 
   if (!Number.isNaN(input as number) && Number.isInteger(input as number)) {
-    return Array(input as number).fill(1000);
+    return Array(input as number).fill(DEFAULT_DELAY);
   }
 
   if (typeof input === 'object') {
@@ -22,7 +24,7 @@ function getRetriesArray(input: RetryInput): number[] {
       return delaysArray;
     }
 
-    return Array(retries).fill(delay ?? 1000);
+    return Array(retries).fill(delay ?? DEFAULT_DELAY);
   }
 
   throw new Error('invalid input');
