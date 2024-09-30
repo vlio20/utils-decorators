@@ -1,5 +1,5 @@
 export function isPromise(obj: any): obj is Promise<any> {
-  return !!(obj && obj.then !== undefined);
+  return !!(obj && typeof obj.then === 'function');
 }
 
 export function sleep(n: number): Promise<void> {
