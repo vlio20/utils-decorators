@@ -10,16 +10,24 @@ const reporter: ReportFunction = function (data: ExactTimeReportData): void {
 export function execTimify<D = any, A extends any[] = any[]>(
   originalMethod: Method<D, A> | AsyncMethod<D, A>,
   arg?: ReportFunction | string,
-): AsyncMethod<void, A> {
+): typeof originalMethod {
   const input: ReportFunction | string = arg ?? reporter;
 
-  return async function (...args: A): Promise<void> {
+  return function (...args: A) {
     const repFunc: ReportFunction = typeof input === 'string' ? this[input].bind(this) : input;
     const start = Date.now();
-    let result = originalMethod.apply(this, args);
+    const result = originalMethod.apply(this, args);
 
     if (isPromise(result)) {
-      result = await result;
+      return result.then(resolved => {
+        repFunc({
+          args,
+          result: resolved,
+          execTime: Date.now() - start,
+        });
+
+        return resolved;
+      });
     }
 
     repFunc({
@@ -27,5 +35,7 @@ export function execTimify<D = any, A extends any[] = any[]>(
       result,
       execTime: Date.now() - start,
     });
+
+    return result;
   };
 }

@@ -31,11 +31,12 @@ describe('exec-time', () => {
     }
 
     const t = new T();
-    t.foo('a');
+    const returned = t.foo('a');
 
     expect(reporter).toBeCalledTimes(1);
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
+    expect(returned).toEqual('ab');
     expect(args.result).toEqual('ab');
     expect(args.execTime).toBeGreaterThanOrEqual(0);
     expect(args.execTime).toBeLessThan(10);
@@ -54,11 +55,12 @@ describe('exec-time', () => {
     }
 
     const t = new T();
-    await t.foo('a');
+    const returned = await t.foo('a');
 
     expect(reporter).toBeCalledTimes(1);
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
+    expect(returned).toEqual('ab');
     expect(args.result).toEqual('ab');
     expect(args.execTime).toBeGreaterThanOrEqual(8);
     expect(args.execTime).toBeLessThan(20);
@@ -75,14 +77,15 @@ describe('exec-time', () => {
     }
 
     const t = new T();
-    await t.foo('a');
+    const returned = await t.foo('a');
     expect(logSpy).toBeCalledTimes(1);
     const clogSpyArgs = logSpy.mock.calls[0][0];
     expect(clogSpyArgs).toBeGreaterThanOrEqual(0);
+    expect(returned).toEqual('ab');
     logSpy.mockRestore();
   });
 
-  it('should make sure that the reporter is called when provided as sting', async () => {
+  it('should make sure that the reporter is called when provided as string', async () => {
     class T {
       goo = jest.fn();
 
@@ -95,11 +98,12 @@ describe('exec-time', () => {
     }
 
     const t = new T();
-    await t.foo('a');
+    const returned = await t.foo('a');
 
     expect(t.goo).toBeCalledTimes(1);
     const args: ExactTimeReportData = t.goo.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
+    expect(returned).toEqual('ab');
     expect(args.result).toEqual('ab');
     expect(args.execTime).toBeGreaterThanOrEqual(8);
     expect(args.execTime).toBeLessThan(20);
