@@ -39,16 +39,16 @@ describe('delay', () => {
     t.foo(1);
 
     await sleep(20);
-    expect(spy).not.toBeCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     await sleep(50);
 
     t.foo(2);
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).lastCalledWith(1);
 
     await sleep(75);
 
-    expect(spy).toBeCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 });

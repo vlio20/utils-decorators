@@ -33,7 +33,7 @@ describe('exec-time', () => {
     const t = new T();
     t.foo('a');
 
-    expect(reporter).toBeCalledTimes(1);
+    expect(reporter).toHaveBeenCalledTimes(1);
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
@@ -56,7 +56,7 @@ describe('exec-time', () => {
     const t = new T();
     await t.foo('a');
 
-    expect(reporter).toBeCalledTimes(1);
+    expect(reporter).toHaveBeenCalledTimes(1);
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
@@ -76,7 +76,7 @@ describe('exec-time', () => {
 
     const t = new T();
     await t.foo('a');
-    expect(logSpy).toBeCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledTimes(1);
     const clogSpyArgs = logSpy.mock.calls[0][0];
     expect(clogSpyArgs).toBeGreaterThanOrEqual(0);
     logSpy.mockRestore();
@@ -97,7 +97,7 @@ describe('exec-time', () => {
     const t = new T();
     await t.foo('a');
 
-    expect(t.goo).toBeCalledTimes(1);
+    expect(t.goo).toHaveBeenCalledTimes(1);
     const args: ExactTimeReportData = t.goo.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');

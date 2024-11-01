@@ -50,9 +50,9 @@ describe('after', () => {
     const spyAfter = jest.spyOn(T.prototype, 'after');
 
     t.foo(1);
-    expect(spyGoo).toBeCalledTimes(1);
-    expect(spyGoo).toBeCalledWith(1);
-    expect(spyAfter).toBeCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledWith(1);
+    expect(spyAfter).toHaveBeenCalledTimes(1);
   });
 
   it('should verify after method invocation when method is provided', () => {
@@ -80,8 +80,8 @@ describe('after', () => {
     const spyGoo = jest.spyOn(T.prototype, 'goo');
 
     t.foo(1);
-    expect(spyGoo).toBeCalledTimes(1);
-    expect(spyGoo).toBeCalledWith(1);
+    expect(spyGoo).toHaveBeenCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledWith(1);
     expect(afterFunc.mock.calls.length).toBe(1);
   });
 

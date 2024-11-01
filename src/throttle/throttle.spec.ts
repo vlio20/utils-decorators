@@ -37,20 +37,20 @@ describe('throttle', () => {
     t.prop = 3;
     const spy = jest.spyOn(T.prototype, 'goo');
     t.foo(1);
-    expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith(1);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(1);
 
     await sleep(10);
 
     t.foo(2);
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).lastCalledWith(1);
 
     await sleep(30);
 
     t.foo(3);
 
-    expect(spy).toBeCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).lastCalledWith(3);
   });
 });
