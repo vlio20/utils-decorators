@@ -124,6 +124,34 @@ describe('retry', () => {
     expect(t.counter).toEqual(3);
   });
 
+  it('should wait according to retries object with delaysArray', async () => {
+    class T {
+      counter = 0;
+
+      @retry({
+        delaysArray: [50, 100],
+      })
+      foo(): Promise<string> {
+        this.counter += 1;
+
+        if (this.counter !== 3) {
+          return Promise.reject(new Error('no'));
+        }
+
+        return Promise.resolve('yes');
+      }
+    }
+
+    const t = new T();
+    t.foo();
+    await sleep(25);
+    expect(t.counter).toEqual(1);
+    await sleep(50);
+    expect(t.counter).toEqual(2);
+    await sleep(150);
+    expect(t.counter).toEqual(3);
+  });
+
   it('should wait 1 sec by default', async () => {
     class T {
       counter = 0;
