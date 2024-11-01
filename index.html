@@ -1640,7 +1640,7 @@
       <div class="ud-section-content">
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
-          Retries execution of the decorated method. The method will be invoked extra x + 1 (where x is the retries
+          Retries execution of the decorated method. The method will be invoked x + 1 times (where x is the retries
           values) in the worst case (when all invocation failed).
           You can provide you own delay time (or delay times array) between the invocations - see details below. Note
           that the default delay between retries is 1000ms.
@@ -1660,10 +1660,10 @@
     delaysArray?: number[];
     retries?: number;
     delay: number;
-    onRetry?: OnRetry;
+    onRetry?: OnRetry | string;
   }
 
-  export type OnRetry = (error: Error, retriesCount: number) => void | string;
+  export type OnRetry = (error: Error, retriesCount: number) => void;
             </pre>
           </div>
         </div>
@@ -1680,7 +1680,7 @@
     constructor(private readonly dataProvider: DataProvider) { }
 
     @retry(3)
-    getData: number): DataDto {
+    getData(): DataDto {
       return this.dataProvider.getData();
     }
   }</pre>
@@ -1689,10 +1689,10 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Function Example 1:</div>
             <pre class="ud-code">
-  import { retrify } from 'utils-decorators';
+  import { retryfy } from 'utils-decorators';
   import { getData } from './data-provider';
 
-  const debouncedFoo = retrify(getData, 3);</pre>
+  const retriedGetData = retryfy(getData, 3);</pre>
           </div>
         </div>
 
@@ -1708,7 +1708,7 @@
     constructor(private readonly dataProvider: DataProvider) { }
 
     @retry([1000, 2000, 3000])
-    getData: number): DataDto {
+    getData(): DataDto {
       return this.dataProvider.getData();
     }
   }</pre>
@@ -1717,10 +1717,10 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Function Example 2 (with delays array):</div>
             <pre class="ud-code">
-  import { retrify } from 'utils-decorators';
+  import { retryfy } from 'utils-decorators';
   import { getData } from './data-provider';
 
-  const debouncedFoo = retrify(getData, [1000, 2000, 3000]);</pre>
+  const retriedGetData = retryfy(getData, [1000, 2000, 3000]);</pre>
           </div>
         </div>
 
@@ -1738,14 +1738,23 @@
     @retry({
       retries: 3,
       delay: 1500,
-      onError: (e, retriesCount) => console.log(e, retriesCount),
+      onRetry: (e, retriesCount) => console.log(e, retriesCount),
     })
-    getData: number): DataDto {
+    getData(): DataDto {
+      return this.dataProvider.getData();
+    }
+
+    @retry({
+      retries: 3,
+      delay: 1500,
+      onRetry: 'onRetry',
+    })
+    getData2(): DataDto {
       return this.dataProvider.getData();
     }
 
     onRetry(e: Error, retriesCount: number) {
-      console.log(e, retriesCount)
+      console.log(e, retriesCount);
     }
   }</pre>
           </div>
@@ -1753,13 +1762,13 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Function Example 3 (with configuration object):</div>
             <pre class="ud-code">
-  import { retrify } from 'utils-decorators';
+  import { retryfy } from 'utils-decorators';
   import { getData } from './data-provider';
 
-  const debouncedFoo = retrify(getData, {
+  const retriedGetData = retryfy(getData, {
     retries: 3,
     delay: 1500,
-    onError: (e, retriesCount) => console.log(e, retriesCount),
+    onRetry: (e, retriesCount) => console.log(e, retriesCount),
   });</pre>
           </div>
         </div>
