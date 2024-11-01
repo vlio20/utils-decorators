@@ -57,7 +57,7 @@
   },
   "homepage": "https://github.com/vlio20/utils-decorators#readme",
   "dependencies": {
-    "tinyqueue": "^3.0.0"
+    "tinyqueue": "^2.0.3"
   },
   "sideEffects": false
 }

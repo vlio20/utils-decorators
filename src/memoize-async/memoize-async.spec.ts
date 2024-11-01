@@ -28,13 +28,13 @@ describe('memozie-async', () => {
 
       setTimeout(() => {
         expect(spy).toHaveBeenCalledWith(1, 2);
-        expect(spy).toBeCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(1);
 
         const resp01 = t.foo(1, 3);
 
         setTimeout(() => {
           expect(spy).toHaveBeenCalledWith(1, 3);
-          expect(spy).toBeCalledTimes(2);
+          expect(spy).toHaveBeenCalledTimes(2);
         }, 0);
 
         setTimeout(async () => {
@@ -43,7 +43,7 @@ describe('memozie-async', () => {
           setTimeout(async () => {
             expect(spy).toHaveBeenCalledWith(1, 2);
 
-            expect(spy).toBeCalledTimes(3);
+            expect(spy).toHaveBeenCalledTimes(3);
 
             expect(await resp1).toBe(3);
             expect(await resp2).toBe(3);

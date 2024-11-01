@@ -38,17 +38,17 @@ describe('debounce', () => {
     const spy = jest.spyOn(T.prototype, 'goo');
     t.foo(); // 15
 
-    expect(spy).not.toBeCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     await sleep(10);
-    expect(spy).toBeCalledTimes(0);
+    expect(spy).toHaveBeenCalledTimes(0);
     t.foo(); // 20
 
     await sleep(20);
-    expect(spy).toBeCalledTimes(0);
+    expect(spy).toHaveBeenCalledTimes(0);
 
     await sleep(40);
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should verify method params are passed', (done) => {
@@ -91,18 +91,18 @@ describe('debounce', () => {
     const spy2 = jest.spyOn(t1, 'goo');
     t1.foo();
 
-    expect(spy1).not.toBeCalled();
-    expect(spy2).not.toBeCalled();
+    expect(spy1).not.toHaveBeenCalled();
+    expect(spy2).not.toHaveBeenCalled();
 
     await sleep(10);
-    expect(spy1).not.toBeCalled();
+    expect(spy1).not.toHaveBeenCalled();
     t2.foo(); // 20
 
     await sleep(30); // 40
-    expect(spy1).toBeCalledTimes(1);
+    expect(spy1).toHaveBeenCalledTimes(1);
 
     await sleep(30); // 70
-    expect(spy1).toBeCalledTimes(1);
-    expect(spy2).toBeCalledTimes(1);
+    expect(spy1).toHaveBeenCalledTimes(1);
+    expect(spy2).toHaveBeenCalledTimes(1);
   });
 });

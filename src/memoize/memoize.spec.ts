@@ -27,7 +27,7 @@ describe('memozie', () => {
     const resp2 = t.foo(1, 2);
     const resp4 = t.foo(1, 3);
 
-    expect(spy).toBeCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls[0][0]).toBe(1);
     expect(spy.mock.calls[0][1]).toBe(2);
     expect(spy.mock.calls[1][0]).toBe(1);
@@ -36,7 +36,7 @@ describe('memozie', () => {
     setTimeout(async () => {
       const resp3 = t.foo(1, 2);
 
-      expect(spy).toBeCalledTimes(3);
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(resp1).toBe(3);
       expect(resp2).toBe(3);
       expect(resp3).toBe(3);

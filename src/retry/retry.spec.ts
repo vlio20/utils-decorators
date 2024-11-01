@@ -201,7 +201,7 @@ describe('retry', () => {
     await t.goo();
     await sleep(100);
 
-    expect(onRetry).toBeCalledTimes(2);
+    expect(onRetry).toHaveBeenCalledTimes(2);
     const argsFirstCall = onRetry.mock.calls[0];
     expect(argsFirstCall[0].message).toEqual('no 1');
     expect(argsFirstCall[1]).toEqual(0);

@@ -24,7 +24,7 @@ describe('refreshable', () => {
     const t = { prop: 0 } as { prop: number };
     foo(t, 'prop');
     await sleep(10);
-    expect(unrefMock).toBeCalled();
+    expect(unrefMock).toHaveBeenCalled();
   });
 
   it('should populate refreshable property', async () => {
