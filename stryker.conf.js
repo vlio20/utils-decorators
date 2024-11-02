@@ -2,9 +2,9 @@ module.exports = {
     mutator: 'typescript',
     packageManager: 'npm',
     reporters: ['progress', 'html', 'dashboard'],
-    testRunner: 'jest',
     coverageAnalysis: 'off',
-    mutate: ['src/**/*.ts', '!src/**/*.spec.ts'],
+    mutate: ['src/before/**/*.ts', '!src/**/*.spec.ts'],
+    command: 'npm run test',
     thresholds: {
       break: 95
     }
