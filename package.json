@@ -22,7 +22,7 @@
   "scripts": {
     "test:full": "npm run clean && tsc -p tsconfig.test.json --noEmit && npm run lint && node --test --experimental-test-coverage && npm run test:mutation",
     "test:unit": "npm run clean && tsc --noEmit && npm run lint && node --test",
-    "test": "tsx --test $(find src -type f -name 'before.spec.ts')",
+    "test": "tsx --test $(find src -type f -name 'cancel-previous.spec.ts')",
     "test:mutation": "stryker run",
     "lint": "eslint ./src --ext .ts --quiet",
     "lint:fix": "eslint ./src --ext .ts --fix",
