@@ -49,9 +49,9 @@ describe('before', () => {
     const spyBefore = jest.spyOn(T.prototype, 'before');
 
     t.foo(1);
-    expect(spyGoo).toBeCalledTimes(1);
-    expect(spyGoo).toBeCalledWith(1);
-    expect(spyBefore).toBeCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledWith(1);
+    expect(spyBefore).toHaveBeenCalledTimes(1);
   });
 
   it('should verify before method invocation when method is provided', () => {
@@ -79,8 +79,8 @@ describe('before', () => {
     const spyGoo = jest.spyOn(T.prototype, 'goo');
 
     t.foo(1);
-    expect(spyGoo).toBeCalledTimes(1);
-    expect(spyGoo).toBeCalledWith(1);
+    expect(spyGoo).toHaveBeenCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledWith(1);
     expect(beforeFunc.mock.calls.length).toBe(1);
   });
 

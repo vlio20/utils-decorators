@@ -43,9 +43,9 @@ describe('onError', () => {
     const spyAfter = jest.spyOn(T.prototype, 'onError');
 
     t.foo(1);
-    expect(spyGoo).toBeCalledTimes(1);
-    expect(spyGoo).toBeCalledWith(1);
-    expect(spyAfter).toBeCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledWith(1);
+    expect(spyAfter).toHaveBeenCalledTimes(1);
   });
 
   it('should verify onError called on exception, when as function', () => {
@@ -69,9 +69,9 @@ describe('onError', () => {
     const spyGoo = jest.spyOn(T.prototype, 'goo');
 
     t.foo(1);
-    expect(spyGoo).toBeCalledTimes(1);
-    expect(spyGoo).toBeCalledWith(1);
-    expect(onErrorFunc).toBeCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledTimes(1);
+    expect(spyGoo).toHaveBeenCalledWith(1);
+    expect(onErrorFunc).toHaveBeenCalledTimes(1);
   });
 
   it('should verify onError called on exception, when function is async', async () => {
@@ -90,7 +90,7 @@ describe('onError', () => {
     const t = new T();
 
     await t.foo(1);
-    expect(onErrorFunc).toBeCalledTimes(1);
+    expect(onErrorFunc).toHaveBeenCalledTimes(1);
   });
 
   it('should verify onError was not called when no error, and the function is async', async () => {
@@ -107,7 +107,7 @@ describe('onError', () => {
     const t = new T();
 
     await t.foo();
-    expect(onErrorFunc).not.toBeCalled();
+    expect(onErrorFunc).not.toHaveBeenCalled();
   });
 
   it('should verify onError called on exception, when function is sync', () => {
@@ -126,6 +126,6 @@ describe('onError', () => {
     const t = new T();
 
     t.foo(1);
-    expect(onErrorFunc).toBeCalledTimes(1);
+    expect(onErrorFunc).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.10.0] - 2024-10-02
+
+### Enchantments
+- Update dependencies [169](https://github.com/vlio20/utils-decorators/pull/169) closes [#170](https://github.com/vlio20/utils-decorators/issues/170)
+
 ## [2.0.9] - 2024-08-11
 
 ### Fixed
@@ -15,7 +20,6 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixing missing await on memoizeAsync [161](https://github.com/vlio20/utils-decorators/pull/160) closes [#161](https://github.com/vlio20/utils-decorators/issues/161) - Kudos to [maormoshe](https://github.com/maormoshe) for reporting and fixing.
-
 
 ## [2.0.6] - 2023-05-12
 
