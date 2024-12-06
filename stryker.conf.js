@@ -1,7 +1,7 @@
 module.exports = {
     mutator: 'typescript',
     packageManager: 'npm',
-    reporters: ['progress', 'html', 'dashboard'],
+    reporters: ['progress', 'html'],
     coverageAnalysis: 'off',
     mutate: ['src/**/*.ts', '!src/**/*.spec.ts'],
     testFiles: ["test/**/*.@(js|ts)"],
