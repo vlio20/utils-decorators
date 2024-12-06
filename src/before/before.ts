@@ -8,7 +8,7 @@ export function before<T = any>(config: BeforeConfig<T>): Decorator<T> {
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = beforify(descriptor.value, config);
 
       return descriptor;

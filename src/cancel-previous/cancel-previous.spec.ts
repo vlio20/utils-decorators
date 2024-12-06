@@ -1,25 +1,21 @@
 import { cancelPrevious } from './cancel-previous';
 import { CanceledPromise } from './canceled-promise';
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 
 describe('cancelPrevious', () => {
   it('should make sure error thrown when decorator not set on method', () => {
-    try {
+    assert.throws(() => {
       const nonValidCancelPrevious: any = cancelPrevious<T>();
 
       class T {
         @nonValidCancelPrevious
           boo: string;
       }
-    } catch (e) {
-      expect('@cancelPrevious is applicable only on a methods.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, Error('@cancelPrevious is applicable only on a methods.'));
   });
 
-  it('should cancel prev invocation', (done) => {
+  it('should cancel prev invocation', (ctx, done) => {
     class T {
       @cancelPrevious<T>()
       foo(x: number): Promise<number> {
@@ -37,18 +33,19 @@ describe('cancelPrevious', () => {
     const func = (x: number) => {
       t.foo(x)
         .then((data) => {
-          expect(data).toBe(100);
-          expect(cancelHappened).toBe(1);
+          assert.equal(data, 100);
+          assert.equal(cancelHappened, 1);
           done();
         })
         .catch((e) => {
           if (e instanceof CanceledPromise) {
-            expect(e.message).toBe('canceled');
+            assert.equal(e.message, 'canceled');
             cancelHappened += 1;
 
             return;
           }
-          throw new Error('should\'t get here');
+
+          throw new Error('shouldn\'t get here');
         });
     };
 
@@ -59,7 +56,7 @@ describe('cancelPrevious', () => {
     }, 5);
   });
 
-  it('should invoke original method id was resolved before second call', (done) => {
+  it('should invoke original method if it was resolved before second call', (ctx, done) => {
     class T {
       @cancelPrevious()
       foo(x: number): Promise<number> {
@@ -80,19 +77,18 @@ describe('cancelPrevious', () => {
         .then((data) => {
           if (round === 1) {
             round += 1;
-            expect(data).toBe(10);
+            assert.equal(data, 10);
           } else {
-            expect(data).toBe(100);
+            assert.equal(data, 100);
           }
 
-          expect(cancelHappened).toBe(0);
-          done();
+          assert.equal(cancelHappened, 0);
         })
         .catch((e) => {
           if (e instanceof CanceledPromise) {
             cancelHappened += 1;
           } else {
-            throw new Error('should\'t get here');
+            throw new Error('shouldn\'t get here');
           }
         });
     };
@@ -101,10 +97,11 @@ describe('cancelPrevious', () => {
 
     setTimeout(() => {
       func(100);
+      done();
     }, 15);
   });
 
-  it('should invoke rejection if original method got an error', (done) => {
+  it('should invoke rejection if original method got an error', (ctx, done) => {
     class T {
       @cancelPrevious<T>()
       foo(x: number): Promise<number> {
@@ -121,13 +118,13 @@ describe('cancelPrevious', () => {
     const func = (x: number) => {
       t.foo(x)
         .then(() => {
-          throw new Error('should\'t get here');
+          throw new Error('shouldn\'t get here');
         })
         .catch((e) => {
           if (e instanceof CanceledPromise) {
-            throw new Error('should\'t get here');
+            throw new Error('shouldn\'t get here');
           } else {
-            expect(e.message).toBe('server error');
+            assert.equal(e.message, 'server error');
             done();
           }
         });

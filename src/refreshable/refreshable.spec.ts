@@ -1,19 +1,19 @@
 import { refreshable } from './refreshable';
 import { sleep } from '../common/test-utils';
+import { describe, it, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 
 describe('refreshable', () => {
   const originalSetInterval = global.setInterval;
-  const unrefMock = jest.fn();
+  const unrefMock = mock.fn();
 
   function useFakeSetInterval() {
-    global.setInterval = <any>jest.fn(() => ({ unref: unrefMock }));
+    global.setInterval = <any>mock.fn(() => ({ unref: unrefMock }));
   }
 
-  function restoreSetInterval() {
+  afterEach(() => {
     global.setInterval = originalSetInterval;
-  }
-
-  afterEach(restoreSetInterval);
+  });
 
   it('should call unref on setInterval', async () => {
     useFakeSetInterval();
@@ -24,7 +24,20 @@ describe('refreshable', () => {
     const t = { prop: 0 } as { prop: number };
     foo(t, 'prop');
     await sleep(10);
-    expect(unrefMock).toHaveBeenCalled();
+    assert.equal(unrefMock.mock.callCount(), 1);
+  });
+
+  it('validate unref is not a function, the refreshable logic still works', async () => {
+    const dataProviderMock = mock.fn(() => Promise.resolve(0));
+    global.setInterval = <any>mock.fn(() => ({ unref: 'string' }));
+    const foo = refreshable<any, number>({
+      dataProvider: dataProviderMock,
+      intervalMs: 50,
+    });
+    const t = { prop: 0 } as { prop: number };
+    foo(t, 'prop');
+    await sleep(10);
+    assert.equal(dataProviderMock.mock.callCount(), 1);
   });
 
   it('should populate refreshable property', async () => {
@@ -61,19 +74,19 @@ describe('refreshable', () => {
 
     await sleep(10);
 
-    expect(t.prop).toBe(0);
-    expect(t.proop).toBe(0);
+    assert.equal(t.prop, 0);
+    assert.equal(t.proop, 0);
 
     await sleep(60);
 
-    expect(t.prop).toBe(1);
-    expect(t.proop).toBe(1);
+    assert.equal(t.prop, 1);
+    assert.equal(t.proop, 1);
     t.prop = null;
     t.proop = 100;
 
     await sleep(50);
 
-    expect(t.prop).toBe(1);
-    expect(t.proop).toBe(2);
+    assert.equal(t.prop, 1);
+    assert.equal(t.proop, 2);
   });
 });

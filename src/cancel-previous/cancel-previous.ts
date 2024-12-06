@@ -8,7 +8,7 @@ export function cancelPrevious<T = any>(): CancelPreviousable<T> {
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<Promise<any>>>,
   ): TypedPropertyDescriptor<Method<Promise<any>>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = cancelPreviousify(descriptor.value);
 
       return descriptor;

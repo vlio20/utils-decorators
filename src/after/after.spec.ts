@@ -1,5 +1,8 @@
 import { after } from './after';
-import { AfterFunc, AfterParams } from './after.model';
+import { describe, it, mock } from 'node:test';
+import assert from 'node:assert';
+import { assertCalls } from '../common/test-utils';
+import { AfterParams } from './after.model';
 
 describe('after', () => {
   it('should make sure error thrown when decorator not set on method', () => {
@@ -7,11 +10,10 @@ describe('after', () => {
       const nonValidAfter: any = after({ func: null });
 
       class T {
-        @nonValidAfter
-          boo: string;
+        @nonValidAfter boo: string;
       }
     } catch (e) {
-      expect('@after is applicable only on a methods.').toBe(e.message);
+      assert.equal(e.message, '@after is applicable only on a methods.');
 
       return;
     }
@@ -20,15 +22,10 @@ describe('after', () => {
   });
 
   it('should verify after method invocation with the right context when provided as string', () => {
-    let counter = 0;
-
     class T {
       prop: number;
 
-      after(): void {
-        expect(this.prop).toBe(3);
-        expect(counter).toBe(1);
-      }
+      after = mock.fn();
 
       @after<T, void>({
         func: 'after',
@@ -37,90 +34,80 @@ describe('after', () => {
         return this.goo(x);
       }
 
-      goo(x: number): void {
-        expect(this.prop).toBe(3);
-        expect(counter).toBe(0);
-        counter += 1;
-      }
+      goo = mock.fn();
     }
 
     const t = new T();
     t.prop = 3;
-    const spyGoo = jest.spyOn(T.prototype, 'goo');
-    const spyAfter = jest.spyOn(T.prototype, 'after');
 
     t.foo(1);
-    expect(spyGoo).toHaveBeenCalledTimes(1);
-    expect(spyGoo).toHaveBeenCalledWith(1);
-    expect(spyAfter).toHaveBeenCalledTimes(1);
+    assertCalls(t.goo, [
+      [[1]],
+    ]);
+
+    assertCalls(t.after, [
+      [
+        [
+          {
+            args: [1],
+            response: undefined,
+          },
+        ],
+      ],
+    ]);
   });
 
-  it('should verify after method invocation when method is provided', () => {
-    let counter = 0;
-
-    const afterFunc = jest.fn(() => {
-      expect(counter).toBe(1);
-    });
+  it('should verify after method invocation when function is provided', () => {
+    const afterFunc = mock.fn();
 
     class T {
       @after<T, void>({
         func: afterFunc,
       })
-      foo(x: number): void {
-        return this.goo(x);
-      }
-
-      goo(x: number): void {
-        expect(counter).toBe(0);
-        counter += 1;
+      foo(x: number): number {
+        return 2;
       }
     }
 
     const t = new T();
-    const spyGoo = jest.spyOn(T.prototype, 'goo');
-
     t.foo(1);
-    expect(spyGoo).toHaveBeenCalledTimes(1);
-    expect(spyGoo).toHaveBeenCalledWith(1);
-    expect(afterFunc.mock.calls.length).toBe(1);
+    assertCalls(afterFunc, [
+      [[{ args: [1], response: 2 }]],
+    ]);
   });
 
-  it('should verify after method invocation when method is provided without waiting for it to be resolved', (done) => {
-    let counter = 0;
-
-    const afterFunc = jest.fn(() => {
-      expect(counter).toBe(1);
-      counter += 1;
+  it('should verify after method invocation when method is provided without waiting for it to be resolved', async () => {
+    const mocker = mock.fn();
+    const afterFunc = mock.fn((args: AfterParams) => {
+      mocker(2);
     });
 
     class T {
       @after<T, void>({
-        func: afterFunc,
+        func: afterFunc as any,
       })
       foo(x: number): Promise<void> {
-        expect(counter).toBe(0);
-        counter += 1;
-
         return new Promise((resolve) => {
           setTimeout(() => {
-            expect(counter).toBe(2);
+            mocker(1);
             resolve();
-            done();
           }, 0);
         });
       }
     }
 
     const t = new T();
-    t.foo(1);
+    await t.foo(1);
+    assertCalls(mocker, [
+      [[2]],
+      [[1]],
+    ]);
   });
 
-  it('should verify after method invocation when method is provided with waiting for it to be resolved', (done) => {
-    let counter = 0;
-
-    const afterFunc = jest.fn(() => {
-      expect(counter).toBe(2);
-      done();
+  it('should verify after method invocation when method is provided with waiting for it to be resolved', async () => {
+    const mocker = mock.fn();
+    const afterFunc = mock.fn((args: AfterParams) => {
+      mocker(2);
     });
 
     class T {
@@ -129,13 +116,9 @@ describe('after', () => {
         wait: true,
       })
       foo(): Promise<void> {
-        expect(counter).toBe(0);
-        counter += 1;
-
         return new Promise((resolve) => {
           setTimeout(() => {
-            expect(counter).toBe(1);
-            counter += 1;
+            mocker(1);
             resolve();
           }, 0);
         });
@@ -143,20 +126,15 @@ describe('after', () => {
     }
 
     const t = new T();
-    t.foo();
+    await t.foo();
+    assertCalls(mocker, [
+      [[1]],
+      [[2]],
+    ]);
   });
 
-  it('should provide args and response to after method - sync', (done) => {
-    const testable1 = 5;
-    const testable2 = 6;
-
-    const afterFunc: AfterFunc<number> = (x: AfterParams<number>): void => {
-      expect(x.args.length).toBe(2);
-      expect(x.args[0]).toBe(testable1);
-      expect(x.args[1]).toBe(testable2);
-      expect(x.response).toBe(testable1 + testable2);
-      done();
-    };
+  it('should provide args and response to after method - sync', () => {
+    const afterFunc = mock.fn();
 
     class T {
       @after<T, number>({
@@ -168,19 +146,15 @@ describe('after', () => {
     }
 
     const t = new T();
-    t.foo(testable1, testable2);
+    t.foo(1, 2);
+
+    assertCalls(afterFunc, [
+      [[{ args: [1, 2], response: 3 }]],
+    ]);
   });
 
   it('should provide args and response to after method - async', async () => {
-    const testable1 = 5;
-    const testable2 = 6;
-
-    const afterFunc: AfterFunc<number> = (x: AfterParams<number>): void => {
-      expect(x.args.length).toBe(2);
-      expect(x.args[0]).toBe(testable1);
-      expect(x.args[1]).toBe(testable2);
-      expect(x.response).toBe(testable1 + testable2);
-    };
+    const afterFunc = mock.fn();
 
     class T {
       @after({
@@ -193,27 +167,10 @@ describe('after', () => {
     }
 
     const t = new T();
-    await t.foo(testable1, testable2);
-  });
+    await t.foo(1, 2);
 
-  it('should returned result of method', async () => {
-    const value = 42;
-
-    const afterFunc: AfterFunc<number> = jest.fn((x: AfterParams<number>) => {
-      expect(x.response).toBe(value);
-    });
-
-    class T {
-      @after<T>({
-        func: afterFunc,
-      })
-      foo(x: number): number {
-        return x;
-      }
-    }
-
-    const t = new T();
-    const result = await t.foo(value);
-    expect(result).toBe(value);
+    assertCalls(afterFunc, [
+      [[{ args: [1, 2], response: 3 }]],
+    ]);
   });
 });

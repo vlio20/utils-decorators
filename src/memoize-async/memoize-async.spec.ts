@@ -1,9 +1,13 @@
 import { memoizeAsync } from './memoize-async';
 import { AsyncCache } from './memoize-async.model';
 import { sleep } from '../common/test-utils';
+import { describe, it, mock } from 'node:test';
+import assert from 'node:assert';
 
-describe('memozie-async', () => {
+describe('memoize-async', () => {
   it('should verify memoize async caching original method', async () => {
+    const spy = mock.fn((x: number, y: number) => Promise.resolve(x + y));
+
     class T {
       prop: number;
 
@@ -13,169 +17,135 @@ describe('memozie-async', () => {
       }
 
       goo(x: number, y: number): Promise<number> {
-        expect(this.prop).toBe(3);
-
-        return Promise.resolve(x + y);
-      }
-    }
-
-    return new Promise((res) => {
-      const t = new T();
-      t.prop = 3;
-      const spy = jest.spyOn(T.prototype, 'goo');
-      const resp1 = t.foo(1, 2);
-      const resp2 = t.foo(1, 2);
-
-      setTimeout(() => {
-        expect(spy).toHaveBeenCalledWith(1, 2);
-        expect(spy).toHaveBeenCalledTimes(1);
-
-        const resp01 = t.foo(1, 3);
-
-        setTimeout(() => {
-          expect(spy).toHaveBeenCalledWith(1, 3);
-          expect(spy).toHaveBeenCalledTimes(2);
-        }, 0);
-
-        setTimeout(async () => {
-          const resp3 = t.foo(1, 2);
-
-          setTimeout(async () => {
-            expect(spy).toHaveBeenCalledWith(1, 2);
-
-            expect(spy).toHaveBeenCalledTimes(3);
-
-            expect(await resp1).toBe(3);
-            expect(await resp2).toBe(3);
-            expect(await resp3).toBe(3);
-            expect(await resp01).toBe(4);
-            res(null);
-          }, 0);
-        }, 20);
-      }, 0);
-    });
-  });
-
-  it('should verify memoize key foo', async () => {
-    const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
-
-    class T {
-      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: mapper })
-      fooWithMapper(x: string, y: string): Promise<string> {
-        return this.goo(x, y);
-      }
-
-      goo(x: string, y: string): Promise<string> {
-        return Promise.resolve(x + y);
-      }
-    }
-
-    return new Promise((resolve) => {
-      const t = new T();
-      const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
-
-      t.fooWithMapper('x', 'y');
-      t.fooWithMapper('x', 'y');
-
-      setTimeout(() => {
-        expect(mapper.mock.calls.length).toBe(2);
-        expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
-        expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
-        resolve(null);
-      }, 0);
-    });
-  });
-
-  it('should verify memoize key foo as string - target method', async () => {
-    class T {
-      foo(x: string, y: string): string {
-        return `${x}_${y}`;
-      }
-
-      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: 'foo' })
-      fooWithMapper(x: string, y: string): Promise<string> {
-        return this.goo(x, y);
-      }
-
-      goo(x: string, y: string): Promise<string> {
-        return Promise.resolve(x + y);
-      }
-    }
-
-    return new Promise((resolve) => {
-      const t = new T();
-      const spyFooWithMapper = jest.spyOn(T.prototype, 'goo');
-      const mapper = jest.spyOn(T.prototype, 'foo');
-
-      t.fooWithMapper('x', 'y');
-      t.fooWithMapper('x', 'y');
-
-      setTimeout(() => {
-        expect(mapper).toHaveBeenCalledTimes(2);
-        expect(spyFooWithMapper).toHaveBeenCalledTimes(1);
-        expect(spyFooWithMapper).toHaveBeenCalledWith('x', 'y');
-        expect(mapper).toHaveBeenCalledWith('x', 'y');
-        resolve(null);
-      }, 0);
-    });
-  });
-
-  it('should make sure error thrown when decorator not set on method', () => {
-    try {
-      const nonValidMemoizeAsync: any = memoizeAsync<T, string>(50);
-
-      class T {
-        @nonValidMemoizeAsync
-          boo: string;
-      }
-    } catch (e) {
-      expect('@memoizeAsync is applicable only on a methods.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
-  });
-
-  it('should make sure that when promise is rejected it is removed from the cache', (done) => {
-    class T {
-      @memoizeAsync<T, string>(20)
-      foo(): Promise<string> {
-        return this.goo();
-      }
-
-      goo(): Promise<string> {
-        return Promise.reject(new Error('rejected'));
+        assert.equal(this.prop, 3);
+        return spy(x, y);
       }
     }
 
     const t = new T();
-    const spy = jest.spyOn(T.prototype, 'goo');
+    t.prop = 3;
 
-    t.foo()
-      .catch((e) => {
-        expect(e.message).toBe('rejected');
-      });
+    const resp1 = await t.foo(1, 2);
+    const resp2 = await t.foo(1, 2);
+    const resp4 = await t.foo(1, 3);
 
-    setTimeout(() => {
-      t.foo().catch((e) => {
-        expect(e.message).toBe('rejected');
-      });
+    assert.equal(spy.mock.callCount(), 2);
+    assert.deepEqual(spy.mock.calls[0].arguments, [1, 2]);
+    assert.deepEqual(spy.mock.calls[1].arguments, [1, 3]);
 
-      setTimeout(() => {
-        expect(spy).toHaveBeenCalledTimes(2);
-        done();
-      }, 0);
-    }, 20);
+    await sleep(20);
+    const resp3 = await t.foo(1, 2);
+
+    assert.equal(spy.mock.callCount(), 3);
+    assert.equal(resp1, 3);
+    assert.equal(resp2, 3);
+    assert.equal(resp3, 3);
+    assert.equal(resp4, 4);
   });
 
-  it('should use provided cache', (done) => {
+  it('should verify memoize key foo', async () => {
+    const mapper = mock.fn((x: string, y: string) => `${x}_${y}`);
+    const spyFooWithMapper = mock.fn((x: string, y: string) => Promise.resolve(x + y));
+
+    class T {
+      // eslint-disable-next-line class-methods-use-this
+      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: mapper })
+      fooWithMapper(x: string, y: string): Promise<string> {
+        return spyFooWithMapper(x, y);
+      }
+    }
+
+    const t = new T();
+
+
+    await t.fooWithMapper('x', 'y');
+    await t.fooWithMapper('x', 'y');
+
+    assert.equal(mapper.mock.callCount(), 2);
+    assert.equal(spyFooWithMapper.mock.callCount(), 1);
+    assert.deepEqual(spyFooWithMapper.mock.calls[0].arguments, ['x', 'y']);
+  });
+
+  it('should verify memoize key foo as string - target method', async () => {
+    const spyFooWithMapper = mock.fn((x: string, y: string) => Promise.resolve(x + y));
+    const spyMapper = mock.fn((x: string, y: string) => `${x}_${y}`);
+
+    class T {
+      foo = spyMapper;
+
+      // eslint-disable-next-line class-methods-use-this
+      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: 'foo' })
+      fooWithMapper(x: string, y: string): Promise<string> {
+        return spyFooWithMapper(x, y);
+      }
+    }
+
+    const prom = new Promise((resolve) => {
+      const t = new T();
+
+      t.fooWithMapper('x', 'y');
+      t.fooWithMapper('x', 'y');
+
+      setTimeout(() => {
+        assert.equal(spyMapper.mock.callCount(), 2);
+        assert.equal(spyFooWithMapper.mock.callCount(), 1);
+
+        assert(spyMapper.mock.calls[0].arguments[0] === 'x');
+        assert(spyMapper.mock.calls[0].arguments[1] === 'y');
+
+        assert(spyFooWithMapper.mock.calls[0].arguments[0] === 'x');
+        assert(spyFooWithMapper.mock.calls[0].arguments[1] === 'y');
+
+        resolve(null);
+      }, 0);
+    });
+
+    await prom;
+  });
+
+  it('should make sure error thrown when decorator not set on method', () => {
+    assert.throws(() => {
+      const nonValidMemoizeAsync: any = memoizeAsync<T, string>(50);
+
+      class T {
+        @nonValidMemoizeAsync boo: string;
+      }
+    }, Error('@memoizeAsync is applicable only on a methods.'));
+  });
+
+  it('should make sure that when promise is rejected it is removed from the cache', async () => {
+    const err = new Error('rejected');
+    const spy = mock.fn(() => Promise.reject(err));
+
+    class T {
+      @memoizeAsync<T, string>(20)
+      async foo(): Promise<string> {
+        return spy();
+      }
+    }
+
+    const t = new T();
+    await assert.rejects(async () => {
+      await t.foo();
+    }, err);
+
+    await sleep(20);
+
+    await assert.rejects(async () => {
+      await t.foo();
+    }, err);
+
+    assert.equal(spy.mock.callCount(), 2);
+  });
+
+  it('should use provided cache', (_, done) => {
     const cache = new Map<string, number>();
+    const spy = mock.fn();
 
     class T {
       @memoizeAsync<T, number>({ expirationTimeMs: 30, cache })
       foo(): Promise<number> {
-        return this.goo();
+        return spy();
       }
 
       goo(): Promise<number> {
@@ -183,21 +153,19 @@ describe('memozie-async', () => {
       }
     }
 
-    const spy = jest.spyOn(T.prototype, 'goo');
-
     const t = new T();
     t.foo();
 
     setTimeout(() => {
       t.foo();
       setTimeout(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
+        assert.equal(spy.mock.callCount(), 1);
 
         cache.delete('[]');
         t.foo();
 
         setTimeout(() => {
-          expect(spy).toHaveBeenCalledTimes(2);
+          assert.equal(spy.mock.callCount(), 2);
           done();
         }, 0);
       }, 0);
@@ -221,8 +189,8 @@ describe('memozie-async', () => {
     const one = t.foo();
     const two = t.goo();
 
-    expect(await one).toBe(1);
-    expect(await two).toBe(2);
+    assert.equal(await one, 1);
+    assert.equal(await two, 2);
   });
 
   it('should verify that by default the cache is never cleaned', async () => {
@@ -238,14 +206,15 @@ describe('memozie-async', () => {
     const t = new T();
 
     await t.foo();
-    expect(cache.size).toEqual(1);
+    assert.equal(cache.size, 1);
 
     await sleep(50);
-    expect(cache.size).toEqual(1);
+    assert.equal(cache.size, 1);
   });
 
   it('should verify usage of async cache', async () => {
     const map = new Map<string, number>();
+    const spy = mock.fn(() => Promise.resolve(1));
 
     const cache: AsyncCache<number> = {
       delete: async (p1: string) => {
@@ -264,35 +233,31 @@ describe('memozie-async', () => {
         cache,
       })
       foo(): Promise<number> {
-        return this.goo();
-      }
-
-      goo(): Promise<number> {
-        return Promise.resolve(1);
+        return spy();
       }
     }
 
-    return new Promise((resolve) => {
-      const spy = jest.spyOn(T.prototype, 'goo');
-
+    const prom = new Promise((resolve) => {
       const t = new T();
       t.foo();
 
       setTimeout(() => {
         t.foo();
         setTimeout(() => {
-          expect(spy).toHaveBeenCalledTimes(1);
+          assert.equal(spy.mock.callCount(), 1);
 
           cache.delete('[]');
           t.foo();
 
           setTimeout(() => {
-            expect(spy).toHaveBeenCalledTimes(2);
+            assert.equal(spy.mock.callCount(), 2);
             resolve(null);
           }, 0);
         }, 0);
       }, 10);
     });
+
+    await prom;
   });
 
   it('should throw exception when async has method throws an exception', async () => {
@@ -303,7 +268,7 @@ describe('memozie-async', () => {
         map.delete(p1);
       },
       get: async (p1: string) => map.get(p1),
-      has: async (p1: string) => Promise.reject(new Error('error')),
+      has: async (_: string) => Promise.reject(new Error('error')),
       set: async (p1: string, p2: number) => {
         map.set(p1, p2);
       },
@@ -320,26 +285,20 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
-    try {
+    await assert.rejects(async () => {
       await t.foo();
-    } catch (e) {
-      expect(e.message).toBe('error');
-
-      return;
-    }
-
-    throw new Error('shouldn\'t get to here');
+    }, Error('error'));
   });
 
-  it('should throw exception when async get method throws an exception', async () => {
+  it('should throw exception when async get method throwing an exception', async () => {
     const map = new Map<string, number>();
 
     const cache: AsyncCache<number> = {
       delete: async (p1: string) => {
         map.delete(p1);
       },
-      get: async (p1: string) => Promise.reject(new Error('error')),
-      has: async (p1: string) => Promise.resolve(true),
+      get: async (_: string) => Promise.reject(new Error('error')),
+      has: async (_: string) => true,
       set: async (p1: string, p2: number) => {
         map.set(p1, p2);
       },
@@ -356,51 +315,9 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
-    try {
+    await assert.rejects(async () => {
       await t.foo();
-    } catch (e) {
-      expect(e.message).toBe('error');
-
-      return;
-    }
-
-    throw new Error('shouldn\'t get to here');
-  });
-
-  it('should throw exception when async get method throws an exception', async () => {
-    const map = new Map<string, number>();
-
-    const cache: AsyncCache<number> = {
-      delete: async (p1: string) => {
-        map.delete(p1);
-      },
-      get: async (p1: string) => Promise.reject(new Error('error')),
-      has: async (p1: string) => true,
-      set: async (p1: string, p2: number) => {
-        map.set(p1, p2);
-      },
-    };
-
-    class T {
-      @memoizeAsync<T, number>({
-        expirationTimeMs: 30,
-        cache,
-      })
-      foo(): Promise<number> {
-        return Promise.resolve(1);
-      }
-    }
-
-    const t = new T();
-    try {
-      await t.foo();
-    } catch (e) {
-      expect(e.message).toBe('error');
-
-      return;
-    }
-
-    throw new Error('shouldn\'t get to here');
+    }, Error('error'));
   });
 
   it('should throw exception when async set method throws an exception', async () => {
@@ -412,7 +329,7 @@ describe('memozie-async', () => {
       },
       get: async (p1: string) => map.get(p1),
       has: async (p1: string) => map.has(p1),
-      set: async (p1: string, p2: number) => new Promise((resolve, reject) => {
+      set: async (_: string, __: number) => new Promise((___, reject) => {
         setTimeout(() => {
           reject(new Error('error'));
         });
@@ -430,15 +347,9 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
-    try {
+    await assert.rejects(async () => {
       await t.foo();
-    } catch (e) {
-      expect(e.message).toBe('error');
-
-      return;
-    }
-
-    throw new Error('shouldn\'t get to here');
+    }, Error('error'));
   });
 
   it('should throw exception when original method is broken', async () => {
@@ -466,14 +377,8 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
-    try {
+    await assert.rejects(async () => {
       await t.foo();
-    } catch (e) {
-      expect(e.message).toBe('error');
-
-      return;
-    }
-
-    throw new Error('shouldn\'t get to here');
+    }, Error('error'));
   });
 });

@@ -7,7 +7,7 @@ export function throttleAsync<T = any, D = any>(parallelCalls?: number): Decorat
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
   ): TypedPropertyDescriptor<AsyncMethod<D>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = throttleAsyncify(descriptor.value, parallelCalls);
 
       return descriptor;

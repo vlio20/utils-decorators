@@ -1,22 +1,17 @@
 import { delegate } from './delegate';
 import { sleep } from '../common/test-utils';
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
 
 describe('delegate', () => {
   it('should make sure error thrown when decorator not set on method', () => {
-    try {
+    assert.throws(() => {
       const nonValidDelegate: any = delegate();
 
       class T {
-        @nonValidDelegate
-          boo: string;
+        @nonValidDelegate boo: string;
       }
-    } catch (e) {
-      expect('@delegate is applicable only on a methods.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, Error('@delegate is applicable only on a methods.'));
   });
 
   it('should delegate method with same key invocation', async () => {
@@ -37,8 +32,8 @@ describe('delegate', () => {
     t.foo();
 
     const res = await Promise.all([t.foo(), t.foo()]);
-    expect(res).toEqual([1, 1]);
-    expect(counter).toEqual(1);
+    assert.deepEqual(res, [1, 1]);
+    assert.strictEqual(counter, 1);
   });
 
   it('should delegate method with same key invocation until delegator is resolved / rejected', async () => {
@@ -60,19 +55,19 @@ describe('delegate', () => {
     t.foo();
 
     const res0 = await Promise.all([t.foo(), t.foo()]);
-    expect(res0[0]).toEqual(res0[1]);
-    expect(res0[0]).toBeGreaterThan(timestampBeforeTest);
-    expect(counter).toEqual(1);
+    assert.strictEqual(res0[0], res0[1]);
+    assert.strictEqual(res0[0] > timestampBeforeTest, true);
+    assert.strictEqual(counter, 1);
 
     t.foo();
     t.foo();
 
     const res1 = await Promise.all([t.foo(), t.foo()]);
-    expect(res1).not.toEqual(res0);
+    assert.notEqual(res1, res0);
 
-    expect(res1[0]).toEqual(res1[1]);
-    expect(res1[0]).toBeGreaterThan(res0[0]);
-    expect(counter).toEqual(2);
+    assert.strictEqual(res1[0], res1[1]);
+    assert.strictEqual(res1[0] > res0[0], true);
+    assert.strictEqual(counter, 2);
   });
 
   it('should delegate method with same key invocation - default key serialization', async () => {
@@ -91,8 +86,8 @@ describe('delegate', () => {
     const t = new T();
 
     const res = await Promise.all([t.foo('a'), t.foo('a'), t.foo('b')]);
-    expect(res).toEqual(['a', 'a', 'b']);
-    expect(counter).toEqual(2);
+    assert.deepEqual(res, ['a', 'a', 'b']);
+    assert.strictEqual(counter, 2);
   });
 
   it('should delegate method with same key invocation - default key serialization - many args', async () => {
@@ -115,8 +110,8 @@ describe('delegate', () => {
       t.foo(1, 1, 1, 2),
       t.foo(1, 1, 1, 1),
     ]);
-    expect(res).toEqual([4, 5, 4]);
-    expect(counter).toEqual(2);
+    assert.deepEqual(res, [4, 5, 4]);
+    assert.strictEqual(counter, 2);
   });
 
   it('should delegate method with same key invocation - custom serialization', async () => {
@@ -135,8 +130,8 @@ describe('delegate', () => {
     const t = new T();
 
     const res = await Promise.all([t.foo(1, 1), t.foo(2, 1), t.foo(1, 1)]);
-    expect(res).toEqual([2, 3, 2]);
-    expect(counter).toEqual(2);
+    assert.deepEqual(res, [2, 3, 2]);
+    assert.equal(counter, 2);
   });
 
   it('should have the correct context', async () => {
@@ -153,6 +148,6 @@ describe('delegate', () => {
 
     const result = await Example.ex1();
 
-    expect(result).toEqual(2);
+    assert.equal(result, 2);
   });
 });

@@ -8,7 +8,7 @@ export function onError<T>(config: OnErrorConfig<T>): OnErrorable<T> {
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = onErrorify(descriptor.value, config);
 
       return descriptor;

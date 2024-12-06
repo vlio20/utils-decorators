@@ -1,90 +1,76 @@
 import { TaskExec } from './task-exec';
 import { sleep } from '../test-utils';
+import { describe, it, mock } from 'node:test';
+import assert from 'node:assert';
 
 describe('utils', () => {
   it('should verify task executed in time - A:40, B:20 -> B, A', async () => {
     const runner = new TaskExec();
     let val = '';
-    const funA = jest.fn().mockImplementation(() => {
-      val += 'A';
-    });
-    const funB = jest.fn().mockImplementation(() => {
-      val += 'B';
-    });
+    const funA = () => { val += 'A'; };
+    const funB = () => { val += 'B'; };
 
     runner.exec(funA, 100);
 
     await sleep(20);
 
-    expect(funA).not.toHaveBeenCalled();
+    assert.strictEqual(val, '');
     runner.exec(funB, 40);
 
     await sleep(20);
 
-    expect(funA).not.toHaveBeenCalled();
-    expect(funB).not.toHaveBeenCalled();
+    assert.strictEqual(val, '');
 
     await sleep(40);
 
-    expect(funA).not.toHaveBeenCalled();
-    expect(funB).toHaveBeenCalledTimes(1);
+    assert.strictEqual(val, 'B');
 
     await sleep(100);
 
-    expect(funA).toHaveBeenCalledTimes(1);
-    expect(funB).toHaveBeenCalledTimes(1);
-    expect(val).toBe('BA');
+    assert.strictEqual(val, 'BA');
   });
 
   it('should verify task executed in time - A:20, B:40 -> A, B', async () => {
     const runner = new TaskExec();
     let val = '';
-    const funA = jest.fn().mockImplementation(() => {
-      val += 'A';
-    });
-    const funB = jest.fn().mockImplementation(() => {
-      val += 'B';
-    });
+    const funA = () => { val += 'A'; };
+    const funB = () => { val += 'B'; };
 
     runner.exec(funA, 50);
     runner.exec(funB, 100);
 
     await sleep(20);
 
-    expect(funA).not.toHaveBeenCalled();
-    expect(funB).not.toHaveBeenCalled();
+    assert.strictEqual(val, '');
 
     await sleep(50);
 
-    expect(funA).toHaveBeenCalled();
-    expect(funB).not.toHaveBeenCalled();
+    assert.strictEqual(val, 'A');
 
     await sleep(50);
 
-    expect(funA).toHaveBeenCalledTimes(1);
-    expect(funB).toHaveBeenCalledTimes(1);
-    expect(val).toBe('AB');
+    assert.strictEqual(val, 'AB');
   });
 
   it('should verify task executed in time -  - A:20, B:20, C:10 -> A, B, C', async () => {
     const runner = new TaskExec();
-    const funA = jest.fn();
-    const funB = jest.fn();
-    const funC = jest.fn();
+    const funA = mock.fn();
+    const funB = mock.fn();
+    const funC = mock.fn();
 
     runner.exec(funA, 50);
     runner.exec(funB, 50);
 
     await sleep(20);
 
-    expect(funA).not.toHaveBeenCalled();
-    expect(funB).not.toHaveBeenCalled();
+    assert.equal(funA.mock.callCount(), 0);
+    assert.equal(funB.mock.callCount(), 0);
     runner.exec(funC, 10);
 
     await sleep(50);
 
-    expect(funA).toHaveBeenCalledTimes(1);
-    expect(funB).toHaveBeenCalledTimes(1);
-    expect(funC).toHaveBeenCalledTimes(1);
+    assert.equal(funA.mock.callCount(), 1);
+    assert.equal(funB.mock.callCount(), 1);
+    assert.equal(funC.mock.callCount(), 1);
   });
 });

@@ -7,7 +7,7 @@ export function debounce<T = any>(delayMs: number): Decorator<T> {
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       const methodsMap = new WeakMap<any, Method<any>>();
       const originalMethod = descriptor.value;
 
