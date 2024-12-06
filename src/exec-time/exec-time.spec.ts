@@ -1,27 +1,22 @@
 import { execTime } from './exec-time';
 import { ExactTimeReportData } from './exec-time.model';
 import { sleep } from '../common/test-utils';
+import { describe, it, mock } from 'node:test';
+import assert from 'node:assert';
 
 describe('exec-time', () => {
   it('should make sure error thrown when decorator not set on method', () => {
-    try {
+    assert.throws(() => {
       const nonValidExecTime: any = execTime();
 
       class T {
-        @nonValidExecTime
-          boo: string;
+        @nonValidExecTime boo: string;
       }
-    } catch (e) {
-      expect('@execTime is applicable only on a methods.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, Error('@execTime is applicable only on a methods.'));
   });
 
   it('should make sure that the reporter is called with the correct data when decorated method is sync', () => {
-    const reporter = jest.fn();
+    const reporter = mock.fn();
 
     class T {
       @execTime(reporter)
@@ -33,22 +28,21 @@ describe('exec-time', () => {
     const t = new T();
     t.foo('a');
 
-    expect(reporter).toHaveBeenCalledTimes(1);
-    const args: ExactTimeReportData = reporter.mock.calls[0][0];
-    expect(args.args).toEqual(['a']);
-    expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(0);
-    expect(args.execTime).toBeLessThan(10);
+    assert.equal(reporter.mock.callCount(), 1);
+    const args: ExactTimeReportData = reporter.mock.calls[0].arguments[0];
+    assert.deepEqual(args.args, ['a']);
+    assert.equal(args.result, 'ab');
+    assert(args.execTime >= 0);
+    assert(args.execTime < 10);
   });
 
   it('should make sure that the reporter is called with the correct data when decorated method is async', async () => {
-    const reporter = jest.fn();
+    const reporter = mock.fn();
 
     class T {
       @execTime(reporter)
       async foo(x: string): Promise<string> {
         await sleep(10);
-
         return Promise.resolve(`${x}b`);
       }
     }
@@ -56,16 +50,18 @@ describe('exec-time', () => {
     const t = new T();
     await t.foo('a');
 
-    expect(reporter).toHaveBeenCalledTimes(1);
-    const args: ExactTimeReportData = reporter.mock.calls[0][0];
-    expect(args.args).toEqual(['a']);
-    expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(8);
-    expect(args.execTime).toBeLessThan(20);
+    assert.equal(reporter.mock.callCount(), 1);
+    const args: ExactTimeReportData = reporter.mock.calls[0].arguments[0];
+    assert.deepEqual(args.args, ['a']);
+    assert.equal(args.result, 'ab');
+    assert(args.execTime >= 8);
+    assert(args.execTime < 20);
   });
 
   it('should make sure that the console.log is being called by default', async () => {
-    const logSpy = jest.spyOn(global.console, 'info');
+    const logSpy = mock.fn(console.log);
+    const slog = console.log;
+    console.info = logSpy;
 
     class T {
       @execTime()
@@ -76,20 +72,19 @@ describe('exec-time', () => {
 
     const t = new T();
     await t.foo('a');
-    expect(logSpy).toHaveBeenCalledTimes(1);
-    const clogSpyArgs = logSpy.mock.calls[0][0];
-    expect(clogSpyArgs).toBeGreaterThanOrEqual(0);
-    logSpy.mockRestore();
+    assert.equal(logSpy.mock.callCount(), 1);
+    const clogSpyArgs = logSpy.mock.calls[0].arguments[0];
+    assert(clogSpyArgs >= 0);
+    console.info = slog;
   });
 
-  it('should make sure that the reporter is called when provided as sting', async () => {
+  it('should make sure that the reporter is called when provided as string', async () => {
     class T {
-      goo = jest.fn();
+      goo = mock.fn();
 
       @execTime('goo')
       async foo(x: string): Promise<string> {
         await sleep(10);
-
         return Promise.resolve(`${x}b`);
       }
     }
@@ -97,11 +92,11 @@ describe('exec-time', () => {
     const t = new T();
     await t.foo('a');
 
-    expect(t.goo).toHaveBeenCalledTimes(1);
-    const args: ExactTimeReportData = t.goo.mock.calls[0][0];
-    expect(args.args).toEqual(['a']);
-    expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(8);
-    expect(args.execTime).toBeLessThan(20);
+    assert.equal(t.goo.mock.callCount(), 1);
+    const args: ExactTimeReportData = t.goo.mock.calls[0].arguments[0];
+    assert.deepEqual(args.args, ['a']);
+    assert.equal(args.result, 'ab');
+    assert(args.execTime >= 8);
+    assert(args.execTime < 20);
   });
 });

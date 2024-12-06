@@ -8,7 +8,7 @@ export function multiDispatch<T = any>(dispatchesAmount: number): MultiDispatcha
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
   ): TypedPropertyDescriptor<AsyncMethod<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = multiDispatchify(descriptor.value, dispatchesAmount);
 
       return descriptor;

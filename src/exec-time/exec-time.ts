@@ -8,7 +8,7 @@ export function execTime<T = any>(arg?: ReportFunction | string): ExactTimeRepor
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = execTimify(descriptor.value, arg);
 
       return descriptor;

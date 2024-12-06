@@ -9,9 +9,10 @@ describe('cancelPrevious', () => {
       const nonValidCancelPrevious: any = cancelPrevious<T>();
 
       class T {
-        @nonValidCancelPrevious boo: string;
+        @nonValidCancelPrevious
+          boo: string;
       }
-    }, '@cancelPrevious is applicable only on a methods.');
+    }, Error('@cancelPrevious is applicable only on a methods.'));
   });
 
   it('should cancel prev invocation', (ctx, done) => {
@@ -44,7 +45,7 @@ describe('cancelPrevious', () => {
             return;
           }
 
-          throw new Error('should\'t get here');
+          throw new Error('shouldn\'t get here');
         });
     };
 

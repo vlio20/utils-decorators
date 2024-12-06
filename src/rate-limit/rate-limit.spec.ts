@@ -2,6 +2,8 @@ import { rateLimit } from './rate-limit';
 import { sleep } from '../common/test-utils';
 import { RateLimitAsyncCounter } from './rate-limit.model';
 import { SimpleRateLimitCounter } from './simple-rate-limit-counter';
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 
 export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
   counterMap = new Map<string, number>();
@@ -48,27 +50,20 @@ describe('rate-limit', () => {
   }
 
   it('should make sure error thrown when decorator not set on method', () => {
-    try {
+    assert.throws(() => {
       const nonValidRateLimit: any = rateLimit({
         allowedCalls: 1,
         timeSpanMs: 1000,
       });
 
       class TT {
-        @nonValidRateLimit
-          boo: string;
+        @nonValidRateLimit boo: string;
       }
-    } catch (e) {
-      expect('@rateLimit is applicable only on a method.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, Error('@rateLimit is applicable only on a method.'));
   });
 
   it('should make sure error on async and sync counters', () => {
-    try {
+    assert.throws(() => {
       class TT {
         @rateLimit({
           allowedCalls: 1,
@@ -76,39 +71,31 @@ describe('rate-limit', () => {
           rateLimitAsyncCounter: {} as any,
           rateLimitCounter: {} as any,
         })
-        foo() {
-        }
+        foo() {}
       }
-
-      throw new Error('should not reach this line');
-    } catch (e) {
-      expect('You cant provide both rateLimitAsyncCounter and rateLimitCounter.').toBe(e.message);
-    }
+    }, Error('You can\'t provide both rateLimitAsyncCounter and rateLimitCounter.'));
   });
 
   it('should verify sync limit is working as expected', async () => {
     const t = new T();
     t.foo();
     await sleep(50);
-    expect(t.counter).toEqual(1);
+    assert.equal(t.counter, 1);
     t.foo();
     await sleep(50);
-    expect(t.counter).toEqual(2);
+    assert.equal(t.counter, 2);
 
     await sleep(50);
 
-    try {
+    assert.throws(() => {
       t.foo();
-      throw new Error('should not get to this line');
-    } catch (e) {
-      expect(e.message).toEqual('You have acceded the amount of allowed calls');
-    }
+    }, Error('You have acceded the amount of allowed calls'));
 
     await sleep(80);
     const resp = t.foo();
 
-    expect(t.counter).toEqual(3);
-    expect(resp).toEqual(3);
+    assert.equal(t.counter, 3);
+    assert.equal(resp, 3);
   });
 
   it('should verify sync limit is working as expected with custom Rate Limiter', async () => {
@@ -129,33 +116,30 @@ describe('rate-limit', () => {
 
     const t = new TT();
     t.foo();
-    expect(countMap.size).toEqual(1);
+    assert.equal(countMap.size, 1);
     await sleep(50);
-    expect(t.counter).toEqual(1);
+    assert.equal(t.counter, 1);
     t.foo();
-    expect(countMap.size).toEqual(1);
-    expect(countMap.get('__rateLimit__')).toEqual(2);
+    assert.equal(countMap.size, 1);
+    assert.equal(countMap.get('__rateLimit__'), 2);
     await sleep(50);
-    expect(t.counter).toEqual(2);
+    assert.equal(t.counter, 2);
 
     await sleep(50);
 
-    try {
+    assert.throws(() => {
       t.foo();
-      throw new Error('should not get to this line');
-    } catch (e) {
-      expect(e.message).toEqual('You have acceded the amount of allowed calls');
-    }
+    }, Error('You have acceded the amount of allowed calls'));
 
     await sleep(80);
-    expect(countMap.get('__rateLimit__')).toEqual(1);
+    assert.equal(countMap.get('__rateLimit__'), 1);
     t.foo();
-    expect(countMap.get('__rateLimit__')).toEqual(2);
+    assert.equal(countMap.get('__rateLimit__'), 2);
 
-    expect(t.counter).toEqual(3);
+    assert.equal(t.counter, 3);
 
     await sleep(220);
-    expect(countMap.size).toEqual(0);
+    assert.equal(countMap.size, 0);
   });
 
   it('should verify async limit is working as expected with custom Rate Limiter', async () => {
@@ -171,7 +155,6 @@ describe('rate-limit', () => {
       })
       async foo() {
         this.counter += 1;
-
         return this.counter;
       }
     }
@@ -181,30 +164,27 @@ describe('rate-limit', () => {
 
     await t1.foo();
     await sleep(50);
-    expect(t1.counter).toEqual(1);
+    assert.equal(t1.counter, 1);
     await t2.foo();
     await sleep(50);
-    expect(t1.counter).toEqual(1);
-    expect(t2.counter).toEqual(1);
+    assert.equal(t1.counter, 1);
+    assert.equal(t2.counter, 1);
 
     await sleep(50);
 
-    try {
+    await assert.rejects(async () => {
       await t1.foo();
-      throw new Error('should not get to this line');
-    } catch (e) {
-      expect(e.message).toEqual('You have acceded the amount of allowed calls');
-    }
+    }, Error('You have acceded the amount of allowed calls'));
 
     await sleep(80);
     const resp1 = await t1.foo();
     const resp2 = await t2.foo();
 
-    expect(t1.counter).toEqual(2);
-    expect(resp1).toEqual(2);
-    expect(resp2).toEqual(2);
+    assert.equal(t1.counter, 2);
+    assert.equal(resp1, 2);
+    assert.equal(resp2, 2);
 
-    expect(counter.counterMap.has('__rateLimit__')).toEqual(true);
+    assert.equal(counter.counterMap.has('__rateLimit__'), true);
   });
 
   it('should invoke provider mapper provided as function', async () => {
@@ -214,7 +194,7 @@ describe('rate-limit', () => {
         timeSpanMs: 200,
         keyResolver: (x: string) => x,
       })
-      foo(x: string) {
+      foo(_: string) {
       }
     }
 
@@ -224,15 +204,15 @@ describe('rate-limit', () => {
     t.foo('b');
     await sleep(50);
 
-    try {
+    assert.throws(() => {
       t.foo('a');
-      throw new Error('should not get to this line');
-    } catch (e) {
-      expect(e.message).toEqual('You have acceded the amount of allowed calls');
-    }
+    }, Error('You have acceded the amount of allowed calls'));
 
     await sleep(120);
-    t.foo('a');
+
+    assert.doesNotThrow(() => {
+      t.foo('a');
+    });
   });
 
   it('should invoke provider mapper provided as string', async () => {
@@ -242,7 +222,7 @@ describe('rate-limit', () => {
         timeSpanMs: 200,
         keyResolver: 'goo',
       })
-      foo(x: string) {
+      foo(_: string) {
       }
 
       goo(x: string) {
@@ -256,15 +236,14 @@ describe('rate-limit', () => {
     t.foo('b');
     await sleep(50);
 
-    try {
+    assert.throws(() => {
       t.foo('a');
-      throw new Error('should not get to this line');
-    } catch (e) {
-      expect(e.message).toEqual('You have acceded the amount of allowed calls');
-    }
+    }, Error('You have acceded the amount of allowed calls'));
 
     await sleep(120);
-    t.foo('a');
+    assert.doesNotThrow(() => {
+      t.foo('a');
+    });
   });
 
   it('should invoke custom handler when exceeds the amount of allowed calls', async () => {
@@ -284,11 +263,8 @@ describe('rate-limit', () => {
     t.foo();
     await sleep(20);
 
-    try {
+    assert.throws(() => {
       t.foo();
-      throw new Error('should not get to this line');
-    } catch (e) {
-      expect(e.message).toEqual('blarg');
-    }
+    }, Error('blarg'));
   });
 });

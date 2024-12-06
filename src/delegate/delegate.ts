@@ -8,7 +8,7 @@ export function delegate<T = any, D = any>(keyResolver?: (...args: any[]) => str
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<AsyncMethod<D>>,
   ): TypedPropertyDescriptor<AsyncMethod<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = delegatify(descriptor.value, keyResolver);
 
       return descriptor;

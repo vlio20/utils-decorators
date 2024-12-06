@@ -1,22 +1,17 @@
 import { sleep } from '../common/test-utils';
 import { throttleAsync } from './throttle-async';
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 
 describe('throttle-async', () => {
   it('should make sure error thrown when decorator not set on method', () => {
-    try {
+    assert.throws(() => {
       const nonThrottleAsync: any = throttleAsync(50);
 
       class T {
-        @nonThrottleAsync
-          boo: string;
+        @nonThrottleAsync boo: string;
       }
-    } catch (e) {
-      expect('@throttleAsync is applicable only on a methods.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, Error('@throttleAsync is applicable only on a methods.'));
   });
 
   it('should verify method invocation is throttled 1', async () => {
@@ -35,23 +30,23 @@ describe('throttle-async', () => {
     return new Promise(async (resolve) => {
       const t = new T();
 
-      expect(t.prop).toEqual(0);
+      assert.strictEqual(t.prop, 0);
       t.foo('a').then((res) => {
-        expect(res).toEqual('a');
+        assert.strictEqual(res, 'a');
       });
-      expect(t.prop).toEqual(1);
+      assert.strictEqual(t.prop, 1);
 
       t.foo('b').then((res) => {
-        expect(res).toEqual('b');
+        assert.strictEqual(res, 'b');
         resolve(null);
       });
 
-      expect(t.prop).toEqual(1);
+      assert.strictEqual(t.prop, 1);
       await sleep(20);
-      expect(t.prop).toEqual(1);
+      assert.strictEqual(t.prop, 1);
 
       await sleep(50);
-      expect(t.prop).toEqual(2);
+      assert.strictEqual(t.prop, 2);
     });
   });
 
@@ -72,13 +67,13 @@ describe('throttle-async', () => {
       const t = new T();
 
       t.foo().then((res) => {
-        expect(res).toEqual(2);
-        expect(t.prop).toEqual(2);
+        assert.strictEqual(res, 2);
+        assert.strictEqual(t.prop, 2);
       });
 
       t.foo().then((res) => {
-        expect(res).toEqual(2);
-        expect(t.prop).toEqual(2);
+        assert.strictEqual(res, 2);
+        assert.strictEqual(t.prop, 2);
         resolve(null);
       });
     });
@@ -109,12 +104,12 @@ describe('throttle-async', () => {
           throw new Error('should get to this point');
         })
         .catch((e: Error) => {
-          expect(e.message).toEqual('blarg');
+          assert.strictEqual(e.message, 'blarg');
         });
 
       t.foo('b')
         .then((res) => {
-          expect(res).toEqual('b');
+          assert.strictEqual(res, 'b');
           resolve(null);
         });
     });
@@ -136,17 +131,17 @@ describe('throttle-async', () => {
     const t = new T();
 
     t.foo('a');
-    expect(t.prop).toEqual(1);
+    assert.strictEqual(t.prop, 1);
     t.foo('b');
-    expect(t.prop).toEqual(2);
+    assert.strictEqual(t.prop, 2);
 
     await sleep(30);
     t.foo('c');
-    expect(t.prop).toEqual(3);
+    assert.strictEqual(t.prop, 3);
 
     const val = await t.foo('d');
-    expect(t.prop).toEqual(4);
-    expect(val).toEqual('d');
+    assert.strictEqual(t.prop, 4);
+    assert.strictEqual(val, 'd');
   });
 
   it('should validate methods invoked between times', async () => {
@@ -176,7 +171,6 @@ describe('throttle-async', () => {
 
     await t.foo('k');
     const seconds = (new Date().getTime() - start.getTime()) / 1000;
-    expect(seconds).toBeGreaterThanOrEqual(0.5);
-    expect(seconds).toBeLessThan(0.6);
+    assert(seconds >= 0.5 && seconds < 0.6);
   });
 });

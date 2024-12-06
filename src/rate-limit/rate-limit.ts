@@ -8,7 +8,7 @@ export function rateLimit<T = any, D = any>(config: RateLimitConfigs): RateLimit
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = rateLimitify(descriptor.value, config);
 
       return descriptor;

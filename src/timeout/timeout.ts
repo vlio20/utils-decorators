@@ -8,7 +8,7 @@ export function timeout<T = any>(ms: number): Timeoutable<T> {
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
   ): TypedPropertyDescriptor<AsyncMethod<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = timeoutify(descriptor.value, ms);
 
       return descriptor;

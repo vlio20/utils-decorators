@@ -11,11 +11,12 @@ export function memoize<T = any, D = any>(input?: MemoizeConfig<T, D> | number):
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<D>>,
   ): TypedPropertyDescriptor<Method<D>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = memoizify(descriptor.value, input as any);
 
       return descriptor;
     }
+
     throw new Error('@memoize is applicable only on a methods.');
   };
 }

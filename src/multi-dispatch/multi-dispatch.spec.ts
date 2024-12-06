@@ -1,22 +1,17 @@
 import { multiDispatch } from './multi-dispatch';
 import { sleep } from '../common/utils/utils';
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 
-describe('retry', () => {
+describe('multi-dispatch', () => {
   it('should make sure error thrown when decorator not set on method', () => {
-    try {
+    assert.throws(() => {
       const nonValidMultiDispatch: any = multiDispatch(50);
 
       class T {
-        @nonValidMultiDispatch
-          boo: string;
+        @nonValidMultiDispatch boo: string;
       }
-    } catch (e) {
-      expect('@multiDispatch is applicable only on a methods.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, Error('@multiDispatch is applicable only on a methods.'));
   });
 
   it('should dispatch twice and resolve', async () => {
@@ -37,8 +32,8 @@ describe('retry', () => {
 
     const t = new T();
     const res = await t.foo();
-    expect(t.counter).toEqual(2);
-    expect(res).toEqual('yes');
+    assert.strictEqual(t.counter, 2);
+    assert.strictEqual(res, 'yes');
   });
 
   it('should get last error if all rejected', async () => {
@@ -60,13 +55,13 @@ describe('retry', () => {
     }
 
     const t = new T();
-    try {
+    await assert.rejects(async () => {
       await t.foo();
-      throw new Error('should not reach here');
-    } catch (e) {
-      expect(t.counter).toEqual(2);
-      expect(e.message).toEqual('slowest');
-    }
+    }, (err: Error) => {
+      assert.strictEqual(t.counter, 2);
+      assert.strictEqual(err.message, 'slowest');
+      return true;
+    });
   });
 
   it('should dispatch twice return faster', async () => {
@@ -79,7 +74,6 @@ describe('retry', () => {
 
         if (this.counter === 1) {
           await sleep(100);
-
           return Promise.resolve('slow');
         }
 
@@ -90,7 +84,7 @@ describe('retry', () => {
 
     const t = new T();
     const res = await t.foo();
-    expect(t.counter).toEqual(2);
-    expect(res).toEqual('fast');
+    assert.strictEqual(t.counter, 2);
+    assert.strictEqual(res, 'fast');
   });
 });
