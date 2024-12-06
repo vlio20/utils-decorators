@@ -8,7 +8,7 @@ export function retry<T = any>(input: RetryInput): Retryable<T> {
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
   ): TypedPropertyDescriptor<AsyncMethod<any>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = retryfy(descriptor.value, input);
 
       return descriptor;

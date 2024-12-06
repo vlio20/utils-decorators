@@ -56,7 +56,7 @@ export function rateLimitify<D = any, A extends any[] = any[]>(
   config: RateLimitConfigs,
 ): Method<D, A> {
   if (config.rateLimitAsyncCounter && config.rateLimitCounter) {
-    throw new Error('You cant provide both rateLimitAsyncCounter and rateLimitCounter.');
+    throw new Error('You can\'t provide both rateLimitAsyncCounter and rateLimitCounter.');
   }
 
   const taskExec = new TaskExec();

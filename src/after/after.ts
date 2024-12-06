@@ -8,7 +8,7 @@ export function after<T = any, D = any>(config: AfterConfig<T, D>): Decorator<T>
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<D>> => {
-    if (descriptor.value) {
+    if (descriptor && descriptor.value) {
       descriptor.value = afterify(descriptor.value, config);
 
       return descriptor;

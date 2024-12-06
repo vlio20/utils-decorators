@@ -14,7 +14,7 @@ export function cancelPreviousify<D = any, A extends any[] = any[]>(originalMeth
 
       originalMethod.apply(this, args)
         .then((data: any) => resolve(data))
-        .catch((err) => reject(err));
+        .catch((err: Error) => reject(err));
     });
   };
 }

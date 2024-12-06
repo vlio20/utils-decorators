@@ -1,35 +1,37 @@
 import { Queue } from './queue';
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 
 describe('Queue', () => {
   it('should initialize with size 0', () => {
     const queue = new Queue<number>();
-    expect(queue.getSize()).toBe(0);
-    expect(queue.isEmpty()).toBe(true);
+    assert.strictEqual(queue.getSize(), 0);
+    assert.strictEqual(queue.isEmpty(), true);
   });
 
   it('should enqueue items and update size', () => {
     const queue = new Queue<number>();
     queue.enqueue(1);
-    expect(queue.getSize()).toBe(1);
-    expect(queue.isEmpty()).toBe(false);
+    assert.strictEqual(queue.getSize(), 1);
+    assert.strictEqual(queue.isEmpty(), false);
     queue.enqueue(2);
-    expect(queue.getSize()).toBe(2);
+    assert.strictEqual(queue.getSize(), 2);
   });
 
   it('should dequeue items in the correct order', () => {
     const queue = new Queue<number>();
     queue.enqueue(1);
     queue.enqueue(2);
-    expect(queue.dequeue()).toBe(1);
-    expect(queue.getSize()).toBe(1);
-    expect(queue.dequeue()).toBe(2);
-    expect(queue.getSize()).toBe(0);
-    expect(queue.isEmpty()).toBe(true);
+    assert.strictEqual(queue.dequeue(), 1);
+    assert.strictEqual(queue.getSize(), 1);
+    assert.strictEqual(queue.dequeue(), 2);
+    assert.strictEqual(queue.getSize(), 0);
+    assert.strictEqual(queue.isEmpty(), true);
   });
 
   it('should return null when dequeue is called on an empty queue', () => {
     const queue = new Queue<number>();
-    expect(queue.dequeue()).toBeNull();
+    assert.strictEqual(queue.dequeue(), null);
   });
 
   it('should handle enqueue and dequeue operations correctly', () => {
@@ -37,11 +39,11 @@ describe('Queue', () => {
     queue.enqueue(1);
     queue.enqueue(2);
     queue.enqueue(3);
-    expect(queue.dequeue()).toBe(1);
+    assert.strictEqual(queue.dequeue(), 1);
     queue.enqueue(4);
-    expect(queue.dequeue()).toBe(2);
-    expect(queue.dequeue()).toBe(3);
-    expect(queue.dequeue()).toBe(4);
-    expect(queue.isEmpty()).toBe(true);
+    assert.strictEqual(queue.dequeue(), 2);
+    assert.strictEqual(queue.dequeue(), 3);
+    assert.strictEqual(queue.dequeue(), 4);
+    assert.strictEqual(queue.isEmpty(), true);
   });
 });

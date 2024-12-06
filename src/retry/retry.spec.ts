@@ -1,23 +1,18 @@
 import { retry } from './retry';
 import { sleep } from '../common/test-utils';
 import { retryfy } from './retryfy';
+import { describe, it, mock } from 'node:test';
+import assert from 'node:assert';
 
 describe('retry', () => {
   it('should make sure error thrown when decorator not set on method', () => {
-    try {
+    assert.throws(() => {
       const nonValidRetry: any = retry(50);
 
       class T {
-        @nonValidRetry
-          boo: string;
+        @nonValidRetry boo: string;
       }
-    } catch (e) {
-      expect('@retry is applicable only on a methods.').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, Error('@retry is applicable only on a methods.'));
   });
 
   it('should retry twice', async () => {
@@ -31,18 +26,16 @@ describe('retry', () => {
       foo(): Promise<string> {
         if (this.counter === 0) {
           this.counter += 1;
-
           return Promise.reject(new Error('no'));
         }
-
         return Promise.resolve('yes');
       }
     }
 
     const t = new T();
     const res = await t.foo();
-    expect(t.counter).toEqual(1);
-    expect(res).toEqual('yes');
+    assert.strictEqual(t.counter, 1);
+    assert.strictEqual(res, 'yes');
   });
 
   it('should throw exception after retries', async () => {
@@ -60,13 +53,10 @@ describe('retry', () => {
     }
 
     const t = new T();
-    try {
+    await assert.rejects(async () => {
       await t.foo();
-      throw new Error('should not get hear');
-    } catch (e) {
-      expect(t.counter).toEqual(3);
-      expect(e.message).toEqual('no');
-    }
+    }, Error('no'));
+    assert.strictEqual(t.counter, 3);
   });
 
   it('should wait according to configured delay', async () => {
@@ -91,11 +81,11 @@ describe('retry', () => {
     const t = new T();
     t.foo();
     await sleep(25);
-    expect(t.counter).toEqual(1);
+    assert.strictEqual(t.counter, 1);
     await sleep(50);
-    expect(t.counter).toEqual(2);
+    assert.strictEqual(t.counter, 2);
     await sleep(75);
-    expect(t.counter).toEqual(3);
+    assert.strictEqual(t.counter, 3);
   });
 
   it('should wait according to retries array', async () => {
@@ -117,11 +107,11 @@ describe('retry', () => {
     const t = new T();
     t.foo();
     await sleep(25);
-    expect(t.counter).toEqual(1);
+    assert.strictEqual(t.counter, 1);
     await sleep(50);
-    expect(t.counter).toEqual(2);
+    assert.strictEqual(t.counter, 2);
     await sleep(150);
-    expect(t.counter).toEqual(3);
+    assert.strictEqual(t.counter, 3);
   });
 
   it('should wait according to retries object with delaysArray', async () => {
@@ -145,11 +135,11 @@ describe('retry', () => {
     const t = new T();
     t.foo();
     await sleep(25);
-    expect(t.counter).toEqual(1);
+    assert.strictEqual(t.counter, 1);
     await sleep(50);
-    expect(t.counter).toEqual(2);
+    assert.strictEqual(t.counter, 2);
     await sleep(150);
-    expect(t.counter).toEqual(3);
+    assert.strictEqual(t.counter, 3);
   });
 
   it('should wait 1 sec by default', async () => {
@@ -171,20 +161,23 @@ describe('retry', () => {
     const t = new T();
     const prom = t.foo();
     await sleep(500);
-    expect(t.counter).toEqual(1);
+    assert.strictEqual(t.counter, 1);
     await sleep(600);
-    expect(t.counter).toEqual(2);
+    assert.strictEqual(t.counter, 2);
 
-    expect(await prom).toEqual('yes');
-    expect(t.counter).toEqual(2);
+    const res = await prom;
+    assert.strictEqual(res, 'yes');
+    assert.strictEqual(t.counter, 2);
   });
 
-  it('should throw error when invalid input', async () => {
-    expect(retryfy.bind(this, '6')).toThrow('invalid input');
+  it('should throw error when invalid input', () => {
+    assert.throws(() => {
+      (retryfy as any)('6');
+    }, new Error('invalid input'));
   });
 
   it('should invoke onRetry', async () => {
-    const onRetry = jest.fn();
+    const onRetry = mock.fn();
 
     class T {
       counter = 0;
@@ -219,7 +212,7 @@ describe('retry', () => {
         return Promise.resolve();
       }
 
-      retry(e, c): void {
+      retry(): void {
         this.decCounter += 1;
       }
     }
@@ -229,20 +222,20 @@ describe('retry', () => {
     await t.goo();
     await sleep(100);
 
-    expect(onRetry).toHaveBeenCalledTimes(2);
+    assert.equal(onRetry.mock.callCount(), 2);
     const argsFirstCall = onRetry.mock.calls[0];
-    expect(argsFirstCall[0].message).toEqual('no 1');
-    expect(argsFirstCall[1]).toEqual(0);
+    assert.equal(argsFirstCall.arguments[0].message, 'no 1');
+    assert.equal(argsFirstCall.arguments[1], 0);
 
     const argsSecondCall = onRetry.mock.calls[1];
-    expect(argsSecondCall[0].message).toEqual('no 2');
-    expect(argsSecondCall[1]).toEqual(1);
+    assert.equal(argsSecondCall.arguments[0].message, 'no 2');
+    assert.equal(argsSecondCall.arguments[1], 1);
 
-    expect(t.decCounter).toEqual(3);
+    assert.equal(t.decCounter, 3);
   });
 
-  it('should throw error when provided both retires and delaysArray', () => {
-    try {
+  it('should throw error when provided both retries and delaysArray', () => {
+    assert.throws(() => {
       class T {
         @retry({
           retries: 3,
@@ -252,20 +245,12 @@ describe('retry', () => {
           return Promise.resolve();
         }
       }
-    } catch (e) {
-      expect('You can not provide both retries and delaysArray').toBe(e.message);
-
-      return;
-    }
-
-    throw new Error('should not reach this line');
+    }, new Error('You can not provide both retries and delaysArray'));
   });
 
   it('should fill the delays with 1000ms by default', async () => {
     class T {
       counter = 0;
-
-      decCounter = 0;
 
       @retry({
         retries: 1,
@@ -285,8 +270,8 @@ describe('retry', () => {
 
     t.foo();
     await sleep(500);
-    expect(t.counter).toEqual(1);
+    assert.strictEqual(t.counter, 1);
     await sleep(600);
-    expect(t.counter).toEqual(2);
+    assert.strictEqual(t.counter, 2);
   });
 });
