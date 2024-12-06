@@ -3,10 +3,8 @@ import { sleep } from '../common/test-utils';
 import { describe, it, mock } from 'node:test';
 import assert from 'node:assert';
 
-declare const window: any;
-
-describe('memozie', () => {
-  it('should verify memoize caching original method', (ctx, done) => {
+describe('memoize', () => {
+  it('should verify memoize caching original method', (_, done) => {
     const spy = mock.fn((x: number, y: number) => x + y);
 
     class T {
@@ -53,7 +51,7 @@ describe('memozie', () => {
     }, Error('@memoize is applicable only on a methods.'));
   });
 
-  it('should use provided cache', (ctx, done) => {
+  it('should use provided cache', (_2, done) => {
     const cache = new Map<string, number>();
     const spy = mock.fn(() => 1);
 
@@ -85,6 +83,7 @@ describe('memozie', () => {
 
     class T {
 
+      // eslint-disable-next-line class-methods-use-this
       @memoize<T, string>({ expirationTimeMs: 10, keyResolver: mapper })
       fooWithMapper(x: string, y: string): string {
         return spyFooWithMapper(x, y);
@@ -109,6 +108,7 @@ describe('memozie', () => {
     class T {
       foo = spyMapper;
 
+      // eslint-disable-next-line class-methods-use-this
       @memoize<T, string>({ expirationTimeMs: 10, keyResolver: 'foo' })
       fooWithInnerMapper(x: string, y: string): string {
         return spyFooWithMapper(x, y);
