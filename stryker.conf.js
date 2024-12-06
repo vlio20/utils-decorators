@@ -4,7 +4,9 @@ module.exports = {
     reporters: ['progress', 'html', 'dashboard'],
     coverageAnalysis: 'off',
     mutate: ['src/**/*.ts', '!src/**/*.spec.ts'],
-    command: 'npm run test',
+    testFiles: ["test/**/*.@(js|ts)"],
+    nodeArgs: ["--loader", "ts-node/esm"],
+    forceBail: true,
     thresholds: {
       break: 95
     }
