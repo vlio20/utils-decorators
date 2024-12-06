@@ -27,7 +27,7 @@ describe('throttle-async', () => {
       }
     }
 
-    return new Promise(async (resolve) => {
+    await new Promise(async (resolve) => {
       const t = new T();
 
       assert.strictEqual(t.prop, 0);
@@ -48,6 +48,7 @@ describe('throttle-async', () => {
       await sleep(50);
       assert.strictEqual(t.prop, 2);
     });
+
   });
 
   it('should verify method invocation is throttled 2', async () => {
@@ -63,7 +64,7 @@ describe('throttle-async', () => {
       }
     }
 
-    return new Promise((resolve) => {
+    await new Promise((resolve) => {
       const t = new T();
 
       t.foo().then((res) => {
@@ -96,7 +97,7 @@ describe('throttle-async', () => {
       }
     }
 
-    return new Promise((resolve) => {
+    await new Promise((resolve) => {
       const t = new T();
 
       t.foo('a')
