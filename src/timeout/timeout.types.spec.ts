@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { timeoutify, timeout } from '../index';
 
 function typeChecks() {
@@ -26,4 +27,17 @@ function typeChecks() {
 
 it('checks the public signatures at compile time', () => {
   expect(typeChecks).toBeDefined();
+});
+
+function checkPromiseCompatibility(): void {
+  const customPromise = Promise.resolve(1) as Promise<number> & { requiredTag: string };
+  class PromiseResults {
+    // @ts-expect-error Timeouts return a native Promise.
+    @timeout(100)
+    timeoutCustom(): typeof customPromise { return customPromise; }
+  }
+}
+
+it('checks timeout public signatures at compile time', () => {
+  expect(checkPromiseCompatibility).toBeDefined();
 });

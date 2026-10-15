@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { retryfy, retry } from '../index';
 
 function typeChecks() {
@@ -42,4 +43,17 @@ function typeChecks() {
 
 it('checks the public signatures at compile time', () => {
   expect(typeChecks).toBeDefined();
+});
+
+function checkPromiseCompatibility(): void {
+  const customPromise = Promise.resolve(1) as Promise<number> & { requiredTag: string };
+  class PromiseResults {
+    // @ts-expect-error Retrying returns a native Promise.
+    @retry({ retries: 2 })
+    retryCustom(): typeof customPromise { return customPromise; }
+  }
+}
+
+it('checks retry public signatures at compile time', () => {
+  expect(checkPromiseCompatibility).toBeDefined();
 });

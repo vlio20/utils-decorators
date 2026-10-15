@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { cancelPreviousify, cancelPrevious } from '../index';
 
 function typeChecks() {
@@ -26,4 +27,17 @@ function typeChecks() {
 
 it('checks the public signatures at compile time', () => {
   expect(typeChecks).toBeDefined();
+});
+
+function checkPromiseCompatibility(): void {
+  const customPromise = Promise.resolve(1) as Promise<number> & { requiredTag: string };
+  class PromiseResults {
+    // @ts-expect-error Cancellation returns a native Promise.
+    @cancelPrevious()
+    cancelCustom(): typeof customPromise { return customPromise; }
+  }
+}
+
+it('checks cancel-previous public signatures at compile time', () => {
+  expect(checkPromiseCompatibility).toBeDefined();
 });

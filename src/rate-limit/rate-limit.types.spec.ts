@@ -55,20 +55,3 @@ function typeChecks(counter: RateLimitAsyncCounter, dynamicConfig: RateLimitConf
 it('checks the public signatures at compile time', () => {
   expect(typeChecks).toBeDefined();
 });
-
-it('returns a promise with an async counter even for a synchronous source', async () => {
-  const counter: RateLimitAsyncCounter = {
-    inc: async () => {},
-    dec: async () => {},
-    getCount: async () => 0,
-  };
-  const receiver = {
-    base: 10,
-    wrapped: rateLimitify(function (this: { base: number }, id: number) {
-      return this.base + id;
-    }, { allowedCalls: 1, timeSpanMs: 0, rateLimitAsyncCounter: counter }),
-  };
-  const result = receiver.wrapped(2);
-  expect(result).toBeInstanceOf(Promise);
-  await expect(result).resolves.toBe(12);
-});

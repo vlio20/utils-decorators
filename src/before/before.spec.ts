@@ -199,3 +199,9 @@ describe('before', () => {
     expect(result).toBe(value);
   });
 });
+
+it('preserves synchronous results without waiting for the before hook', () => {
+  const hook = jest.fn();
+  expect(beforify(() => 42, { func: hook })()).toBe(42);
+  expect(hook).toHaveBeenCalledWith();
+});

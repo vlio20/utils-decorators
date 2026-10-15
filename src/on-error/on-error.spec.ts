@@ -1,3 +1,4 @@
+import { onErrorify } from './on-errorify';
 import { onError } from './on-error';
 
 describe('onError', () => {
@@ -133,4 +134,8 @@ describe('onError', () => {
     await t.foo(1);
     expect(onErrorFunc).toHaveBeenCalledTimes(1);
   });
+});
+
+it('returns the recovery result when the source rejects', async () => {
+  await expect(onErrorify(async () => { throw 'failure'; }, { func: () => 'recovered' })()).resolves.toBe('recovered');
 });

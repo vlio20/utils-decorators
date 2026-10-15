@@ -1,3 +1,4 @@
+import { afterify } from './afterify';
 import { after } from './after';
 import { AfterFunc, AfterParams } from './after.model';
 
@@ -220,5 +221,19 @@ describe('after', () => {
     const t = new T();
     const result = await t.foo(value);
     expect(result).toBe(value);
+  });
+});
+
+describe('afterify return values', () => {
+  it('preserves synchronous results and reports the original arguments', () => {
+    const report = jest.fn();
+    expect(afterify((id: number) => id, { func: report })(42)).toBe(42);
+    expect(report).toHaveBeenCalledWith({ args: [42], response: 42 });
+  });
+
+  it('reports resolved async values when waiting', async () => {
+    const report = jest.fn();
+    await expect(afterify(async () => 42, { wait: true, func: report })()).resolves.toBe(42);
+    expect(report).toHaveBeenCalledWith({ args: [], response: 42 });
   });
 });

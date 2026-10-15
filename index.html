@@ -163,6 +163,19 @@
       margin-bottom: 1.5rem;
     }
 
+    .ud-migration-table {
+      width: 100%;
+      min-width: 36rem;
+      border-collapse: collapse;
+    }
+
+    .ud-migration-table th, .ud-migration-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #E5E7EB;
+      text-align: left;
+      vertical-align: top;
+    }
+
     .ud-code-wrapper {
       display: flex;
       flex-wrap: wrap;
@@ -229,6 +242,10 @@
 
       <li class="ud-nav">
         <a href="#typescript" onclick="logNavEvent('typescript')">TypeScript</a>
+      </li>
+
+      <li class="ud-nav">
+        <a href="#migration" onclick="logNavEvent('migration')">Migration to 3.0</a>
       </li>
 
       <li class="ud-group">
@@ -349,6 +366,61 @@
           <code>experimentalDecorators</code>. Legacy decorator callbacks cannot infer their payload from the method;
           annotate it when needed, such as <code>AfterParams&lt;number, [number]&gt;</code>.
           Otherwise, payload values safely default to <code>unknown</code>.
+        </p>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="migration"></div>
+      <div class="ud-section-title">Migrating to 3.0</div>
+      <div class="ud-section-content">
+        <p class="ud-description">
+          3.0 makes types match runtime behavior and infers wrapper types from your functions.
+          Some previously accepted declarations now fail because they could mislead callers.
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <table class="ud-migration-table" aria-label="TypeScript migration changes and reasons">
+              <thead><tr><th scope="col">What to update</th><th scope="col">Why it changed</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>For configured decorators, replace calls such as <code>@memoize&lt;Service, number&gt;({...})</code>
+                    with <code>@memoize({...})</code>.</td>
+                  <td>The decorated method supplies the types; configuration must fit them.</td>
+                </tr>
+                <tr>
+                  <td><code>afterify</code> and default <code>beforify</code> preserve synchronous results and throws.
+                    <code>execTimify</code> now returns the measured result. Add an async adapter if you need a promise.</td>
+                  <td>Return types now describe the values callers actually receive.</td>
+                </tr>
+                <tr>
+                  <td>Declare <code>void</code> for <code>@debounce</code>, <code>@delay</code>, and <code>@throttle</code>.
+                    Async decorators require promise-returning methods; recovery values must fit the result.</td>
+                  <td>Legacy decorators cannot rewrite the caller-visible method signature or preserve custom promise properties.</td>
+                </tr>
+                <tr>
+                  <td>Narrow <code>unknown</code> errors and payloads. Annotate decorator callbacks when needed,
+                    for example <code>AfterParams&lt;number, [number]&gt;</code>; wrapper callbacks infer automatically.</td>
+                  <td>JavaScript can throw any value. Decorator factories cannot infer callback types backward from a method.</td>
+                </tr>
+                <tr>
+                  <td>Include <code>undefined</code> in <code>@refreshable</code> properties, and <code>null</code>
+                    if you assign it to stop refreshing.</td>
+                  <td>The property is empty until the first result arrives.</td>
+                </tr>
+                <tr>
+                  <td>Choose one rate-limit counter, and either <code>retries</code> or <code>delaysArray</code>.
+                    Extend these union configurations with type intersections.</td>
+                  <td>Invalid combinations already failed at runtime; the types now catch them earlier.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="ud-description">
+          If you explicitly use <code>Method</code> or <code>AsyncMethod</code>, specify the argument tuple,
+          for example <code>Method&lt;number, [number]&gt;</code>. Their safe default is now <code>unknown[]</code>;
+          ordinary wrapper calls infer the tuple for you.
         </p>
       </div>
     </section>
