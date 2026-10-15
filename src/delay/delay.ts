@@ -7,7 +7,7 @@ export function delay<T = any>(delayMs: number): Decorator<T> {
     propertyName: keyof T,
     descriptor: TypedPropertyDescriptor<Method<any>>,
   ): TypedPropertyDescriptor<Method<any>> => {
-    if (descriptor.value) {
+    if (descriptor?.value) {
       descriptor.value = delayfy(descriptor.value, delayMs);
 
       return descriptor;
