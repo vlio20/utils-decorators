@@ -1,4 +1,4 @@
-import { AsyncMethod } from '../common/model/common.model';
+import { AsyncMethod, Method } from '../common/model/common.model';
 import { sleep } from '../common/utils/utils';
 import { OnRetry, RetryInput, RetryInputConfig } from './retry.model';
 
@@ -30,7 +30,7 @@ function getRetriesArray(input: RetryInput): number[] {
   throw new Error('invalid input');
 }
 
-function getOnRetry(input: RetryInput, context: any): OnRetry {
+function getOnRetry(input: RetryInput, context: Record<PropertyKey, Method<any>>): OnRetry | undefined {
   if (typeof input === 'object') {
     const { onRetry } = (input as RetryInputConfig);
     if (typeof onRetry === 'string') {
@@ -44,11 +44,12 @@ function getOnRetry(input: RetryInput, context: any): OnRetry {
 }
 
 async function exec(
+  this: unknown,
   originalMethod: (...x: any[]) => any,
   args: any[],
   retriesArr: number[],
   callsMadeSoFar: number,
-  onRetry: OnRetry,
+  onRetry: OnRetry | undefined,
 ): Promise<any> {
   try {
     const res = await originalMethod.apply(this, args);
@@ -72,7 +73,7 @@ async function exec(
 export function retryfy<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, input: RetryInput): AsyncMethod<D, A> {
   const retriesArray = getRetriesArray(input);
 
-  return function (...args: A): Promise<D> {
+  return function (this: Record<PropertyKey, Method<any>>, ...args: A): Promise<D> {
     const onRetry = getOnRetry(input, this);
 
     return exec(

@@ -1,11 +1,13 @@
 import { AsyncMethod, Method } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
-import { RateLimitConfigs } from './rate-limit.model';
+import { RateLimitAsyncCounter, RateLimitConfigs } from './rate-limit.model';
 import { SimpleRateLimitCounter } from './simple-rate-limit-counter';
+
+type ResolvedRateLimitConfigs = RateLimitConfigs & Required<Pick<RateLimitConfigs, 'rateLimitCounter' | 'exceedHandler'>>;
 
 async function handleAsyncRateLimit<T, D, A extends any[]>(
   target: T,
-  resolvedConfig: RateLimitConfigs,
+  resolvedConfig: ResolvedRateLimitConfigs & { rateLimitAsyncCounter: RateLimitAsyncCounter },
   key: string,
   taskExec: TaskExec,
   originalMethod: AsyncMethod<D, A>,
@@ -29,12 +31,12 @@ async function handleAsyncRateLimit<T, D, A extends any[]>(
 
 function handleRateLimit<T, D, A extends any[]>(
   target: T,
-  resolvedConfig: RateLimitConfigs,
+  resolvedConfig: ResolvedRateLimitConfigs,
   key: string,
   taskExec: TaskExec,
   originalMethod: (...x: A) => D,
   args: A,
-): Promise<D> {
+): D {
   const { rateLimitCounter } = resolvedConfig;
   const currentCount = rateLimitCounter.getCount(key);
 
@@ -60,22 +62,25 @@ export function rateLimitify<D = any, A extends any[] = any[]>(
   }
 
   const taskExec = new TaskExec();
-  const resolvedConfig: RateLimitConfigs = {
-    rateLimitCounter: new SimpleRateLimitCounter(),
-    exceedHandler: () => {
-      throw new Error('You have acceded the amount of allowed calls');
-    },
-    keyResolver: () => '__rateLimit__',
+  const resolvedConfig = {
     ...config,
+    rateLimitCounter: config.rateLimitCounter ?? new SimpleRateLimitCounter(),
+    exceedHandler: config.exceedHandler ?? (() => {
+      throw new Error('You have acceded the amount of allowed calls');
+    }),
+    keyResolver: config.keyResolver ?? (() => '__rateLimit__'),
   };
 
-  return function (...args: A): D | Promise<D> {
-    const keyResolver: (...x: A) => string = typeof resolvedConfig.keyResolver === 'string'
-      ? this[resolvedConfig.keyResolver] : (resolvedConfig.keyResolver as (...x: A) => any).bind(this);
+  return function (this: Record<PropertyKey, Method<any>>, ...args: A): D | Promise<D> {
+    const keyResolver = typeof resolvedConfig.keyResolver === 'function'
+      ? resolvedConfig.keyResolver.bind(this) : this[resolvedConfig.keyResolver].bind(this);
     const key = keyResolver(...args);
 
     if (resolvedConfig.rateLimitAsyncCounter) {
-      return handleAsyncRateLimit<any, D, A>(this, resolvedConfig, key, taskExec, originalMethod as AsyncMethod<D>, args);
+      return handleAsyncRateLimit<any, D, A>(
+        this, { ...resolvedConfig, rateLimitAsyncCounter: resolvedConfig.rateLimitAsyncCounter },
+        key, taskExec, originalMethod as AsyncMethod<D>, args,
+      );
     }
 
     return handleRateLimit<any, D, A>(this, resolvedConfig, key, taskExec, originalMethod as Method<D>, args);

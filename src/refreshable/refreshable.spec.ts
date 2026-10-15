@@ -55,7 +55,7 @@ describe('refreshable', () => {
       intervalMs: 50,
     });
 
-    const t = { prop: 9, proop: 4 } as { prop: number; proop: number };
+    const t = { prop: 9, proop: 4 } as { prop: number | null; proop: number };
     fooDec(t, 'prop');
     gooDec(t, 'proop');
 

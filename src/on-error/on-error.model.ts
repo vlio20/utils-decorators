@@ -10,4 +10,4 @@ export interface OnErrorConfig<T> {
   func: ((...args: any[]) => any) | keyof T;
 }
 
-export type OnErrorHandler = (e?: Error, args?: any[]) => any;
+export type OnErrorHandler = (e: unknown, args: any[]) => any;

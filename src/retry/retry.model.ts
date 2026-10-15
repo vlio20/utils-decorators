@@ -15,4 +15,4 @@ export type Retryable<T> = (
   descriptor: TypedPropertyDescriptor<AsyncMethod<any>>
 ) => TypedPropertyDescriptor<AsyncMethod<any>>;
 
-export type OnRetry = (error: Error, retriesCount: number) => void;
+export type OnRetry = (error: unknown, retriesCount: number) => void;

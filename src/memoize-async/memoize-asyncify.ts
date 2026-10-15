@@ -1,4 +1,4 @@
-import { AsyncMethod } from '../common/model/common.model';
+import { AsyncMethod, Method } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
 import { AsyncMemoizeConfig } from './memoize-async.model';
 
@@ -10,28 +10,18 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
   originalMethod: AsyncMethod<D, A>,
   input?: AsyncMemoizeConfig<any, D> | number,
 ): AsyncMethod<D, A> {
-  const defaultConfig: AsyncMemoizeConfig<any, D> = {
-    cache: new Map<string, D>(),
+  const config = typeof input === 'number' ? { expirationTimeMs: input } : input;
+  const resolvedConfig = {
+    ...config,
+    cache: config?.cache ?? new Map<string, D>(),
   };
   const runner = new TaskExec();
   const promCache = new Map<string, Promise<D>>();
-  let resolvedConfig = {
-    ...defaultConfig,
-  } as AsyncMemoizeConfig<any, D>;
 
-  if (typeof input === 'number') {
-    resolvedConfig.expirationTimeMs = input;
-  } else {
-    resolvedConfig = {
-      ...resolvedConfig,
-      ...input,
-    };
-  }
-
-  return async function (...args: A): Promise<D> {
-    const keyResolver = typeof resolvedConfig.keyResolver === 'string'
-      ? this[resolvedConfig.keyResolver].bind(this)
-      : resolvedConfig.keyResolver;
+  return async function (this: Record<PropertyKey, Method<any>>, ...args: A): Promise<D> {
+    const keyResolver = typeof resolvedConfig.keyResolver === 'function' || resolvedConfig.keyResolver === undefined
+      ? resolvedConfig.keyResolver
+      : this[resolvedConfig.keyResolver].bind(this);
 
     let key;
 
@@ -41,11 +31,12 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
       key = JSON.stringify(args);
     }
 
-    if (promCache.has(key)) {
-      return promCache.get(key);
+    const cachedPromise = promCache.get(key);
+    if (cachedPromise) {
+      return cachedPromise;
     }
 
-    const prom = new Promise<any>(async (resolve, reject) => {
+    const prom = new Promise<D>(async (resolve, reject) => {
       let inCache: boolean;
 
       try {
@@ -57,7 +48,7 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
       }
 
       if (inCache) {
-        let data: any;
+        let data: D | null | undefined;
         try {
           data = await resolvedConfig.cache.get(key);
         } catch (e) {
@@ -66,7 +57,8 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
           return;
         }
 
-        resolve(data);
+        // The cache has confirmed this key exists.
+        resolve(data as D);
       } else {
         try {
           const data = await originalMethod.apply(this, args);

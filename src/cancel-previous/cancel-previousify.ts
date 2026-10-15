@@ -4,7 +4,7 @@ import { CanceledPromise } from './canceled-promise';
 export function cancelPreviousify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>): AsyncMethod<D, A> {
   let rej: (e: CanceledPromise) => void;
 
-  return function (...args: A): Promise<D> {
+  return function (this: unknown, ...args: A): Promise<D> {
     if (rej) {
       rej(new CanceledPromise());
     }

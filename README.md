@@ -17,8 +17,6 @@ npm i utils-decorators
 
 Please note that the decorators are **working perfectly with plain JavaScript** code as well as with TypeScript.
 
-Version 3 requires Node.js 22.18+ on the 22.x line, or Node.js 24.11+.
-
 # Docs 
 check the <a href="https://vlio20.github.io/utils-decorators/" target="_blank">documentation</a>
 

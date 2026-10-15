@@ -8,9 +8,13 @@ describe('throttle', () => {
 
       class T {
         @nonValidThrottle
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@throttle is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -21,7 +25,7 @@ describe('throttle', () => {
 
   it('should verify method invocation is throttled', async () => {
     class T {
-      prop: number;
+      prop!: number;
 
       @throttle<T>(20)
       foo(x: number): void {

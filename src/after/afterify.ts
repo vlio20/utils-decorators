@@ -9,10 +9,10 @@ export function afterify<D = any, A extends any[] = any[]>(
     ...config,
   };
 
-  return async function (...args: A): Promise<D> {
-    const afterFunc: AfterFunc<ReturnType<typeof originalMethod>> = typeof resolvedConfig.func === 'string'
-      ? this[resolvedConfig.func].bind(this)
-      : resolvedConfig.func;
+  return async function (this: Record<PropertyKey, Method<any>>, ...args: A): Promise<D> {
+    const afterFunc: AfterFunc<ReturnType<typeof originalMethod>> = typeof resolvedConfig.func === 'function'
+      ? resolvedConfig.func
+      : this[resolvedConfig.func].bind(this);
 
     if (resolvedConfig.wait) {
       const response = await originalMethod.apply(this, args);

@@ -12,11 +12,13 @@ export function debounce<T = any>(delayMs: number): Decorator<T> {
       const originalMethod = descriptor.value;
 
       descriptor.value = function (...args: any[]) {
-        if (!methodsMap.has(this)) {
-          methodsMap.set(this, debouncify(originalMethod, delayMs).bind(this));
+        let method = methodsMap.get(this);
+        if (!method) {
+          method = debouncify(originalMethod, delayMs).bind(this);
+          methodsMap.set(this, method);
         }
 
-        methodsMap.get(this)(...args);
+        method(...args);
       };
 
       return descriptor;

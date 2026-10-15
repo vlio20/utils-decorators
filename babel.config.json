@@ -1,15 +1,19 @@
 {
-  "targets": { "node": "current" },
+  "targets": {
+    "node": "current"
+  },
   "presets": [
     [
       "@babel/preset-env",
       {
         "modules": "commonjs"
       }
-    ],
-    "@babel/preset-typescript"
+    ]
   ],
   "plugins": [
+    [
+      "@babel/plugin-transform-typescript"
+    ],
     [
       "@babel/plugin-proposal-decorators",
       {

@@ -8,9 +8,13 @@ describe('delay', () => {
 
       class T {
         @nonValidDelay
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@delay is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -21,7 +25,7 @@ describe('delay', () => {
 
   it('should verify method invocation is delayed', async () => {
     class T {
-      prop: number;
+      prop!: number;
 
       @delay<T>(50)
       foo(x: number): void {

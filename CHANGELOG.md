@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Enchantments
 - Update dependencies [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#179](https://github.com/vlio20/utils-decorators/issues/179)
 
+### Fixed
+- Fix argument forwarding in `@multiDispatch` and `multiDispatchify` [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#184](https://github.com/vlio20/utils-decorators/issues/184)
+
 ## [2.10.0] - 2024-10-02
 
 ### Enchantments

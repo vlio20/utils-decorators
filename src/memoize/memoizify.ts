@@ -6,28 +6,17 @@ export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Meth
 export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, config: MemoizeConfig<any, D>): Method<D, A>;
 export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, expirationTimeMs: number): Method<D, A>;
 export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, input?: MemoizeConfig<any, D> | number): Method<D, A> {
-  const defaultConfig: MemoizeConfig<any, D> = {
-    cache: new Map<string, D>(),
+  const config = typeof input === 'number' ? { expirationTimeMs: input } : input;
+  const resolvedConfig = {
+    ...config,
+    cache: config?.cache ?? new Map<string, D>(),
   };
-
   const runner = new TaskExec();
-  let resolvedConfig = {
-    ...defaultConfig,
-  } as MemoizeConfig<any, D>;
 
-  if (typeof input === 'number') {
-    resolvedConfig.expirationTimeMs = input;
-  } else {
-    resolvedConfig = {
-      ...resolvedConfig,
-      ...input,
-    };
-  }
-
-  return function (...args: A): D {
-    const keyResolver = typeof resolvedConfig.keyResolver === 'string'
-      ? this[resolvedConfig.keyResolver].bind(this)
-      : resolvedConfig.keyResolver;
+  return function (this: Record<PropertyKey, Method<any>>, ...args: A): D {
+    const keyResolver = typeof resolvedConfig.keyResolver === 'function' || resolvedConfig.keyResolver === undefined
+      ? resolvedConfig.keyResolver
+      : this[resolvedConfig.keyResolver].bind(this);
 
     const key = keyResolver
       ? keyResolver(...args)
@@ -45,6 +34,7 @@ export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Meth
       resolvedConfig.cache.set(key, response);
     }
 
-    return resolvedConfig.cache.get(key);
+    // A cache reporting has(key) must supply the cached value.
+    return resolvedConfig.cache.get(key) as D;
   };
 }

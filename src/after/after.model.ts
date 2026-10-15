@@ -1,4 +1,4 @@
-export type AfterFunc<D> = (x?: AfterParams<D>) => void;
+export type AfterFunc<D> = (x: AfterParams<D>) => void;
 
 export interface AfterConfig<T = any, D = any> {
   func: AfterFunc<D> | keyof T;

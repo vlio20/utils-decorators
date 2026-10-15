@@ -14,6 +14,10 @@ describe('readonly', () => {
     try {
       t.prop = 4;
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toBe('Cannot assign to read only property \'prop\' of object \'#<T>\'');
 
       return;

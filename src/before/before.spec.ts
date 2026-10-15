@@ -3,13 +3,18 @@ import { before } from './before';
 describe('before', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
+      // @ts-expect-error Intentionally invalid input verifies runtime validation.
       const nonValidBefore: any = before({ func: null });
 
       class T {
         @nonValidBefore
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@before is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -22,7 +27,7 @@ describe('before', () => {
     let counter = 0;
 
     class T {
-      prop: number;
+      prop!: number;
 
       before(): void {
         expect(this.prop).toBe(3);

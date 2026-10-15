@@ -4,7 +4,7 @@ export type KeyResolver = (...args: any[]) => string;
 
 export interface Cache<D> {
   set: (key: string, value: D) => void;
-  get: (key: string) => D | null;
+  get: (key: string) => D | null | undefined;
   delete: (key: string) => void;
   has: (key: string) => boolean;
 }
