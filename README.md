@@ -20,12 +20,6 @@ Please note that the decorators are **working perfectly with plain JavaScript** 
 # Docs 
 check the <a href="https://vlio20.github.io/utils-decorators/" target="_blank">documentation</a>
 
-## TypeScript
-
-Function wrappers infer argument tuples, return values, and explicit receivers from the original function. Decorators validate their configuration against the decorated method. See the [TypeScript guide and 3.0 migration notes](docs/types.md) for examples, return types, and legacy decorator limitations.
-
-Run `npm run test:types` to check the public API type regressions.
-
 # Feedback
 I will be more than happy to hear your feedback, don't hesitate to ask any question or open an issue. PRs are always welcomed :)  
 Also, I will be happy to hear about new ideas for new decorators, if you have such, please open an issue and describe the requirements and features of your decorator. 

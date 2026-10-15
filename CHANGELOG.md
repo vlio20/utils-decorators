@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Preserve synchronous results in `afterify` and default `beforify`, and return measured results from `execTimify`. Reject decorator declarations whose return types cannot be preserved, including value-returning scheduling methods and custom promise result properties.
-- Use safe `unknown` payload defaults and inferred configuration factories. Add strict public API type regressions and a [TypeScript migration guide](docs/types.md).
+- Use safe `unknown` payload defaults and inferred configuration factories. Add strict public API type regressions and concise [TypeScript documentation](https://vlio20.github.io/utils-decorators/#typescript).
 
 ## [2.10.0] - 2024-10-02
 

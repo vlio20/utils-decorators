@@ -227,6 +227,10 @@
         <a href="#install" onclick="logNavEvent('install')">Installation</a>
       </li>
 
+      <li class="ud-nav">
+        <a href="#typescript" onclick="logNavEvent('typescript')">TypeScript</a>
+      </li>
+
       <li class="ud-group">
         <div>Decorators</div>
       </li>
@@ -323,10 +327,37 @@
     </section>
 
     <section class="ud-section">
+      <div id="typescript"></div>
+      <div class="ud-section-title">TypeScript</div>
+      <div class="ud-section-content">
+        <p class="ud-description">
+          Pass your function, get its types: wrappers infer arguments, return values, and explicit <code>this</code>
+          requirements. Configuration callbacks are inferred too, without extra generic arguments.
+        </p>
+        <pre class="ud-code">
+  import { afterify } from 'utils-decorators';
+
+  const load = afterify(async (id: number) =&gt; ({ id }), {
+    wait: true,
+    func: ({ args, response }) =&gt; console.log(args[0], response.id),
+  });
+
+  load(42); // Promise&lt;{ id: number }&gt;
+  // load('42'); // Type error</pre>
+        <p class="ud-description">
+          Use TypeScript 5.4+ with <code>strict</code> enabled. Decorators also require
+          <code>experimentalDecorators</code>. Legacy decorator callbacks cannot infer their payload from the method;
+          annotate it when needed, such as <code>AfterParams&lt;number, [number]&gt;</code>.
+          Otherwise, payload values safely default to <code>unknown</code>.
+        </p>
+      </div>
+    </section>
+
+    <section class="ud-section">
       <div id="after"></div>
       <div class="ud-section-title">After</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: wrapper arguments and responses are inferred. With wait omitted or false, the hook receives the original return value; with wait true, it receives the resolved value. Synchronous results stay synchronous. Hook return values are ignored. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description"><code>wait: true</code> gives the hook the resolved response; otherwise it receives the original return value. Synchronous results stay synchronous.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Invocation of the decorated method will cause execution of the provided function method after the invocation
@@ -414,7 +445,7 @@ interface AfterConfig&lt;T = unknown, D = unknown, A extends unknown[] = unknown
       <div id="before"></div>
       <div class="ud-section-title">Before</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: before hooks receive no arguments. The wrapper preserves the original return type unless wait is true. A decorator with wait true or a runtime boolean requires a promise-returning method. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">Hooks take no arguments. Waiting hooks make the wrapper asynchronous and require promise-returning decorated methods.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Invocation of the decorated method will cause an execution of the provided function method before the
@@ -493,7 +524,6 @@ interface BeforeConfig&lt;T = unknown&gt; {
       <div id="cancelPrevious"></div>
       <div class="ud-section-title">Cancel Previous</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: both APIs require promise-returning functions, preserve arguments and explicit receivers, and return the original resolved value type. Cancellation rejects the previous promise with CanceledPromise. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Invocation of the decorated method will cause the a rejection of the previous invocation with an error of
@@ -535,7 +565,7 @@ interface BeforeConfig&lt;T = unknown&gt; {
       <div id="debounce"></div>
       <div class="ud-section-title">Debounce</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: debouncify preserves arguments and explicit receivers and returns void. The decorator accepts only methods declared to return void. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">The wrapper returns <code>void</code>; decorated methods must also declare <code>void</code>.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Causes a delay in the invocation of the decorated method by given time (in ms), if during the delay another
@@ -585,7 +615,7 @@ interface BeforeConfig&lt;T = unknown&gt; {
       <div id="delay"></div>
       <div class="ud-section-title">Delay</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: delayfy preserves arguments and explicit receivers and returns void. The decorator accepts only methods declared to return void. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">The wrapper returns <code>void</code>; decorated methods must also declare <code>void</code>.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Causes a delay in the invocation of the decorated method by given time (in ms).
@@ -634,7 +664,6 @@ interface BeforeConfig&lt;T = unknown&gt; {
       <div id="delegate"></div>
       <div class="ud-section-title">Delegate</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: both APIs require promise-returning functions. The key resolver must accept the original arguments and return a string; wrapper arguments, explicit receivers, and resolved results are inferred. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           For a given input, if within the time period of the resolving of the promise of the first invocation the
@@ -722,7 +751,7 @@ interface BeforeConfig&lt;T = unknown&gt; {
       <div id="execTime"></div>
       <div class="ud-section-title">Exec-Time</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: execTimify and the decorator preserve synchronous results and return resolved async results through a promise. Reporter payloads contain typed arguments, the resolved result, and execution time. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">Returns the measured result and reports resolved async values. Synchronous calls stay synchronous.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Measures the time that takes for the decorated method to response.
@@ -828,7 +857,7 @@ interface BeforeConfig&lt;T = unknown&gt; {
       <div id="memoize"></div>
       <div class="ud-section-title">Memoize</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: memoizify preserves the original arguments, explicit receiver, and return type. Cache values and key resolver arguments must match the original method. Synchronous memoization requires a synchronous cache. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">Cache values and key resolver arguments must match the original function. Use a synchronous cache here.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Memoizes the response that is being returned by the decorated method.
@@ -975,7 +1004,6 @@ interface MemoizeConfig&lt;T, D, A extends unknown[] = unknown[]&gt; {
       <div id="memoizeAsync"></div>
       <div class="ud-section-title">Memoize Async</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: both APIs require promise-returning methods. Caches hold resolved values, and may be synchronous or asynchronous. Arguments, explicit receivers, and result types are preserved. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Memoizes the promise that being returned by the decorated method.
@@ -1169,7 +1197,6 @@ interface AsyncMemoizeConfig&lt;T, D, A extends unknown[] = unknown[]&gt; {
       <div id="multiDispatch"></div>
       <div class="ud-section-title">Multi Dispatch</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: both APIs require promise-returning methods and preserve argument tuples, explicit receivers, and resolved result types. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Will invoke the decorated method the amount of provided time in parallel. This decorator is useful when you
@@ -1222,7 +1249,7 @@ interface AsyncMemoizeConfig&lt;T, D, A extends unknown[] = unknown[]&gt; {
       <div id="onError"></div>
       <div class="ud-section-title">On Error</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: the wrapper returns a promise of the original or recovery result. Handlers receive an unknown error and the original argument tuple. The decorator requires a promise-returning method and a compatible recovery result, or a handler that throws. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">Handlers receive an <code>unknown</code> error and the original arguments. The wrapper returns a promise of the result or fallback; decorated methods must return promises with compatible fallback values.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           This decorator catches promise rejections and invokes the recovery handler. The wrapper also accepts synchronous sources. There is no wait option.
@@ -1281,7 +1308,7 @@ type OnErrorHandler&lt;D, A extends unknown[]&gt; = (error: unknown, args: A) =&
       <div id="rateLimit"></div>
       <div class="ud-section-title">Rate Limit</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: a synchronous counter preserves the original return type; an async counter produces a promise. A runtime counter choice produces a union. Decorated methods must return promises if an async counter may be used. Key resolvers must accept the original arguments. The counters are mutually exclusive. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">Async counters produce promises and require promise-returning decorated methods. Choose one counter type; the two cannot be combined.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Limits the amount of calls to the decorated method in a given time period. This decorator can support both
@@ -1528,7 +1555,7 @@ type RateLimitConfigs&lt;T = unknown, A extends unknown[] = unknown[]&gt; = {
       <div id="readonly"></div>
       <div class="ud-section-title">Readonly</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: the decorator preserves descriptor types and enforces readonly behavior at runtime. Add the TypeScript readonly modifier to a field to also reject assignments at compile time. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">Add TypeScript’s <code>readonly</code> modifier to reject field assignments at compile time too.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           This decorator prevents setting new values to decorated property.
@@ -1554,7 +1581,7 @@ type RateLimitConfigs&lt;T = unknown, A extends unknown[] = unknown[]&gt; = {
       <div id="refreshable"></div>
       <div class="ud-section-title">Refreshable</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: properties must include the resolved provider value and the initial undefined value. Include null to allow assignment that stops refreshing. Providers take no arguments and must not require a receiver. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">Include <code>undefined</code> in the property type until data arrives, and <code>null</code> to stop refreshing. Providers take no arguments or receiver.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           This decorator provides an ability to access a property which value is being updated over and over in a given
@@ -1603,7 +1630,7 @@ interface RefreshableConfig&lt;D&gt; {
       <div id="retry"></div>
       <div class="ud-section-title">Retry</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: both APIs require promise-returning methods and preserve arguments, explicit receivers, and results. onRetry receives an unknown error; named hooks must be compatible callable members. retries and delaysArray are mutually exclusive. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description"><code>onRetry</code> receives an <code>unknown</code> error. Choose <code>retries</code> or <code>delaysArray</code>, not both.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Retries execution of the decorated method. The method will be invoked x + 1 times (where x is the retries
@@ -1743,7 +1770,7 @@ type RetryInputConfig&lt;T = unknown&gt; = {
       <div id="throttle"></div>
       <div class="ud-section-title">Throttle</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: throttlify preserves arguments and explicit receivers and returns void. The decorator accepts only methods declared to return void. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
+        <p class="ud-description">The wrapper returns <code>void</code>; decorated methods must also declare <code>void</code>.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Invocation of the decorated method will happen immediately, but if another invocation of this method will
@@ -1793,7 +1820,6 @@ type RetryInputConfig&lt;T = unknown&gt; = {
       <div id="throttleAsync"></div>
       <div class="ud-section-title">Throttle Async</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: both APIs require promise-returning methods and preserve arguments, explicit receivers, and resolved result types. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           For a given limit, the decorator will invoke the decorated method jus the allowed times. Once one of the
@@ -1842,7 +1868,6 @@ type RetryInputConfig&lt;T = unknown&gt; = {
       <div id="timeout"></div>
       <div class="ud-section-title">Timeout</div>
       <div class="ud-section-content">
-        <p class="ud-description">Types: both APIs require promise-returning methods and preserve arguments, explicit receivers, and resolved result types. Timeout failures reject with TimeoutError. See the <a href="https://github.com/vlio20/utils-decorators/blob/codex/3.0.0/docs/types.md">TypeScript guide and migration notes</a> for inference examples and decorator limitations.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Will throw an error (<i>TimeoutError</i>) if the decorated method returned promise won't be resolved withing
