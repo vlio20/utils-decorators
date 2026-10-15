@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [3.0.0] - Unreleased
 
+### Changed
+- Update npm dependencies within existing version ranges and refresh the lockfile ([#179](https://github.com/vlio20/utils-decorators/issues/179)).
+
 ## [2.10.0] - 2024-10-02
 
 ### Enchantments
