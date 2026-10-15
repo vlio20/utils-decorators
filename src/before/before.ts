@@ -1,16 +1,16 @@
-import { BeforeConfig } from './before.model';
-import { Decorator, Method } from '../common/model/common.model';
+import { AnyMethod, CompatibleKeys, PromiseReturnCompatible } from '../common/model/common.model';
 import { beforify } from './beforify';
 
-export function before<T = any>(config: BeforeConfig<T>): Decorator<T> {
-  return (
+export function before<const C extends { func: (() => unknown) | PropertyKey; wait?: boolean }>(config: C) {
+  return <T, F extends AnyMethod>(
     target: T,
-    propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<Method<any>>,
-  ): TypedPropertyDescriptor<Method<any>> => {
+    propertyName: string | symbol,
+    descriptor: TypedPropertyDescriptor<F> & ([C['func']] extends [(() => unknown) | CompatibleKeys<T, []>] ? unknown : never)
+      & (true extends (C extends { wait?: infer W } ? W : false)
+        ? ReturnType<F> extends Promise<unknown> ? PromiseReturnCompatible<F> : never : unknown),
+  ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = beforify(descriptor.value, config);
-
+      descriptor.value = beforify(descriptor.value, config as any) as F;
       return descriptor;
     }
     throw new Error('@before is applicable only on a methods.');

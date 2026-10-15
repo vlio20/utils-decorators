@@ -1,3 +1,4 @@
+import { rateLimitify } from './rate-limitify';
 import { rateLimit } from './rate-limit';
 import { sleep } from '../common/test-utils';
 import { RateLimitAsyncCounter } from './rate-limit.model';
@@ -74,6 +75,7 @@ describe('rate-limit', () => {
   it('should make sure error on async and sync counters', () => {
     try {
       class TT {
+        // @ts-expect-error Deliberately invalid configuration to verify runtime validation.
         @rateLimit({
           allowedCalls: 1,
           timeSpanMs: 1000,
@@ -261,7 +263,7 @@ describe('rate-limit', () => {
 
   it('should invoke provider mapper provided as string', async () => {
     class TT {
-      @rateLimit<TT>({
+      @rateLimit({
         allowedCalls: 1,
         timeSpanMs: 200,
         keyResolver: 'goo',
@@ -297,7 +299,7 @@ describe('rate-limit', () => {
 
   it('should invoke custom handler when exceeds the amount of allowed calls', async () => {
     class TT {
-      @rateLimit<TT>({
+      @rateLimit({
         allowedCalls: 1,
         timeSpanMs: 50,
         exceedHandler: () => {
@@ -323,4 +325,21 @@ describe('rate-limit', () => {
       expect(e.message).toEqual('blarg');
     }
   });
+});
+
+it('returns a promise with an async counter even for a synchronous source', async () => {
+  const counter: RateLimitAsyncCounter = {
+    inc: async () => {},
+    dec: async () => {},
+    getCount: async () => 0,
+  };
+  const receiver = {
+    base: 10,
+    wrapped: rateLimitify(function (this: { base: number }, id: number) {
+      return this.base + id;
+    }, { allowedCalls: 1, timeSpanMs: 0, rateLimitAsyncCounter: counter }),
+  };
+  const result = receiver.wrapped(2);
+  expect(result).toBeInstanceOf(Promise);
+  await expect(result).resolves.toBe(12);
 });

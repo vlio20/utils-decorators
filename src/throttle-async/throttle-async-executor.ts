@@ -1,25 +1,24 @@
-import { AsyncMethod } from '../common/model/common.model';
 import { Queue } from '../common/data-stractures/queue';
 
-export class ThrottleAsyncExecutor<D> {
+export class ThrottleAsyncExecutor<D, A extends unknown[], This = unknown> {
   private onGoingCallsCount = 0;
 
-  private callsToRun = new Queue<CallArgs<D>>();
+  private callsToRun = new Queue<CallArgs<D, A, This>>();
 
   constructor(
-    private readonly fun: AsyncMethod<D>,
+    private readonly fun: (this: This, ...args: A) => Promise<D>,
     private readonly parallelCalls: number,
   ) {
   }
 
-  exec(context: any, args: any[]): Promise<D> {
+  exec(context: This, args: A): Promise<D> {
     const proms = new Promise<D>((resolve, reject) => {
       this.callsToRun.enqueue({ context, args, resolve, reject });
     });
 
     this.tryCall();
 
-    (proms as any).hell = args[0];
+    Object.assign(proms, { hell: args[0] });
 
     return proms;
   }
@@ -43,9 +42,9 @@ export class ThrottleAsyncExecutor<D> {
   }
 }
 
-interface CallArgs<T> {
-  context: any;
-  args: any[];
+interface CallArgs<T, A extends unknown[], This> {
+  context: This;
+  args: A;
   resolve: (value: T) => void;
   reject: (error: unknown) => void;
 }

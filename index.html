@@ -163,6 +163,19 @@
       margin-bottom: 1.5rem;
     }
 
+    .ud-migration-table {
+      width: 100%;
+      min-width: 36rem;
+      border-collapse: collapse;
+    }
+
+    .ud-migration-table th, .ud-migration-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #E5E7EB;
+      text-align: left;
+      vertical-align: top;
+    }
+
     .ud-code-wrapper {
       display: flex;
       flex-wrap: wrap;
@@ -225,6 +238,14 @@
 
       <li class="ud-nav">
         <a href="#install" onclick="logNavEvent('install')">Installation</a>
+      </li>
+
+      <li class="ud-nav">
+        <a href="#typescript" onclick="logNavEvent('typescript')">TypeScript</a>
+      </li>
+
+      <li class="ud-nav">
+        <a href="#migration" onclick="logNavEvent('migration')">Migration to 3.0</a>
       </li>
 
       <li class="ud-group">
@@ -323,9 +344,92 @@
     </section>
 
     <section class="ud-section">
+      <div id="typescript"></div>
+      <div class="ud-section-title">TypeScript</div>
+      <div class="ud-section-content">
+        <p class="ud-description">
+          Pass your function, get its types: wrappers infer arguments, return values, and explicit <code>this</code>
+          requirements. Configuration callbacks are inferred too, without extra generic arguments.
+        </p>
+        <pre class="ud-code">
+  import { afterify } from 'utils-decorators';
+
+  const load = afterify(async (id: number) =&gt; ({ id }), {
+    wait: true,
+    func: ({ args, response }) =&gt; console.log(args[0], response.id),
+  });
+
+  load(42); // Promise&lt;{ id: number }&gt;
+  // load('42'); // Type error</pre>
+        <p class="ud-description">
+          Use TypeScript 5.4+ with <code>strict</code> enabled. Decorators also require
+          <code>experimentalDecorators</code>. Legacy decorator callbacks cannot infer their payload from the method;
+          annotate it when needed, such as <code>AfterParams&lt;number, [number]&gt;</code>.
+          Otherwise, payload values safely default to <code>unknown</code>.
+        </p>
+      </div>
+    </section>
+
+    <section class="ud-section">
+      <div id="migration"></div>
+      <div class="ud-section-title">Migrating to 3.0</div>
+      <div class="ud-section-content">
+        <p class="ud-description">
+          3.0 makes types match runtime behavior and infers wrapper types from your functions.
+          Some previously accepted declarations now fail because they could mislead callers.
+        </p>
+        <div class="ud-code-wrapper">
+          <div class="ud-code-part">
+            <table class="ud-migration-table" aria-label="TypeScript migration changes and reasons">
+              <thead><tr><th scope="col">What to update</th><th scope="col">Why it changed</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>For configured decorators, replace calls such as <code>@memoize&lt;Service, number&gt;({...})</code>
+                    with <code>@memoize({...})</code>.</td>
+                  <td>The decorated method supplies the types; configuration must fit them.</td>
+                </tr>
+                <tr>
+                  <td><code>afterify</code> and default <code>beforify</code> preserve synchronous results and throws.
+                    <code>execTimify</code> now returns the measured result. Add an async adapter if you need a promise.</td>
+                  <td>Return types now describe the values callers actually receive.</td>
+                </tr>
+                <tr>
+                  <td>Declare <code>void</code> for <code>@debounce</code>, <code>@delay</code>, and <code>@throttle</code>.
+                    Async decorators require promise-returning methods; recovery values must fit the result.</td>
+                  <td>Legacy decorators cannot rewrite the caller-visible method signature or preserve custom promise properties.</td>
+                </tr>
+                <tr>
+                  <td>Narrow <code>unknown</code> errors and payloads. Annotate decorator callbacks when needed,
+                    for example <code>AfterParams&lt;number, [number]&gt;</code>; wrapper callbacks infer automatically.</td>
+                  <td>JavaScript can throw any value. Decorator factories cannot infer callback types backward from a method.</td>
+                </tr>
+                <tr>
+                  <td>Include <code>undefined</code> in <code>@refreshable</code> properties, and <code>null</code>
+                    if you assign it to stop refreshing.</td>
+                  <td>The property is empty until the first result arrives.</td>
+                </tr>
+                <tr>
+                  <td>Choose one rate-limit counter, and either <code>retries</code> or <code>delaysArray</code>.
+                    Extend these union configurations with type intersections.</td>
+                  <td>Invalid combinations already failed at runtime; the types now catch them earlier.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="ud-description">
+          If you explicitly use <code>Method</code> or <code>AsyncMethod</code>, specify the argument tuple,
+          for example <code>Method&lt;number, [number]&gt;</code>. Their safe default is now <code>unknown[]</code>;
+          ordinary wrapper calls infer the tuple for you.
+        </p>
+      </div>
+    </section>
+
+    <section class="ud-section">
       <div id="after"></div>
       <div class="ud-section-title">After</div>
       <div class="ud-section-content">
+        <p class="ud-description"><code>wait: true</code> gives the hook the resolved response; otherwise it receives the original return value. Synchronous results stay synchronous.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Invocation of the decorated method will cause execution of the provided function method after the invocation
@@ -335,13 +439,10 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  interface AfterConfig&lt;T = any, D = any&gt; {
-    // the function (or the method name within the context) to invoke after the invocation of the decorated method
-    func: keyof T | (args: ...any[]) => &lt;D&gt; ;
-
-    // in case of a returned promise of the decorated method, should the after function wait for it to be resolved
-    wait?: boolean;
-  }</pre>
+interface AfterConfig&lt;T = unknown, D = unknown, A extends unknown[] = unknown[]&gt; {
+  func: AfterFunc&lt;D, A&gt; | CompatibleKeys&lt;T, [AfterParams&lt;D, A&gt;]&gt;;
+  wait?: boolean;
+}</pre>
           </div>
         </div>
 
@@ -349,13 +450,10 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Arguments to provided method:</div>
             <pre class="ud-code">
-  interface AfterParams&lt;D = any&gt; {
-    // the arguments that were provided to the decorated method
-    args: any[];
-
-    // the response data of the decorated method
-    response: D;
-  }</pre>
+  interface AfterParams&lt;D = unknown, A extends unknown[] = unknown[]&gt; {
+  args: A;
+  response: D;
+}</pre>
           </div>
         </div>
 
@@ -363,7 +461,7 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Decorator Example 1:</div>
             <pre class="ud-code">
-  import { after } from 'utils-decorators';
+  import { after, AfterParams } from 'utils-decorators';
 
   class Example1 {
 
@@ -385,14 +483,14 @@
             <pre class="ud-code">
   import { afterify } from 'utils-decorators';
 
-  function foo = () => {
-    console.log('original method called');
+  function foo(id: number): number {
+    return id;
   }
 
   const fooWithAfter = afterify(foo, {
-    func: (respData: AfterParams&lt;number&gt;) => {
-        console.log(respData.args, respData.response);
-    };
+    func: ({ args, response }) => {
+      console.log(args[0].toFixed(), response.toFixed());
+    },
   });</pre>
           </div>
         </div>
@@ -400,12 +498,12 @@
 
         <div class="ud-subtitle">Decorator Example 2:</div>
         <pre class="ud-code">
-  import { after } from 'utils-decorators';
+  import { after, AfterParams } from 'utils-decorators';
 
   class Example2 {
 
     @after({
-      func: (respData: AfterParams&lt;number&gt) => console.log(respData.args, respData.response),
+      func: (respData: AfterParams&lt;number&gt;) => console.log(respData.args, respData.response),
       wait: true,
     })
     foo(x: number): Promise&lt;number&gt; {
@@ -419,6 +517,7 @@
       <div id="before"></div>
       <div class="ud-section-title">Before</div>
       <div class="ud-section-content">
+        <p class="ud-description">Hooks take no arguments. Waiting hooks make the wrapper asynchronous and require promise-returning decorated methods.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Invocation of the decorated method will cause an execution of the provided function method before the
@@ -429,13 +528,10 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  interface BeforeConfig&lt;T = any, D = any&gt; {
-    // the function (or the method name within the context) to invoke before the invocation of the decorated method
-    func: keyof T | (args: ...any[]) => &lt;D&gt; ;
-
-    // in case of a returned promise of the decorated method, should the before function wait for it to be resolved
-    wait?: boolean;
-  }</pre>
+interface BeforeConfig&lt;T = unknown&gt; {
+  func: (() =&gt; unknown) | CompatibleKeys&lt;T, []&gt;;
+  wait?: boolean;
+}</pre>
           </div>
         </div>
 
@@ -465,14 +561,14 @@
             <pre class="ud-code">
   import { beforify } from 'utils-decorators';
 
-  function foo = () => {
+  function foo() {
     console.log('original method called');
   }
 
   const fooWithBefore = beforify(foo, {
     func: () => {
         console.log('this will be invoked before');
-    };
+    },
   });</pre>
           </div>
 
@@ -485,8 +581,8 @@
 
   class Example2 {
 
-    @after({
-      func: () => console.log('this will be invoked before');,
+    @before({
+      func: () => console.log('this will be invoked before'),
       wait: true,
     })
     foo(x: number): Promise&lt;number&gt; {
@@ -541,6 +637,7 @@
       <div id="debounce"></div>
       <div class="ud-section-title">Debounce</div>
       <div class="ud-section-content">
+        <p class="ud-description">The wrapper returns <code>void</code>; decorated methods must also declare <code>void</code>.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Causes a delay in the invocation of the decorated method by given time (in ms), if during the delay another
@@ -565,8 +662,8 @@
   class Example1 {
 
     @debounce(1000)
-    foo(x: number): number {
-      return 42;
+    foo(x: number): void {
+      console.log(x);
     }
   }</pre>
           </div>
@@ -590,6 +687,7 @@
       <div id="delay"></div>
       <div class="ud-section-title">Delay</div>
       <div class="ud-section-content">
+        <p class="ud-description">The wrapper returns <code>void</code>; decorated methods must also declare <code>void</code>.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Causes a delay in the invocation of the decorated method by given time (in ms).
@@ -613,8 +711,8 @@
   class Example1 {
 
     @delay(1000)
-    foo(x: number): number {
-      return 42;
+    foo(x: number): void {
+      console.log(x);
     }
   }</pre>
           </div>
@@ -725,6 +823,7 @@
       <div id="execTime"></div>
       <div class="ud-section-title">Exec-Time</div>
       <div class="ud-section-content">
+        <p class="ud-description">Returns the measured result and reports resolved async values. Synchronous calls stay synchronous.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Measures the time that takes for the decorated method to response.
@@ -737,11 +836,11 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Arguments to the reporter function:</div>
             <pre class="ud-code">
-  interface ExactTimeReportData = {
-    args: any[];
-    result: any;
-    execTime: number;
-  };</pre>
+  interface ExactTimeReportData&lt;D = unknown, A extends unknown[] = unknown[]&gt; {
+  args: A;
+  result: D;
+  execTime: number;
+}</pre>
           </div>
         </div>
 
@@ -753,7 +852,7 @@
   // (see details above) as an argument. If the decorated method returns a Promise,
   // the decorator will wait for it to be resolved/rejected.
   // The default report function is (data: ExactTimeReportData) => console.info(data.execTime)
-  reporter?: string | (data: ExactTimeReportData) => any;
+  reporter?: ReportFunction | PropertyKey; // named reporters are checked against the method
             </pre>
           </div>
         </div>
@@ -762,7 +861,7 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Decorator Example 1:</div>
             <pre class="ud-code">
-  import { execTime } from 'utils-decorators';
+  import { execTime, ExactTimeReportData } from 'utils-decorators';
   import { DataProvider, DataDto } from './data-provider.service';
 
   class Example1 {
@@ -793,7 +892,7 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Decorator Example 2 (with custom reporter):</div>
             <pre class="ud-code">
-  import { execTime } from 'utils-decorators';
+  import { execTime, ExactTimeReportData } from 'utils-decorators';
   import { DataProvider, DataDto } from './data-provider.service';
 
   class Example2 {
@@ -812,13 +911,13 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Function Example 2 (with custom reporter):</div>
             <pre class="ud-code">
-  import { delegatify } from 'utils-decorators';
+  import { execTimify } from 'utils-decorators';
 
   function getData(): Promise&lt;DataDto> {
     return dataProvider.getData();
   }
 
-  const measuredFoo = execTimify(getData, (data: ExactTimeReportData) => {
+  const measuredFoo = execTimify(getData, (data) => {
     console.log(data.args, data.result, data.execTime);
   });</pre>
           </div>
@@ -830,6 +929,7 @@
       <div id="memoize"></div>
       <div class="ud-section-title">Memoize</div>
       <div class="ud-section-content">
+        <p class="ud-description">Cache values and key resolver arguments must match the original function. Use a synchronous cache here.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Memoizes the response that is being returned by the decorated method.
@@ -844,19 +944,11 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  interface MemoizeConfig&lt;T, D&gt; {
-    // an optional cache object which should implement the Cache interface.
-    // Internally the decorator is using Map&lt;string, D&gt;
-    cache?: Cache&lt;D&gt;;
-
-    // an optional function (or a function name within the context) that maps the arguments to a specific key.
-    // The default mapping function is JSON.stringify(args).
-    keyResolver?: string | (...args: any[]) => string;
-
-    // An optional TTL (time to leave in milliseconds) for the entry to be removed from the cache.
-    // If not provided the cache will be never cleared.
-    expirationTimeMs?: number;
-  }</pre>
+interface MemoizeConfig&lt;T, D, A extends unknown[] = unknown[]&gt; {
+  cache?: Cache&lt;D&gt;;
+  keyResolver?: ((...args: A) =&gt; string) | CompatibleKeys&lt;T, A, string&gt;;
+  expirationTimeMs?: number;
+}</pre>
           </div>
         </div>
 
@@ -994,8 +1086,8 @@
           Be default the key of the cached value will be the serialized <i>JSON.stringify</i> value of the provided
           arguments.
           You can supply your own key resolver.
-          Also, you can provide your own cache, it has to implement the <i>GetterSetter&lt;D&gt;</i> interface, by
-          default the decorator is using a simple <i>Map&lt;string, Promise&lt;D>></i>.
+          Also, you can provide your own cache, it must implement <i>Cache&lt;D&gt;</i> or <i>AsyncCache&lt;D&gt;</i>. By
+          default the decorator uses a <i>Map&lt;string, D&gt;</i> of resolved values.
           For further readying please read <a
             href="https://medium.com/swlh/caching-in-node-nestjs-web-applications-was-never-easier-1bb560c7cd62">this</a>
           blog post.
@@ -1005,19 +1097,11 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  interface MemoizeAsyncConfig&lt;T, D&gt; {
-    // an optional cache object which should implement the Cache or the AsyncCache interface.
-    // Internally the decorator is using Map&lt;string, D&gt;
-    cache?: Cache&lt;D&gt;;
-
-    // an optional function (or a function name within the context) that maps the arguments to a specific key.
-    // The default mapping function is JSON.stringify(args).
-    keyResolver?: string | (...args: any[]) => string;
-
-    // An optional TTL (time to leave in milliseconds) for the entry to be removed from the cache.
-    // If not provided the cache will be never cleared.
-    expirationTimeMs?: number;
-  }</pre>
+interface AsyncMemoizeConfig&lt;T, D, A extends unknown[] = unknown[]&gt; {
+  cache?: Cache&lt;D&gt; | AsyncCache&lt;D&gt;;
+  keyResolver?: ((...args: A) =&gt; string) | CompatibleKeys&lt;T, A, string&gt;;
+  expirationTimeMs?: number;
+}</pre>
           </div>
         </div>
 
@@ -1237,22 +1321,19 @@
       <div id="onError"></div>
       <div class="ud-section-title">On Error</div>
       <div class="ud-section-content">
+        <p class="ud-description">Handlers receive an <code>unknown</code> error and the original arguments. The wrapper returns a promise of the result or fallback; decorated methods must return promises with compatible fallback values.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
-          This decorator will catch errors thrown from the decorated method and invoke the provided `func` function.
-          If the decorated method returns a <i>Promise</i> the <i>wait</i> property should be set to true in order to
-          handle the
-          promise rejection correctly.
+          This decorator catches promise rejections and invokes the recovery handler. The wrapper also accepts synchronous sources. There is no wait option.
         </p>
 
         <div class="ud-code-wrapper">
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  interface OnErrorConfig&lt;T = any, D = any&gt; {
-    // the function (or the method name within the context) to invoke on an error of the decorated method
-    func: keyof T | (args: ...any[]) => &lt;D&gt; ;
-  }</pre>
+// Handlers receive the error and original arguments, then return a recovery value.
+// Named hooks must be compatible callable receiver members.
+type OnErrorHandler&lt;D, A extends unknown[]&gt; = (error: unknown, args: A) =&gt; D;</pre>
           </div>
         </div>
         <div class="ud-code-wrapper">
@@ -1270,8 +1351,9 @@
       return doSomething();
     }
 
-    errorHandler(e: Error): void {
+    errorHandler(e: unknown): number {
       console.error(e);
+      return 0;
     }
   }</pre>
           </div>
@@ -1298,6 +1380,7 @@
       <div id="rateLimit"></div>
       <div class="ud-section-title">Rate Limit</div>
       <div class="ud-section-content">
+        <p class="ud-description">Async counters produce promises and require promise-returning decorated methods. Choose one counter type; the two cannot be combined.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Limits the amount of calls to the decorated method in a given time period. This decorator can support both
@@ -1308,31 +1391,15 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  interface RateLimitConfigs&lt;T = any> {
-    // the time window for which the rate-limit should hold the counts (time in milliseconds)
-    timeSpanMs: number;
-
-    // the amount of call allowed in the provided timeSpanMs.
-    allowedCalls: number;
-
-    // Sometimes you want to group your calls and only then apply the rate-limit.
-    // By providing the keyResolver you can group your calls by the provided arguments.
-    // You should supply here an optional function (or the method name within the context) which will be invoked to get
-    // in order to get a key
-    keyResolver?: keyof T | (...args: any[]) => string;
-
-    // An optional custom rate limit counter, note that you can only provide rateLimitCounter
-    // or rateLimitAsyncCounter - not both
-    rateLimitCounter?: RateLimitCounter;
-
-    // An optional custom async rate limit counter, note that you can only provide rateLimitCounter
-    // or rateLimitAsyncCounter - not both
-    rateLimitAsyncCounter?: RateLimitAsyncCounter;
-
-    // An optional custom handler which will be invoked when the amount of calls has exceeds,
-    // By default the decorator will throw an Error
-    exceedHandler?: () => void;
-  }</pre>
+type RateLimitConfigs&lt;T = unknown, A extends unknown[] = unknown[]&gt; = {
+  timeSpanMs: number;
+  allowedCalls: number;
+  keyResolver?: ((...args: A) =&gt; string) | CompatibleKeys&lt;T, A, string&gt;;
+  exceedHandler?: () =&gt; void;
+} &amp; (
+  | { rateLimitCounter?: RateLimitCounter; rateLimitAsyncCounter?: undefined }
+  | { rateLimitCounter?: undefined; rateLimitAsyncCounter?: RateLimitAsyncCounter }
+);</pre>
           </div>
         </div>
 
@@ -1560,6 +1627,7 @@
       <div id="readonly"></div>
       <div class="ud-section-title">Readonly</div>
       <div class="ud-section-content">
+        <p class="ud-description">Add TypeScript’s <code>readonly</code> modifier to reject field assignments at compile time too.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           This decorator prevents setting new values to decorated property.
@@ -1585,6 +1653,7 @@
       <div id="refreshable"></div>
       <div class="ud-section-title">Refreshable</div>
       <div class="ud-section-content">
+        <p class="ud-description">Include <code>undefined</code> in the property type until data arrives, and <code>null</code> to stop refreshing. Providers take no arguments or receiver.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           This decorator provides an ability to access a property which value is being updated over and over in a given
@@ -1600,15 +1669,10 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  // the amount of invocations to generate simultaneously
-  interface RefreshableConfig&lt;D> {
-    // the function that will provide the data to the decorated attribute
-    dataProvider: AsyncMethod&lt;D>;
-
-    // the time interval (in milliseconds) in which the data will be refreshed
-    intervalMs: number;
-  }
-            </pre>
+interface RefreshableConfig&lt;D&gt; {
+  dataProvider: (this: void) =&gt; Promise&lt;D&gt;;
+  intervalMs: number;
+}</pre>
           </div>
         </div>
 
@@ -1627,7 +1691,7 @@
         // 10 minuts
         intervalMs: 1000 * 60 * 10
     })
-    users: UserDto[];
+    users: UserDto[] | undefined | null;
   }</pre>
           </div>
         </div>
@@ -1638,6 +1702,7 @@
       <div id="retry"></div>
       <div class="ud-section-title">Retry</div>
       <div class="ud-section-content">
+        <p class="ud-description"><code>onRetry</code> receives an <code>unknown</code> error. Choose <code>retries</code> or <code>delaysArray</code>, not both.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Retries execution of the decorated method. The method will be invoked x + 1 times (where x is the retries
@@ -1654,17 +1719,15 @@
           <div class="ud-code-part">
             <div class="ud-subtitle">Configuration:</div>
             <pre class="ud-code">
-  type RetryInput = number | number[] | RetryInputConfig;
-
-  export interface RetryInputConfig {
-    delaysArray?: number[];
-    retries?: number;
-    delay: number;
-    onRetry?: OnRetry | string;
-  }
-
-  export type OnRetry = (error: Error, retriesCount: number) => void;
-            </pre>
+type RetryInput&lt;T = unknown&gt; = number | number[] | RetryInputConfig&lt;T&gt;;
+type OnRetry = (error: unknown, retriesCount: number) =&gt; void;
+type RetryInputConfig&lt;T = unknown&gt; = {
+  delay?: number;
+  onRetry?: OnRetry | CompatibleKeys&lt;T, [unknown, number]&gt;;
+} &amp; (
+  | { delaysArray: number[]; retries?: undefined }
+  | { delaysArray?: undefined; retries?: number }
+);</pre>
           </div>
         </div>
 
@@ -1680,7 +1743,7 @@
     constructor(private readonly dataProvider: DataProvider) { }
 
     @retry(3)
-    getData(): DataDto {
+    getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
   }</pre>
@@ -1708,7 +1771,7 @@
     constructor(private readonly dataProvider: DataProvider) { }
 
     @retry([1000, 2000, 3000])
-    getData(): DataDto {
+    getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
   }</pre>
@@ -1740,7 +1803,7 @@
       delay: 1500,
       onRetry: (e, retriesCount) => console.log(e, retriesCount),
     })
-    getData(): DataDto {
+    getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
 
@@ -1749,11 +1812,11 @@
       delay: 1500,
       onRetry: 'onRetry',
     })
-    getData2(): DataDto {
+    getData2(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
 
-    onRetry(e: Error, retriesCount: number) {
+    onRetry(e: unknown, retriesCount: number) {
       console.log(e, retriesCount);
     }
   }</pre>
@@ -1779,6 +1842,7 @@
       <div id="throttle"></div>
       <div class="ud-section-title">Throttle</div>
       <div class="ud-section-content">
+        <p class="ud-description">The wrapper returns <code>void</code>; decorated methods must also declare <code>void</code>.</p>
         <div class="ud-subtitle">Description:</div>
         <p class="ud-description">
           Invocation of the decorated method will happen immediately, but if another invocation of this method will
@@ -1803,8 +1867,8 @@
   class Example1 {
 
     @throttle(1000)
-    foo(x: number): number {
-      return 42;
+    foo(x: number): void {
+      console.log(x);
     }
   }</pre>
           </div>
@@ -1854,7 +1918,7 @@
     constructor(private readonly dataProvider: DataProvider) { }
 
     @throttleAsync(2)
-    getData(): DataDto {
+    getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
   }</pre>
@@ -1902,7 +1966,7 @@
     constructor(private readonly dataProvider: DataProvider) { }
 
     @timeout(2000)
-    getData(): DataDto {
+    getData(): Promise&lt;DataDto&gt; {
       return this.dataProvider.getData();
     }
   }</pre>

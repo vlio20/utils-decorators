@@ -1,3 +1,4 @@
+import { execTimify } from './exec-timify';
 import { execTime } from './exec-time';
 import { ExactTimeReportData } from './exec-time.model';
 import { sleep } from '../common/test-utils';
@@ -107,5 +108,19 @@ describe('exec-time', () => {
     expect(args.result).toEqual('ab');
     expect(args.execTime).toBeGreaterThanOrEqual(8);
     expect(args.execTime).toBeLessThan(20);
+  });
+});
+
+describe('execTimify return values', () => {
+  it('returns and reports the synchronous result', () => {
+    const report = jest.fn();
+    expect(execTimify(() => 42, report)()).toBe(42);
+    expect(report).toHaveBeenCalledWith({ args: [], result: 42, execTime: expect.any(Number) });
+  });
+
+  it('returns and reports the resolved async result', async () => {
+    const report = jest.fn();
+    await expect(execTimify(async () => 42, report)()).resolves.toBe(42);
+    expect(report).toHaveBeenCalledWith({ args: [], result: 42, execTime: expect.any(Number) });
   });
 });

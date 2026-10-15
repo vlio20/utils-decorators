@@ -1,7 +1,8 @@
-import { Method } from '../common/model/common.model';
-
-export function delayfy<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, delayMs: number): Method<void, A> {
-  return function (this: unknown, ...args: A): void {
+export function delayfy<D, A extends unknown[], This = unknown>(
+  originalMethod: (this: This, ...args: A) => D,
+  delayMs: number,
+): (this: This, ...args: A) => void {
+  return function (this: This, ...args: A): void {
     setTimeout(() => {
       originalMethod.apply(this, args);
     }, delayMs);

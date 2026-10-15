@@ -1,7 +1,7 @@
 import { AsyncMethod } from '../common/model/common.model';
 
-export type Delegatable<T, D> = (
+export type Delegatable<T = unknown, D = unknown> = <A extends unknown[]>(
   target: T,
-  propertyName: keyof T,
-  descriptor: TypedPropertyDescriptor<AsyncMethod<D>>
-) => TypedPropertyDescriptor<AsyncMethod<D>>;
+  propertyName: string | symbol,
+  descriptor: TypedPropertyDescriptor<AsyncMethod<D, A>>
+) => TypedPropertyDescriptor<AsyncMethod<D, A>>;

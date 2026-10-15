@@ -21,7 +21,7 @@ describe('refreshable', () => {
       dataProvider: () => Promise.resolve(0),
       intervalMs: 50,
     });
-    const t = { prop: 0 } as { prop: number };
+    const t = { prop: 0 } as { prop: number | undefined };
     foo(t, 'prop');
     await sleep(10);
     expect(unrefMock).toHaveBeenCalled();
@@ -55,7 +55,7 @@ describe('refreshable', () => {
       intervalMs: 50,
     });
 
-    const t = { prop: 9, proop: 4 } as { prop: number | null; proop: number };
+    const t = { prop: 9, proop: 4 } as { prop: number | null | undefined; proop: number | undefined };
     fooDec(t, 'prop');
     gooDec(t, 'proop');
 

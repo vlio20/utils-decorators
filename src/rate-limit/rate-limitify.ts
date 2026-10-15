@@ -1,13 +1,17 @@
-import { AsyncMethod, Method } from '../common/model/common.model';
+import { AsyncMethod } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
-import { RateLimitAsyncCounter, RateLimitConfigs } from './rate-limit.model';
+import { RateLimitAsyncCounter, RateLimitConfigs, RateLimitCounter } from './rate-limit.model';
 import { SimpleRateLimitCounter } from './simple-rate-limit-counter';
 
-type ResolvedRateLimitConfigs = RateLimitConfigs & Required<Pick<RateLimitConfigs, 'rateLimitCounter' | 'exceedHandler'>>;
+type ResolvedRateLimitConfigs<T, A extends unknown[]> = Omit<RateLimitConfigs<T, A>, 'rateLimitCounter' | 'rateLimitAsyncCounter'> & {
+  rateLimitCounter: RateLimitCounter;
+  rateLimitAsyncCounter?: RateLimitAsyncCounter;
+  exceedHandler: () => void;
+};
 
-async function handleAsyncRateLimit<T, D, A extends any[]>(
+async function handleAsyncRateLimit<T, D, A extends unknown[]>(
   target: T,
-  resolvedConfig: ResolvedRateLimitConfigs & { rateLimitAsyncCounter: RateLimitAsyncCounter },
+  resolvedConfig: ResolvedRateLimitConfigs<T, A> & { rateLimitAsyncCounter: RateLimitAsyncCounter },
   key: string,
   taskExec: TaskExec,
   originalMethod: AsyncMethod<D, A>,
@@ -29,9 +33,9 @@ async function handleAsyncRateLimit<T, D, A extends any[]>(
   return originalMethod.apply(target, args);
 }
 
-function handleRateLimit<T, D, A extends any[]>(
+function handleRateLimit<T, D, A extends unknown[]>(
   target: T,
-  resolvedConfig: ResolvedRateLimitConfigs,
+  resolvedConfig: ResolvedRateLimitConfigs<T, A>,
   key: string,
   taskExec: TaskExec,
   originalMethod: (...x: A) => D,
@@ -53,10 +57,22 @@ function handleRateLimit<T, D, A extends any[]>(
   return originalMethod.apply(target, args);
 }
 
-export function rateLimitify<D = any, A extends any[] = any[]>(
-  originalMethod: Method<D, A> | AsyncMethod<D, A>,
-  config: RateLimitConfigs,
-): Method<D, A> {
+export function rateLimitify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => D,
+  config: NoInfer<RateLimitConfigs<T, A>> & { rateLimitAsyncCounter: RateLimitAsyncCounter },
+): (this: T, ...args: A) => Promise<Awaited<D>>;
+export function rateLimitify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => D,
+  config: NoInfer<RateLimitConfigs<T, A>> & { rateLimitAsyncCounter?: undefined },
+): (this: T, ...args: A) => D;
+export function rateLimitify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => D,
+  config: NoInfer<RateLimitConfigs<T, A>>,
+): (this: T, ...args: A) => D | Promise<Awaited<D>>;
+export function rateLimitify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => D,
+  config: RateLimitConfigs<T, A>,
+): (this: T, ...args: A) => D | Promise<Awaited<D>> {
   if (config.rateLimitAsyncCounter && config.rateLimitCounter) {
     throw new Error('You cant provide both rateLimitAsyncCounter and rateLimitCounter.');
   }
@@ -71,18 +87,18 @@ export function rateLimitify<D = any, A extends any[] = any[]>(
     keyResolver: config.keyResolver ?? (() => '__rateLimit__'),
   };
 
-  return function (this: Record<PropertyKey, Method<any>>, ...args: A): D | Promise<D> {
+  return function (this: T, ...args: A): D | Promise<Awaited<D>> {
     const keyResolver = typeof resolvedConfig.keyResolver === 'function'
-      ? resolvedConfig.keyResolver.bind(this) : this[resolvedConfig.keyResolver].bind(this);
+      ? resolvedConfig.keyResolver.bind(this) : (this[resolvedConfig.keyResolver] as (...args: A) => string).bind(this);
     const key = keyResolver(...args);
 
     if (resolvedConfig.rateLimitAsyncCounter) {
-      return handleAsyncRateLimit<any, D, A>(
+      return handleAsyncRateLimit<T, Awaited<D>, A>(
         this, { ...resolvedConfig, rateLimitAsyncCounter: resolvedConfig.rateLimitAsyncCounter },
-        key, taskExec, originalMethod as AsyncMethod<D>, args,
+        key, taskExec, originalMethod as AsyncMethod<Awaited<D>, A>, args,
       );
     }
 
-    return handleRateLimit<any, D, A>(this, resolvedConfig, key, taskExec, originalMethod as Method<D>, args);
-  } as Method<D>;
+    return handleRateLimit<T, D, A>(this, resolvedConfig, key, taskExec, originalMethod, args);
+  };
 }

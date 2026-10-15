@@ -255,6 +255,7 @@ describe('retry', () => {
   it('should throw error when provided both retires and delaysArray', () => {
     try {
       class T {
+        // @ts-expect-error Deliberately invalid configuration to verify runtime validation.
         @retry({
           retries: 3,
           delaysArray: [1, 2, 3],

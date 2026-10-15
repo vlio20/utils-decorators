@@ -1,16 +1,22 @@
-import { AsyncMethod, Method } from '../common/model/common.model';
+import { AnyMethod, CompatibleKeys, Method } from '../common/model/common.model';
 import { OnErrorConfig, OnErrorHandler } from './on-error.model';
 
-export function onErrorify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, config: OnErrorConfig<any>): AsyncMethod<D, A> {
-  return async function (this: Record<PropertyKey, Method<any>>, ...args: A): Promise<D> {
-    const onErrorFunc: OnErrorHandler = typeof config.func === 'function'
-      ? config.func : this[config.func].bind(this);
-
+export function onErrorify<D, A extends unknown[], T, K extends CompatibleKeys<NoInfer<T>, [unknown, NoInfer<A>]>>(
+  originalMethod: Method<D, A, T>, config: { func: K },
+): Method<Promise<Awaited<D> | Awaited<ReturnType<Extract<T[K], AnyMethod>>>>, A, T>;
+export function onErrorify<D, A extends unknown[], T, H>(
+  originalMethod: Method<D, A, T>, config: { func: OnErrorHandler<H, NoInfer<A>> },
+): Method<Promise<Awaited<D> | Awaited<H>>, A, T>;
+export function onErrorify<D, A extends unknown[], T, H>(
+  originalMethod: Method<D, A, T>, config: OnErrorConfig<NoInfer<T>, H, NoInfer<A>>,
+): Method<Promise<Awaited<D> | Awaited<H>>, A, T>;
+export function onErrorify(originalMethod: Method<any>, config: OnErrorConfig<any, any, any>): Method<Promise<any>> {
+  return async function (this: any, ...args: any[]): Promise<any> {
+    const hook = typeof config.func === 'function' ? config.func : this[config.func].bind(this);
     try {
-      const res = await originalMethod.apply(this, args);
-      return res;
+      return await originalMethod.apply(this, args);
     } catch (e) {
-      return onErrorFunc(e, args);
+      return await hook(e, args);
     }
   };
 }

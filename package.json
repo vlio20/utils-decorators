@@ -23,8 +23,9 @@
     "typescript": "^6.0.3"
   },
   "scripts": {
-    "test": "npm run clean && tsc -p tsconfig.test.json --noEmit && npm run lint && jest --coverage && npm run test:mutation",
-    "test:unit": "npm run clean && tsc --noEmit && npm run lint && jest --clearCache && jest",
+    "test": "npm run clean && npm run test:types && npm run lint && jest --coverage && npm run test:mutation",
+    "test:unit": "npm run clean && npm run test:types && npm run lint && jest --clearCache && jest",
+    "test:types": "tsc -p tsconfig.test.json --noEmit",
     "test:mutation": "stryker run",
     "lint": "eslint ./src --ext .ts --quiet",
     "lint:fix": "eslint ./src --ext .ts --fix",
