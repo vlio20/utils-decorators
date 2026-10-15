@@ -1,18 +1,15 @@
-import { AsyncMethod } from '../common/model/common.model';
+import { AsyncDecorator, CompatibleKeys } from '../common/model/common.model';
 
-export type RetryInput = number | number[] | RetryInputConfig;
+export type RetryInput<T = unknown> = number | number[] | RetryInputConfig<T>;
 
-export type RetryInputConfig = {
-  delaysArray?: number[];
-  retries?: number;
+export type RetryInputConfig<T = unknown> = {
   delay?: number;
-  onRetry?: OnRetry | string;
-};
+  onRetry?: OnRetry | CompatibleKeys<T, [error: unknown, retriesCount: number]>;
+} & (
+  | { delaysArray: number[]; retries?: undefined }
+  | { delaysArray?: undefined; retries?: number }
+);
 
-export type Retryable<T> = (
-  target: T,
-  propertyName: keyof T,
-  descriptor: TypedPropertyDescriptor<AsyncMethod<any>>
-) => TypedPropertyDescriptor<AsyncMethod<any>>;
+export type Retryable<T = unknown> = AsyncDecorator<T>;
 
 export type OnRetry = (error: unknown, retriesCount: number) => void;

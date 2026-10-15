@@ -1,6 +1,34 @@
 import { before } from './before';
+import { beforify } from './beforify';
 
 describe('before', () => {
+  it('starts a waiting hook immediately and waits before calling the source', async () => {
+    let release!: () => void;
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    const hook = jest.fn(() => pending);
+    const source = jest.fn(() => 42);
+    const wrapped = beforify(source, { func: hook, wait: true });
+
+    const result = wrapped();
+    expect(hook).toHaveBeenCalledTimes(1);
+    expect(source).not.toHaveBeenCalled();
+    release();
+    await expect(result).resolves.toBe(42);
+    expect(source).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects the promise when a waiting hook throws synchronously', async () => {
+    const failure = new Error('hook failed');
+    const hook = jest.fn(() => { throw failure; });
+    const source = jest.fn(() => 42);
+    const wrapped = beforify(source, { func: hook, wait: true });
+
+    const result = wrapped();
+    expect(hook).toHaveBeenCalledTimes(1);
+    await expect(result).rejects.toBe(failure);
+    expect(source).not.toHaveBeenCalled();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       // @ts-expect-error Intentionally invalid input verifies runtime validation.
@@ -35,7 +63,7 @@ describe('before', () => {
         counter += 1;
       }
 
-      @before<T>({
+      @before({
         func: 'before',
       })
       foo(x: number): void {
@@ -68,7 +96,7 @@ describe('before', () => {
     });
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
       })
       foo(x: number): void {
@@ -101,7 +129,7 @@ describe('before', () => {
     }));
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
       })
       foo(x: number): void {
@@ -131,11 +159,11 @@ describe('before', () => {
     }));
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
         wait: true,
       })
-      foo(x: number): void {
+      async foo(x: number): Promise<void> {
         return this.goo(x);
       }
 
@@ -157,7 +185,7 @@ describe('before', () => {
     });
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
       })
       foo(x: number): number {

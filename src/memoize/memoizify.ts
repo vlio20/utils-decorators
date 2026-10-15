@@ -1,11 +1,16 @@
-import { Method } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
 import { MemoizeConfig } from './memoize.model';
 
-export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>): Method<D, A>;
-export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, config: MemoizeConfig<any, D>): Method<D, A>;
-export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, expirationTimeMs: number): Method<D, A>;
-export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, input?: MemoizeConfig<any, D> | number): Method<D, A> {
+export function memoizify<D, A extends unknown[], T>(originalMethod: (this: T, ...args: A) => D): (this: T, ...args: A) => D;
+export function memoizify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => D,
+  config: NoInfer<MemoizeConfig<T, D, A>>
+): (this: T, ...args: A) => D;
+export function memoizify<D, A extends unknown[], T>(originalMethod: (this: T, ...args: A) => D, expirationTimeMs: number): (this: T, ...args: A) => D;
+export function memoizify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => D,
+  input?: NoInfer<MemoizeConfig<T, D, A>> | number
+): (this: T, ...args: A) => D {
   const config = typeof input === 'number' ? { expirationTimeMs: input } : input;
   const resolvedConfig = {
     ...config,
@@ -13,10 +18,10 @@ export function memoizify<D = any, A extends any[] = any[]>(originalMethod: Meth
   };
   const runner = new TaskExec();
 
-  return function (this: Record<PropertyKey, Method<any>>, ...args: A): D {
+  return function (this: T, ...args: A): D {
     const keyResolver = typeof resolvedConfig.keyResolver === 'function' || resolvedConfig.keyResolver === undefined
       ? resolvedConfig.keyResolver
-      : this[resolvedConfig.keyResolver].bind(this);
+      : (this[resolvedConfig.keyResolver] as (...args: A) => string).bind(this);
 
     const key = keyResolver
       ? keyResolver(...args)

@@ -1,15 +1,16 @@
-import { RateLimitable, RateLimitConfigs } from './rate-limit.model';
-import { Method } from '../common/model/common.model';
+import { RateLimitConfigs, ConfiguredRateLimitable } from './rate-limit.model';
+import { AnyMethod } from '../common/model/common.model';
 import { rateLimitify } from './rate-limitify';
 
-export function rateLimit<T = any, D = any>(config: RateLimitConfigs): RateLimitable<T, D> {
-  return (
+export function rateLimit<const C extends RateLimitConfigs<any, any[]>>(config: C): ConfiguredRateLimitable<C>;
+export function rateLimit<T = unknown>(config: RateLimitConfigs<T, any[]>): any {
+  return <F extends AnyMethod>(
     target: T,
-    propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<Method<any>>,
-  ): TypedPropertyDescriptor<Method<any>> => {
+    propertyName: string | symbol,
+    descriptor: TypedPropertyDescriptor<F>,
+  ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = rateLimitify(descriptor.value, config);
+      descriptor.value = rateLimitify(descriptor.value as (this: T, ...args: any[]) => unknown, config) as F;
 
       return descriptor;
     }

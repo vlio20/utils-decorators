@@ -1,15 +1,15 @@
-import { AsyncMethod } from '../common/model/common.model';
+import { AnyMethod } from '../common/model/common.model';
 import { Retryable, RetryInput } from './retry.model';
 import { retryfy } from './retryfy';
 
-export function retry<T = any>(input: RetryInput): Retryable<T> {
-  return (
+export function retry<T = unknown>(input: RetryInput<T>): Retryable<T> {
+  return <F extends AnyMethod>(
     target: T,
-    propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
-  ): TypedPropertyDescriptor<AsyncMethod<any>> => {
+    propertyName: string | symbol,
+    descriptor: TypedPropertyDescriptor<F>,
+  ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = retryfy(descriptor.value, input);
+      descriptor.value = retryfy(descriptor.value as (this: T, ...args: any[]) => Promise<any>, input) as F;
 
       return descriptor;
     }

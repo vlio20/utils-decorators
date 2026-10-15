@@ -70,7 +70,7 @@ describe('memozie', () => {
     const cache = new Map<string, number>();
 
     class T {
-      @memoize<T, number>({ expirationTimeMs: 30, cache })
+      @memoize({ expirationTimeMs: 30, cache })
       foo(): number {
         return this.goo();
       }
@@ -100,7 +100,7 @@ describe('memozie', () => {
     const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
 
     class T {
-      @memoize<T, string>({ expirationTimeMs: 10, keyResolver: mapper })
+      @memoize({ expirationTimeMs: 10, keyResolver: mapper })
       fooWithMapper(x: string, y: string): string {
         return this.goo(x, y);
       }
@@ -127,7 +127,7 @@ describe('memozie', () => {
         return `${x}_${y}`;
       }
 
-      @memoize<T, string>({ expirationTimeMs: 10, keyResolver: 'foo' })
+      @memoize({ expirationTimeMs: 10, keyResolver: 'foo' })
       fooWithInnerMapper(x: string, y: string): string {
         return this.goo(x, y);
       }
@@ -153,7 +153,7 @@ describe('memozie', () => {
     const cache = new Map();
 
     class T {
-      @memoize<T, number>({ cache })
+      @memoize({ cache })
       foo(): number {
         return 1;
       }

@@ -1,13 +1,7 @@
-import { Method } from '../common/model/common.model';
+import { AsyncDecorator, CompatibleKeys } from '../common/model/common.model';
 
-export type OnErrorable<T> = (
-  target: T,
-  propertyName: keyof T,
-  descriptor: TypedPropertyDescriptor<Method<any>>
-) => TypedPropertyDescriptor<Method<any>>;
-
-export interface OnErrorConfig<T> {
-  func: ((...args: any[]) => any) | keyof T;
+export type OnErrorable<T = unknown> = AsyncDecorator<T>;
+export interface OnErrorConfig<T = unknown, D = unknown, A extends unknown[] = unknown[]> {
+  func: OnErrorHandler<D, A> | CompatibleKeys<T, [error: unknown, args: A], D>;
 }
-
-export type OnErrorHandler = (e: unknown, args: any[]) => any;
+export type OnErrorHandler<D = unknown, A extends unknown[] = unknown[]> = (e: unknown, args: A) => D;

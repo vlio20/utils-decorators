@@ -1,15 +1,15 @@
-import { AsyncMethod } from '../common/model/common.model';
+import { AnyMethod } from '../common/model/common.model';
 import { Timeoutable } from './timeout.model';
 import { timeoutify } from './timeoutify';
 
-export function timeout<T = any>(ms: number): Timeoutable<T> {
-  return (
+export function timeout<T = unknown>(ms: number): Timeoutable<T> {
+  return <F extends AnyMethod>(
     target: T,
-    propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<AsyncMethod<any>>,
-  ): TypedPropertyDescriptor<AsyncMethod<any>> => {
+    propertyName: string | symbol,
+    descriptor: TypedPropertyDescriptor<F>,
+  ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = timeoutify(descriptor.value, ms);
+      descriptor.value = timeoutify(descriptor.value, ms) as F;
 
       return descriptor;
     }

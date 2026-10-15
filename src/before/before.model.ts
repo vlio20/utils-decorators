@@ -1,4 +1,6 @@
-export interface BeforeConfig<T> {
-  func: ((...args: any[]) => any) | keyof T;
+import { CompatibleKeys } from '../common/model/common.model';
+
+export interface BeforeConfig<T = unknown> {
+  func: (() => unknown) | CompatibleKeys<T, []>;
   wait?: boolean;
 }

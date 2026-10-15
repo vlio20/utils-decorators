@@ -74,6 +74,7 @@ describe('rate-limit', () => {
   it('should make sure error on async and sync counters', () => {
     try {
       class TT {
+        // @ts-expect-error Deliberately invalid configuration to verify runtime validation.
         @rateLimit({
           allowedCalls: 1,
           timeSpanMs: 1000,
@@ -261,7 +262,7 @@ describe('rate-limit', () => {
 
   it('should invoke provider mapper provided as string', async () => {
     class TT {
-      @rateLimit<TT>({
+      @rateLimit({
         allowedCalls: 1,
         timeSpanMs: 200,
         keyResolver: 'goo',
@@ -297,7 +298,7 @@ describe('rate-limit', () => {
 
   it('should invoke custom handler when exceeds the amount of allowed calls', async () => {
     class TT {
-      @rateLimit<TT>({
+      @rateLimit({
         allowedCalls: 1,
         timeSpanMs: 50,
         exceedHandler: () => {

@@ -60,7 +60,7 @@ describe('memozie-async', () => {
     const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
 
     class T {
-      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: mapper })
+      @memoizeAsync({ expirationTimeMs: 10, keyResolver: mapper })
       fooWithMapper(x: string, y: string): Promise<string> {
         return this.goo(x, y);
       }
@@ -92,7 +92,7 @@ describe('memozie-async', () => {
         return `${x}_${y}`;
       }
 
-      @memoizeAsync<T, string>({ expirationTimeMs: 10, keyResolver: 'foo' })
+      @memoizeAsync({ expirationTimeMs: 10, keyResolver: 'foo' })
       fooWithMapper(x: string, y: string): Promise<string> {
         return this.goo(x, y);
       }
@@ -177,7 +177,7 @@ describe('memozie-async', () => {
     const cache = new Map<string, number>();
 
     class T {
-      @memoizeAsync<T, number>({ expirationTimeMs: 30, cache })
+      @memoizeAsync({ expirationTimeMs: 30, cache })
       foo(): Promise<number> {
         return this.goo();
       }
@@ -233,7 +233,7 @@ describe('memozie-async', () => {
     const cache = new Map();
 
     class T {
-      @memoizeAsync<T, number>({ cache })
+      @memoizeAsync({ cache })
       foo(): Promise<number> {
         return Promise.resolve(1);
       }
@@ -263,7 +263,7 @@ describe('memozie-async', () => {
     };
 
     class T {
-      @memoizeAsync<T, number>({
+      @memoizeAsync({
         expirationTimeMs: 30,
         cache,
       })
@@ -314,7 +314,7 @@ describe('memozie-async', () => {
     };
 
     class T {
-      @memoizeAsync<T, number>({
+      @memoizeAsync({
         expirationTimeMs: 30,
         cache,
       })
@@ -354,7 +354,7 @@ describe('memozie-async', () => {
     };
 
     class T {
-      @memoizeAsync<T, number>({
+      @memoizeAsync({
         expirationTimeMs: 30,
         cache,
       })
@@ -394,7 +394,7 @@ describe('memozie-async', () => {
     };
 
     class T {
-      @memoizeAsync<T, number>({
+      @memoizeAsync({
         expirationTimeMs: 30,
         cache,
       })
@@ -436,7 +436,7 @@ describe('memozie-async', () => {
     };
 
     class T {
-      @memoizeAsync<T, number>({
+      @memoizeAsync({
         expirationTimeMs: 30,
         cache,
       })
@@ -476,7 +476,7 @@ describe('memozie-async', () => {
     };
 
     class T {
-      @memoizeAsync<T, number>({
+      @memoizeAsync({
         expirationTimeMs: 30,
         cache,
       })

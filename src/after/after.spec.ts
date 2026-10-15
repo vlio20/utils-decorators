@@ -35,7 +35,7 @@ describe('after', () => {
         expect(counter).toBe(1);
       }
 
-      @after<T, void>({
+      @after({
         func: 'after',
       })
       foo(x: number): void {
@@ -68,7 +68,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T, void>({
+      @after({
         func: afterFunc,
       })
       foo(x: number): void {
@@ -99,7 +99,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T, void>({
+      @after({
         func: afterFunc,
       })
       foo(x: number): Promise<void> {
@@ -129,7 +129,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T, void>({
+      @after({
         func: afterFunc,
         wait: true,
       })
@@ -164,7 +164,7 @@ describe('after', () => {
     };
 
     class T {
-      @after<T, number>({
+      @after({
         func: afterFunc,
       })
       foo(x: number, y: number): number {
@@ -209,7 +209,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T>({
+      @after({
         func: afterFunc,
       })
       foo(x: number): number {

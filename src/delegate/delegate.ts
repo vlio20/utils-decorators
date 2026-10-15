@@ -1,19 +1,16 @@
-import { Delegatable } from './delegate.model';
-import { AsyncMethod } from '../common/model/common.model';
+import { AsyncMethod, PromiseReturnCompatible } from '../common/model/common.model';
 import { delegatify } from './delegatify';
 
-export function delegate<T = any, D = any>(keyResolver?: (...args: any[]) => string): Delegatable<T, D> {
-  return (
+export function delegate<T = unknown, A extends unknown[] = unknown[]>(keyResolver?: (...args: A) => string) {
+  return <F extends AsyncMethod<any, any[], any>>(
     target: T,
-    propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<AsyncMethod<D>>,
-  ): TypedPropertyDescriptor<AsyncMethod<any>> => {
+    propertyName: string | symbol,
+    descriptor: TypedPropertyDescriptor<F> & PromiseReturnCompatible<F> & (Parameters<F> extends A ? unknown : never),
+  ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = delegatify(descriptor.value, keyResolver);
-
+      descriptor.value = delegatify(descriptor.value, keyResolver as ((...args: any[]) => string) | undefined) as F;
       return descriptor;
     }
-
     throw new Error('@delegate is applicable only on a methods.');
   };
 }
