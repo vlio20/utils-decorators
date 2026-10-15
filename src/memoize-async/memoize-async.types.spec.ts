@@ -1,6 +1,11 @@
 import { memoizeAsyncify, memoizeAsync, AsyncMemoizeConfig, AsyncCache } from '../index';
 
-function typeChecks(asyncCache: AsyncCache<number>) {
+function typeChecks(
+  asyncCache: AsyncCache<number>,
+  wrongCache: { expirationTimeMs: number } | { expirationTimeMs: number; cache: Map<string, string> | AsyncCache<string> },
+  wrongResolver: { expirationTimeMs: number } | { expirationTimeMs: number; keyResolver: (id: string) => string },
+  validConfig: { expirationTimeMs: number } | { expirationTimeMs: number; cache: Map<string, number>; keyResolver: (id: number) => string },
+) {
   const optionalWrongCache: AsyncMemoizeConfig<unknown, string> = { cache: new Map<string, string>() };
   const optionalWrongResolver: AsyncMemoizeConfig<unknown, number, [string]> = { keyResolver: (id) => id };
   class CacheValidation {
@@ -70,6 +75,17 @@ function typeChecks(asyncCache: AsyncCache<number>) {
     boo(id: number): Promise<number> { return Promise.resolve(id); }
   }
 
+  class UnionConfigurations {
+    field = 1;
+    // @ts-expect-error A cache in any union member must match the method result.
+    @memoizeAsync(wrongCache)
+    wrongCache(): Promise<number> { return Promise.resolve(this.field); }
+    // @ts-expect-error A resolver in any union member must accept the method arguments.
+    @memoizeAsync(wrongResolver)
+    wrongResolver(id: number): Promise<number> { return Promise.resolve(id + this.field); }
+    @memoizeAsync(validConfig)
+    valid(id: number): Promise<number> { return Promise.resolve(id + this.field); }
+  }
 }
 
 it('checks the public signatures at compile time', () => {

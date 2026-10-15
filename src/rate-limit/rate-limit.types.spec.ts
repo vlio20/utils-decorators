@@ -1,6 +1,15 @@
 import { rateLimit, rateLimitify, RateLimitAsyncCounter, RateLimitConfigs, RateLimitCounter } from '../index';
 
-function typeChecks(counter: RateLimitAsyncCounter, dynamicConfig: RateLimitConfigs<unknown, [number]>) {
+function typeChecks(
+  counter: RateLimitAsyncCounter,
+  dynamicConfig: RateLimitConfigs<unknown, [number]>,
+  unionAsyncConfig: { allowedCalls: number; timeSpanMs: number }
+    | { allowedCalls: number; timeSpanMs: number; rateLimitAsyncCounter: RateLimitAsyncCounter },
+  wrongResolver: { allowedCalls: number; timeSpanMs: number }
+    | { allowedCalls: number; timeSpanMs: number; keyResolver: (id: string) => string },
+  validResolver: { allowedCalls: number; timeSpanMs: number }
+    | { allowedCalls: number; timeSpanMs: number; keyResolver: (id: number) => string },
+) {
   const syncCounter: RateLimitCounter = { inc: () => {}, dec: () => {}, getCount: () => 0 };
   // @ts-expect-error Counters are mutually exclusive.
   rateLimitify((id: number) => id, { allowedCalls: 1, timeSpanMs: 10, rateLimitCounter: syncCounter, rateLimitAsyncCounter: counter });
@@ -49,6 +58,26 @@ function typeChecks(counter: RateLimitAsyncCounter, dynamicConfig: RateLimitConf
     // @ts-expect-error Async counter cannot decorate a synchronous method.
     @rateLimit({ allowedCalls: 1, timeSpanMs: 10, rateLimitAsyncCounter: counter })
     foo(): number { return this.field; }
+  }
+
+  const sharedOptions = { allowedCalls: 1, timeSpanMs: 10, cache: new Map<string, string>() };
+  class UnionConfigurations {
+    field = 1;
+    // @ts-expect-error An async counter in any union member requires a promise result.
+    @rateLimit(unionAsyncConfig)
+    sync(): number { return this.field; }
+    // @ts-expect-error Async counter branches cannot preserve custom promise properties.
+    @rateLimit(unionAsyncConfig)
+    extended(): Promise<number> & { extra: string } { return Object.assign(Promise.resolve(this.field), { extra: 'x' }); }
+    @rateLimit(unionAsyncConfig)
+    async validAsync(): Promise<number> { return this.field; }
+    // @ts-expect-error A resolver in any union member must accept the method arguments.
+    @rateLimit(wrongResolver)
+    wrongResolver(id: number): number { return id + this.field; }
+    @rateLimit(validResolver)
+    validResolver(id: number): number { return id + this.field; }
+    @rateLimit(sharedOptions)
+    unrelatedCache(): number { return this.field; }
   }
 }
 

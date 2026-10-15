@@ -21,3 +21,16 @@ export type AsyncDecorator<T = unknown> = <F extends (this: any, ...args: any[])
   propertyName: string | symbol,
   descriptor: TypedPropertyDescriptor<F> & PromiseReturnCompatible<F>
 ) => TypedPropertyDescriptor<F>;
+
+/** Collect property values from every union member, including optional properties. */
+export type ConfigProperty<C, K extends PropertyKey> = C extends unknown
+  ? K extends keyof C ? Exclude<C[K], undefined> : never
+  : never;
+
+/** Validate all possible resolver values together so invalid union members cannot disappear. */
+export type ResolverValidation<C, T, F extends AnyMethod> = [ConfigProperty<C, 'keyResolver'>] extends [
+  ((...args: Parameters<F>) => string) | CompatibleKeys<T, Parameters<F>, string>
+] ? unknown : never;
+
+export type AsyncReturnValidation<F extends AnyMethod> = [ReturnType<F>] extends [Promise<unknown>]
+  ? PromiseReturnCompatible<F> : never;

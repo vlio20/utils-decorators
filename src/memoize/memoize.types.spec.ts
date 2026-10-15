@@ -1,6 +1,11 @@
 import { memoizify, memoize, MemoizeConfig, AsyncCache } from '../index';
 
-function typeChecks(asyncCache: AsyncCache<number>) {
+function typeChecks(
+  asyncCache: AsyncCache<number>,
+  wrongCache: { expirationTimeMs: number } | { expirationTimeMs: number; cache: Map<string, string> },
+  wrongResolver: { expirationTimeMs: number } | { expirationTimeMs: number; keyResolver: (id: string) => string },
+  validConfig: { expirationTimeMs: number } | { expirationTimeMs: number; cache: Map<string, number>; keyResolver: (id: number) => string },
+) {
   const optionalWrongCache: MemoizeConfig<unknown, string> = { cache: new Map<string, string>() };
   const optionalWrongResolver: MemoizeConfig<unknown, number, [string]> = { keyResolver: (id) => id };
   class CacheValidation {
@@ -59,6 +64,17 @@ function typeChecks(asyncCache: AsyncCache<number>) {
     boo(id: number): number { return id + this.field; }
   }
 
+  class UnionConfigurations {
+    field = 1;
+    // @ts-expect-error A cache in any union member must match the method result.
+    @memoize(wrongCache)
+    wrongCache(): number { return this.field; }
+    // @ts-expect-error A resolver in any union member must accept the method arguments.
+    @memoize(wrongResolver)
+    wrongResolver(id: number): number { return id + this.field; }
+    @memoize(validConfig)
+    valid(id: number): number { return id + this.field; }
+  }
 }
 
 it('checks the public signatures at compile time', () => {

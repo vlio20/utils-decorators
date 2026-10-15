@@ -1,4 +1,4 @@
-import { Method, CompatibleKeys } from '../common/model/common.model';
+import { Method, CompatibleKeys, AnyMethod, ConfigProperty, ResolverValidation, AsyncReturnValidation } from '../common/model/common.model';
 
 export type RateLimitConfigs<T = unknown, A extends unknown[] = unknown[]> = {
   timeSpanMs: number;
@@ -28,7 +28,10 @@ export type RateLimitable<T, D> = <F extends Method<D, any[], any>>(
   descriptor: TypedPropertyDescriptor<F>
 ) => TypedPropertyDescriptor<F>;
 
-export type ConfiguredRateLimitable<C> = import('../memoize/memoize.model').ConfiguredMemoizable<
-  C, 'rateLimitAsyncCounter' extends keyof C
-    ? [Exclude<C['rateLimitAsyncCounter'], undefined>] extends [never] ? false : true
-    : false>;
+export type ConfiguredRateLimitable<C> = <T, F extends AnyMethod>(
+  target: T,
+  propertyName: string | symbol,
+  descriptor: TypedPropertyDescriptor<F>
+    & ResolverValidation<C, T, F>
+    & ([ConfigProperty<C, 'rateLimitAsyncCounter'>] extends [never] ? unknown : AsyncReturnValidation<F>)
+) => TypedPropertyDescriptor<F>;
