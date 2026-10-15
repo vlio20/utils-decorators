@@ -9,9 +9,13 @@ describe('timeout', () => {
 
       class T {
         @nonValidTimeout
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@timeout is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -36,6 +40,10 @@ describe('timeout', () => {
       await t.foo();
       throw new Error('should not reach here');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toEqual(`timeout occurred after ${ms}`);
       expect(e instanceof TimeoutError).toBeTruthy();
     }

@@ -19,12 +19,12 @@ export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
     }
 
     await sleep(10);
-    this.counterMap.set(key, this.counterMap.get(key) + 1);
+    this.counterMap.set(key, ((this.counterMap.get(key) ?? 0) + 1));
   }
 
   async dec(key: string): Promise<void> {
     await sleep(10);
-    const currentCount = this.counterMap.get(key);
+    const currentCount = this.counterMap.get(key) ?? 0;
 
     await sleep(10);
     if (currentCount === 1) {
@@ -56,9 +56,13 @@ describe('rate-limit', () => {
 
       class TT {
         @nonValidRateLimit
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@rateLimit is applicable only on a method.').toBe(e.message);
 
       return;
@@ -82,6 +86,10 @@ describe('rate-limit', () => {
 
       throw new Error('should not reach this line');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('You cant provide both rateLimitAsyncCounter and rateLimitCounter.').toBe(e.message);
     }
   });
@@ -101,6 +109,10 @@ describe('rate-limit', () => {
       t.foo();
       throw new Error('should not get to this line');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
@@ -144,6 +156,10 @@ describe('rate-limit', () => {
       t.foo();
       throw new Error('should not get to this line');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
@@ -193,6 +209,10 @@ describe('rate-limit', () => {
       await t1.foo();
       throw new Error('should not get to this line');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
@@ -228,6 +248,10 @@ describe('rate-limit', () => {
       t.foo('a');
       throw new Error('should not get to this line');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
@@ -260,6 +284,10 @@ describe('rate-limit', () => {
       t.foo('a');
       throw new Error('should not get to this line');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
@@ -288,6 +316,10 @@ describe('rate-limit', () => {
       t.foo();
       throw new Error('should not get to this line');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toEqual('blarg');
     }
   });

@@ -1,6 +1,6 @@
 import { Method } from '../common/model/common.model';
 
-export type ReportFunction = (data?: ExactTimeReportData) => any;
+export type ReportFunction = (data: ExactTimeReportData) => any;
 
 export interface ExactTimeReportData {
   args: any[];

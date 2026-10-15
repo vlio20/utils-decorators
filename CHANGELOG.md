@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [3.0.0] - Unreleased
 
+### Enchantments
+- Update dependencies [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#179](https://github.com/vlio20/utils-decorators/issues/179)
+- Replace Babel test compilation with TypeScript and V8 coverage, removing direct Babel dependencies; closes [#185](https://github.com/vlio20/utils-decorators/issues/185).
+
+### Fixed
+- Support TypeScript legacy field decorators in `@readonly` and preserve validation errors when method decorators are applied to fields; closes [#185](https://github.com/vlio20/utils-decorators/issues/185).
+- Fix argument forwarding in `@multiDispatch` and `multiDispatchify` [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#184](https://github.com/vlio20/utils-decorators/issues/184)
+
 ## [2.10.0] - 2024-10-02
 
 ### Enchantments

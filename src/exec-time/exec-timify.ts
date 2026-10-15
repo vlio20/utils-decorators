@@ -13,10 +13,11 @@ export function execTimify<D = any, A extends any[] = any[]>(
 ): AsyncMethod<void, A> {
   const input: ReportFunction | string = arg ?? reporter;
 
-  return async function (...args: A): Promise<void> {
+  return async function (this: Record<PropertyKey, Method<any>>, ...args: A): Promise<void> {
     const repFunc: ReportFunction = typeof input === 'string' ? this[input].bind(this) : input;
     const start = Date.now();
-    let result = originalMethod.apply(this, args);
+    const method: Method<D | Promise<D>, A> = originalMethod;
+    let result = method.apply(this, args);
 
     if (isPromise(result)) {
       result = await result;

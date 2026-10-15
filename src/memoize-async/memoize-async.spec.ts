@@ -5,7 +5,7 @@ import { sleep } from '../common/test-utils';
 describe('memozie-async', () => {
   it('should verify memoize async caching original method', async () => {
     class T {
-      prop: number;
+      prop!: number;
 
       @memoizeAsync<T, number>(10)
       foo(x: number, y: number): Promise<number> {
@@ -126,9 +126,13 @@ describe('memozie-async', () => {
 
       class T {
         @nonValidMemoizeAsync
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@memoizeAsync is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -323,6 +327,10 @@ describe('memozie-async', () => {
     try {
       await t.foo();
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toBe('error');
 
       return;
@@ -359,6 +367,10 @@ describe('memozie-async', () => {
     try {
       await t.foo();
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toBe('error');
 
       return;
@@ -395,6 +407,10 @@ describe('memozie-async', () => {
     try {
       await t.foo();
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toBe('error');
 
       return;
@@ -433,6 +449,10 @@ describe('memozie-async', () => {
     try {
       await t.foo();
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toBe('error');
 
       return;
@@ -469,6 +489,10 @@ describe('memozie-async', () => {
     try {
       await t.foo();
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(e.message).toBe('error');
 
       return;

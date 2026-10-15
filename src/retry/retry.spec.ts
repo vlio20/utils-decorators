@@ -9,9 +9,13 @@ describe('retry', () => {
 
       class T {
         @nonValidRetry
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@retry is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -64,6 +68,10 @@ describe('retry', () => {
       await t.foo();
       throw new Error('should not get hear');
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect(t.counter).toEqual(3);
       expect(e.message).toEqual('no');
     }
@@ -180,7 +188,10 @@ describe('retry', () => {
   });
 
   it('should throw error when invalid input', async () => {
-    expect(retryfy.bind(this, '6')).toThrow('invalid input');
+    expect(() => {
+      // @ts-expect-error A string is not a valid retry configuration.
+      retryfy(async () => undefined, '6');
+    }).toThrow('invalid input');
   });
 
   it('should invoke onRetry', async () => {
@@ -219,7 +230,7 @@ describe('retry', () => {
         return Promise.resolve();
       }
 
-      retry(e, c): void {
+      retry(e: unknown, c: number): void {
         this.decCounter += 1;
       }
     }
@@ -253,6 +264,10 @@ describe('retry', () => {
         }
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('You can not provide both retries and delaysArray').toBe(e.message);
 
       return;

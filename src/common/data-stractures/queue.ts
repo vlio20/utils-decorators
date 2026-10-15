@@ -1,7 +1,7 @@
 export class Queue<T> {
-  private firstItem: Node<T> = null;
+  private firstItem: Node<T> | null = null;
 
-  private lastItem: Node<T> = null;
+  private lastItem: Node<T> | null = null;
 
   private size = 0;
 
@@ -16,7 +16,7 @@ export class Queue<T> {
   enqueue(item: T): void {
     const newItem = Queue.createItem(item);
 
-    if (this.isEmpty()) {
+    if (!this.lastItem) {
       this.firstItem = newItem;
       this.lastItem = newItem;
     } else {
@@ -27,16 +27,19 @@ export class Queue<T> {
     this.size += 1;
   }
 
-  dequeue(): T {
-    let removedItem = null;
-
-    if (!this.isEmpty()) {
-      removedItem = this.firstItem.value;
-      this.firstItem = this.firstItem.next;
-      this.size -= 1;
+  dequeue(): T | null {
+    const item = this.firstItem;
+    if (!item) {
+      return null;
     }
 
-    return removedItem;
+    this.firstItem = item.next;
+    this.size -= 1;
+    if (!this.firstItem) {
+      this.lastItem = null;
+    }
+
+    return item.value;
   }
 
   private static createItem<T>(value: T): Node<T> {
@@ -48,6 +51,6 @@ export class Queue<T> {
 }
 
 interface Node<T> {
-  next: Node<T>;
+  next: Node<T> | null;
   value: T;
 }

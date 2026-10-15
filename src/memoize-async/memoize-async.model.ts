@@ -4,7 +4,7 @@ export type AsyncMemoizable<T, D> = Memoizable<T, Promise<D>>;
 
 export interface AsyncCache<D> {
   set: (key: string, value: D) => Promise<void>;
-  get: (key: string) => Promise<D> | Promise<null>;
+  get: (key: string) => Promise<D | null | undefined>;
   delete: (key: string) => Promise<void>;
   has: (key: string) => Promise<boolean>;
 }

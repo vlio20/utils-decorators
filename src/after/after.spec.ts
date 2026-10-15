@@ -4,13 +4,18 @@ import { AfterFunc, AfterParams } from './after.model';
 describe('after', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
+      // @ts-expect-error Intentionally invalid input verifies runtime validation.
       const nonValidAfter: any = after({ func: null });
 
       class T {
         @nonValidAfter
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@after is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -23,7 +28,7 @@ describe('after', () => {
     let counter = 0;
 
     class T {
-      prop: number;
+      prop!: number;
 
       after(): void {
         expect(this.prop).toBe(3);

@@ -13,12 +13,8 @@ export class ThrottleAsyncExecutor<D> {
   }
 
   exec(context: any, args: any[]): Promise<D> {
-    const callArgs: CallArgs<D> = { context, args, resolve: null, reject: null };
-    this.callsToRun.enqueue(callArgs);
-
     const proms = new Promise<D>((resolve, reject) => {
-      callArgs.resolve = resolve;
-      callArgs.reject = reject;
+      this.callsToRun.enqueue({ context, args, resolve, reject });
     });
 
     this.tryCall();
@@ -30,7 +26,11 @@ export class ThrottleAsyncExecutor<D> {
 
   private tryCall(): void {
     if (this.callsToRun.getSize() > 0 && this.onGoingCallsCount < this.parallelCalls) {
-      const { context, args, resolve, reject } = this.callsToRun.dequeue();
+      const callArgs = this.callsToRun.dequeue();
+      if (!callArgs) {
+        return;
+      }
+      const { context, args, resolve, reject } = callArgs;
       this.onGoingCallsCount += 1;
       this.fun.apply(context, args)
         .then(resolve)
@@ -46,6 +46,6 @@ export class ThrottleAsyncExecutor<D> {
 interface CallArgs<T> {
   context: any;
   args: any[];
-  resolve: (value?: T) => void;
-  reject: (error?: Error) => void;
+  resolve: (value: T) => void;
+  reject: (error: unknown) => void;
 }

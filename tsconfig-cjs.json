@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "Node20",
+    "moduleResolution": "node16",
     "outDir": "./dist/cjs"
   },
 }

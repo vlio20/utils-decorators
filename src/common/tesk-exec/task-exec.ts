@@ -3,7 +3,7 @@ import TinyQueue from 'tinyqueue';
 export class TaskExec {
   private tasks = new TinyQueue<TimedTask>([], (a, b) => a.execTime - b.execTime);
 
-  private handler;
+  private handler: ReturnType<typeof setTimeout> | undefined;
 
   exec(func: (...args: any) => any, ttl: number): void {
     this.tasks.push({ func, execTime: Date.now() + ttl });
@@ -11,19 +11,22 @@ export class TaskExec {
   }
 
   private handleNext(): void {
-    if (!this.tasks.length) {
+    const task = this.tasks.peek();
+    if (!task) {
       return;
     }
 
-    const { execTime } = this.tasks.peek();
+    const { execTime } = task;
     this.execNext(Math.max(execTime - Date.now(), 0));
   }
 
   private execNext(ttl: number): void {
     clearTimeout(this.handler);
     this.handler = setTimeout(() => {
-      const { func } = this.tasks.pop();
-      func();
+      const task = this.tasks.pop();
+      if (task) {
+        task.func();
+      }
       this.handleNext();
     }, ttl);
   }

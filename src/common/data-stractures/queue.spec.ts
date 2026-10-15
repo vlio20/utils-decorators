@@ -1,6 +1,16 @@
 import { Queue } from './queue';
 
 describe('Queue', () => {
+  it('should accept new items after the queue has been drained', () => {
+    const queue = new Queue<number>();
+    queue.enqueue(1);
+    expect(queue.dequeue()).toBe(1);
+    expect(queue.dequeue()).toBeNull();
+    queue.enqueue(2);
+    expect(queue.dequeue()).toBe(2);
+    expect(queue.getSize()).toBe(0);
+  });
+
   it('should initialize with size 0', () => {
     const queue = new Queue<number>();
     expect(queue.getSize()).toBe(0);

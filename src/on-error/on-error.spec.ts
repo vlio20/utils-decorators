@@ -3,13 +3,18 @@ import { onError } from './on-error';
 describe('onError', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
+      // @ts-expect-error Intentionally invalid input verifies runtime validation.
       const nonValidOnError: any = onError({ func: null });
 
       class T {
         @nonValidOnError
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@onError is applicable only on a methods.').toBe(e.message);
 
       return;

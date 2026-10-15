@@ -1,7 +1,7 @@
 import { Refreshable, RefreshableConfig } from './refreshable.model';
 
 export function refreshable<T = any, D = any>(config: RefreshableConfig<D>): Refreshable<T> {
-  return async function (target: T, key: keyof T): Promise<void> {
+  return async function (this: T, target: T, key: keyof T): Promise<void> {
     let data: D;
 
     const intervalHandler = setInterval(async () => {

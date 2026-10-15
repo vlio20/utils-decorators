@@ -8,9 +8,13 @@ describe('debounce', () => {
 
       class T {
         @nonValidDebounce
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@debounce is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -21,7 +25,7 @@ describe('debounce', () => {
 
   it('should verify method invocation is debounced', async () => {
     class T {
-      prop: number;
+      prop!: number;
 
       @debounce<T>(30)
       foo(): void {

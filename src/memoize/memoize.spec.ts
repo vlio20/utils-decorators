@@ -6,7 +6,7 @@ declare const window: any;
 describe('memozie', () => {
   it('should verify memoize caching original method', (done) => {
     class T {
-      prop: 3;
+      prop!: 3;
 
       @memoize<T, number>(10)
       foo(x: number, y: number): number {
@@ -51,9 +51,13 @@ describe('memozie', () => {
 
       class T {
         @nonValidMemoize
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@memoize is applicable only on a methods.').toBe(e.message);
 
       return;
