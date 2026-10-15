@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - Unreleased
+
 ## [2.10.0] - 2024-10-02
 
 ### Enchantments
