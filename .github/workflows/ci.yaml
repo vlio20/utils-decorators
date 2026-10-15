@@ -17,12 +17,12 @@ jobs:
       - name: Run build and tests
         run: |
           npm ci
-          npm run test:unit -- --coverage
+          npm run test
           npm run build
 
-      - name: Archive test coverage
+      - name: Archive mutation reports
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: test coverage
-          path: coverage
+          name: mutation reports
+          path: reports
