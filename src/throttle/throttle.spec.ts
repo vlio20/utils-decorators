@@ -44,13 +44,13 @@ describe('throttle', () => {
 
     t.foo(2);
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).lastCalledWith(1);
+    expect(spy).toHaveBeenLastCalledWith(1);
 
     await sleep(30);
 
     t.foo(3);
 
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy).lastCalledWith(3);
+    expect(spy).toHaveBeenLastCalledWith(3);
   });
 });

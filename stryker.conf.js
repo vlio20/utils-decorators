@@ -1,5 +1,4 @@
 module.exports = {
-    mutator: 'typescript',
     packageManager: 'npm',
     reporters: ['progress', 'html', 'dashboard'],
     testRunner: 'jest',

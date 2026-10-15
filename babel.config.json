@@ -1,11 +1,10 @@
 {
+  "targets": { "node": "current" },
   "presets": [
     [
       "@babel/preset-env",
       {
-        "targets": {
-          "node": "current"
-        }
+        "modules": "commonjs"
       }
     ],
     "@babel/preset-typescript"
@@ -14,11 +13,11 @@
     [
       "@babel/plugin-proposal-decorators",
       {
-        "legacy": true
+        "version": "legacy"
       }
     ],
     [
-      "@babel/plugin-proposal-class-properties"
+      "@babel/plugin-transform-class-properties"
     ]
   ]
 }
