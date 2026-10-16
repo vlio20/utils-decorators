@@ -1,16 +1,22 @@
+import { afterify } from './afterify';
 import { after } from './after';
 import { AfterFunc, AfterParams } from './after.model';
 
 describe('after', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
+      // @ts-expect-error Intentionally invalid input verifies runtime validation.
       const nonValidAfter: any = after({ func: null });
 
       class T {
         @nonValidAfter
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@after is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -23,14 +29,14 @@ describe('after', () => {
     let counter = 0;
 
     class T {
-      prop: number;
+      prop!: number;
 
       after(): void {
         expect(this.prop).toBe(3);
         expect(counter).toBe(1);
       }
 
-      @after<T, void>({
+      @after({
         func: 'after',
       })
       foo(x: number): void {
@@ -63,7 +69,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T, void>({
+      @after({
         func: afterFunc,
       })
       foo(x: number): void {
@@ -94,7 +100,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T, void>({
+      @after({
         func: afterFunc,
       })
       foo(x: number): Promise<void> {
@@ -124,7 +130,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T, void>({
+      @after({
         func: afterFunc,
         wait: true,
       })
@@ -159,7 +165,7 @@ describe('after', () => {
     };
 
     class T {
-      @after<T, number>({
+      @after({
         func: afterFunc,
       })
       foo(x: number, y: number): number {
@@ -204,7 +210,7 @@ describe('after', () => {
     });
 
     class T {
-      @after<T>({
+      @after({
         func: afterFunc,
       })
       foo(x: number): number {
@@ -215,5 +221,19 @@ describe('after', () => {
     const t = new T();
     const result = await t.foo(value);
     expect(result).toBe(value);
+  });
+});
+
+describe('afterify return values', () => {
+  it('preserves synchronous results and reports the original arguments', () => {
+    const report = jest.fn();
+    expect(afterify((id: number) => id, { func: report })(42)).toBe(42);
+    expect(report).toHaveBeenCalledWith({ args: [42], response: 42 });
+  });
+
+  it('reports resolved async values when waiting', async () => {
+    const report = jest.fn();
+    await expect(afterify(async () => 42, { wait: true, func: report })()).resolves.toBe(42);
+    expect(report).toHaveBeenCalledWith({ args: [], response: 42 });
   });
 });

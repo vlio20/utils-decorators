@@ -13,11 +13,11 @@ export class SimpleRateLimitCounter implements RateLimitCounter {
       this.counterMap.set(key, 0);
     }
 
-    this.counterMap.set(key, this.counterMap.get(key) + 1);
+    this.counterMap.set(key, this.getCount(key) + 1);
   }
 
   dec(key: string): void {
-    const currentCount = this.counterMap.get(key);
+    const currentCount = this.getCount(key);
 
     if (currentCount === 1) {
       this.counterMap.delete(key);

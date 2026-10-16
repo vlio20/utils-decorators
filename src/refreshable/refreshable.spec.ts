@@ -1,79 +1,123 @@
 import { refreshable } from './refreshable';
-import { sleep } from '../common/test-utils';
 
 describe('refreshable', () => {
-  const originalSetInterval = global.setInterval;
-  const unrefMock = jest.fn();
-
-  function useFakeSetInterval() {
-    global.setInterval = <any>jest.fn(() => ({ unref: unrefMock }));
-  }
-
-  function restoreSetInterval() {
-    global.setInterval = originalSetInterval;
-  }
-
-  afterEach(restoreSetInterval);
-
-  it('should call unref on setInterval', async () => {
-    useFakeSetInterval();
-    const foo = refreshable<any, number>({
-      dataProvider: () => Promise.resolve(0),
-      intervalMs: 50,
-    });
-    const t = { prop: 0 } as { prop: number };
-    foo(t, 'prop');
-    await sleep(10);
-    expect(unrefMock).toHaveBeenCalled();
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
   });
 
-  it('should populate refreshable property', async () => {
-    let fooCtr = 0;
-    let gooCtr = 0;
+  it('starts only on the first read, then populates and refreshes the property', async () => {
+    const provider = jest.fn<Promise<number>, []>()
+      .mockResolvedValueOnce(3)
+      .mockResolvedValue(4);
+    class Monitor {
+      @refreshable({ dataProvider: provider, intervalMs: 50 })
+      declare value: number | null | undefined;
+    }
+    const monitor = new Monitor();
 
-    const foo = async (): Promise<number> => {
-      const tmp = gooCtr;
-      fooCtr += 1;
+    await jest.advanceTimersByTimeAsync(100);
+    expect(provider).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(0);
 
-      return tmp;
-    };
+    expect(monitor.value).toBeUndefined();
+    expect(monitor.value).toBeUndefined();
+    expect(jest.getTimerCount()).toBe(2);
+    await jest.advanceTimersByTimeAsync(0);
+    expect(monitor.value).toBe(3);
+    expect(provider).toHaveBeenCalledTimes(1);
 
-    const goo = async (): Promise<number> => {
-      const tmp = gooCtr;
-      gooCtr += 1;
+    await jest.advanceTimersByTimeAsync(50);
+    expect(monitor.value).toBe(4);
+    expect(provider).toHaveBeenCalledTimes(2);
+  });
 
-      return tmp;
-    };
+  it('unrefs the interval when first read, if supported', () => {
+    const unref = jest.fn();
+    jest.spyOn(global, 'setInterval').mockReturnValue({ unref } as unknown as ReturnType<typeof setInterval>);
+    const target = { value: undefined as number | undefined };
+    refreshable({ dataProvider: async () => 0, intervalMs: 50 })(target, 'value');
 
-    const fooDec = refreshable<any, number>({
-      dataProvider: foo,
-      intervalMs: 50,
-    });
+    expect(unref).not.toHaveBeenCalled();
+    expect(target.value).toBeUndefined();
+    expect(unref).toHaveBeenCalledTimes(1);
+  });
 
-    const gooDec = refreshable<any, number>({
-      dataProvider: goo,
-      intervalMs: 50,
-    });
+  it('keeps values and refresh timers independent across instances', async () => {
+    const provider = jest.fn<Promise<number>, []>()
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(2)
+      .mockResolvedValue(3);
+    class Monitor {
+      @refreshable({ dataProvider: provider, intervalMs: 50 })
+      declare value: number | null | undefined;
+    }
+    const first = new Monitor();
+    const second = new Monitor();
 
-    const t = { prop: 9, proop: 4 } as { prop: number; proop: number };
-    fooDec(t, 'prop');
-    gooDec(t, 'proop');
+    expect(first.value).toBeUndefined();
+    await jest.advanceTimersByTimeAsync(0);
+    expect(first.value).toBe(1);
+    expect(second.value).toBeUndefined();
+    await jest.advanceTimersByTimeAsync(0);
+    expect(second.value).toBe(2);
+    expect(first.value).toBe(1);
 
-    await sleep(10);
+    first.value = null;
+    await jest.advanceTimersByTimeAsync(50);
+    expect(first.value).toBe(1);
+    expect(second.value).toBe(3);
+    expect(provider).toHaveBeenCalledTimes(3);
 
-    expect(t.prop).toBe(0);
-    expect(t.proop).toBe(0);
+    second.value = null;
+    await jest.advanceTimersByTimeAsync(100);
+    expect(provider).toHaveBeenCalledTimes(3);
+    expect(jest.getTimerCount()).toBe(0);
+  });
 
-    await sleep(60);
+  it('can stop before the first read without starting or restarting timers', async () => {
+    const provider = jest.fn(async () => 1);
+    const target = { value: undefined as number | null | undefined };
+    refreshable({ dataProvider: provider, intervalMs: 50 })(target, 'value');
 
-    expect(t.prop).toBe(1);
-    expect(t.proop).toBe(1);
-    t.prop = null;
-    t.proop = 100;
+    target.value = null;
+    expect(target.value).toBeUndefined();
+    target.value = 100;
+    expect(target.value).toBeUndefined();
+    await jest.advanceTimersByTimeAsync(100);
+    expect(provider).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(0);
+  });
 
-    await sleep(50);
+  it('ignores ordinary assignments without starting work or replacing data', async () => {
+    const target = { value: undefined as number | null | undefined };
+    refreshable({ dataProvider: async () => 3, intervalMs: 50 })(target, 'value');
 
-    expect(t.prop).toBe(1);
-    expect(t.proop).toBe(2);
+    target.value = 100;
+    expect(jest.getTimerCount()).toBe(0);
+    expect(target.value).toBeUndefined();
+    await jest.advanceTimersByTimeAsync(0);
+    target.value = undefined;
+    expect(target.value).toBe(3);
+    target.value = 100;
+    expect(target.value).toBe(3);
+  });
+
+  it('allows an in-flight refresh to finish after stopping', async () => {
+    let finish!: (value: number) => void;
+    const provider = jest.fn(() => new Promise<number>(resolve => { finish = resolve; }));
+    const target = { value: undefined as number | null | undefined };
+    refreshable({ dataProvider: provider, intervalMs: 50 })(target, 'value');
+
+    expect(target.value).toBeUndefined();
+    await jest.advanceTimersByTimeAsync(0);
+    target.value = null;
+    finish(7);
+    await Promise.resolve();
+    expect(target.value).toBe(7);
+    await jest.advanceTimersByTimeAsync(100);
+    expect(provider).toHaveBeenCalledTimes(1);
   });
 });

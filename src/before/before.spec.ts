@@ -1,15 +1,48 @@
 import { before } from './before';
+import { beforify } from './beforify';
 
 describe('before', () => {
+  it('starts a waiting hook immediately and waits before calling the source', async () => {
+    let release!: () => void;
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    const hook = jest.fn(() => pending);
+    const source = jest.fn(() => 42);
+    const wrapped = beforify(source, { func: hook, wait: true });
+
+    const result = wrapped();
+    expect(hook).toHaveBeenCalledTimes(1);
+    expect(source).not.toHaveBeenCalled();
+    release();
+    await expect(result).resolves.toBe(42);
+    expect(source).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects the promise when a waiting hook throws synchronously', async () => {
+    const failure = new Error('hook failed');
+    const hook = jest.fn(() => { throw failure; });
+    const source = jest.fn(() => 42);
+    const wrapped = beforify(source, { func: hook, wait: true });
+
+    const result = wrapped();
+    expect(hook).toHaveBeenCalledTimes(1);
+    await expect(result).rejects.toBe(failure);
+    expect(source).not.toHaveBeenCalled();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
+      // @ts-expect-error Intentionally invalid input verifies runtime validation.
       const nonValidBefore: any = before({ func: null });
 
       class T {
         @nonValidBefore
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@before is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -22,7 +55,7 @@ describe('before', () => {
     let counter = 0;
 
     class T {
-      prop: number;
+      prop!: number;
 
       before(): void {
         expect(this.prop).toBe(3);
@@ -30,7 +63,7 @@ describe('before', () => {
         counter += 1;
       }
 
-      @before<T>({
+      @before({
         func: 'before',
       })
       foo(x: number): void {
@@ -63,7 +96,7 @@ describe('before', () => {
     });
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
       })
       foo(x: number): void {
@@ -96,7 +129,7 @@ describe('before', () => {
     }));
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
       })
       foo(x: number): void {
@@ -126,11 +159,11 @@ describe('before', () => {
     }));
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
         wait: true,
       })
-      foo(x: number): void {
+      async foo(x: number): Promise<void> {
         return this.goo(x);
       }
 
@@ -152,7 +185,7 @@ describe('before', () => {
     });
 
     class T {
-      @before<T>({
+      @before({
         func: beforeFunc,
       })
       foo(x: number): number {
@@ -164,5 +197,34 @@ describe('before', () => {
     const value = 42;
     const result = await t.foo(value);
     expect(result).toBe(value);
+  });
+});
+
+it('preserves synchronous results without waiting for the before hook', () => {
+  const hook = jest.fn();
+  expect(beforify(() => 42, { func: hook })()).toBe(42);
+  expect(hook).toHaveBeenCalledWith();
+});
+
+describe('original arguments in before hooks', () => {
+  it.each([false, true])('forwards arguments to before callbacks and named hooks (wait: %s)', async (wait) => {
+    const payload = { id: 172 };
+    const hook = jest.fn();
+    const source = jest.fn((...args: unknown[]) => args);
+    const wrapped = beforify(source, { func: hook, wait });
+    await expect(Promise.resolve(wrapped(payload, 'name'))).resolves.toEqual([payload, 'name']);
+    expect(hook).toHaveBeenCalledWith(payload, 'name');
+    expect(hook.mock.calls[0][0]).toBe(payload);
+
+    class Service {
+      hook = jest.fn();
+
+      // eslint-disable-next-line class-methods-use-this
+      @before({ func: 'hook', wait })
+      async load(...args: unknown[]): Promise<unknown[]> { return args; }
+    }
+    const service = new Service();
+    await expect(service.load(payload, 'name')).resolves.toEqual([payload, 'name']);
+    expect(service.hook).toHaveBeenCalledWith(payload, 'name');
   });
 });

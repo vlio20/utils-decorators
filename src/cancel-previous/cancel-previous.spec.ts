@@ -8,9 +8,13 @@ describe('cancelPrevious', () => {
 
       class T {
         @nonValidCancelPrevious
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@cancelPrevious is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -48,6 +52,7 @@ describe('cancelPrevious', () => {
 
             return;
           }
+
           throw new Error('should\'t get here');
         });
     };

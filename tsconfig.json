@@ -5,11 +5,14 @@
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "strict": true,
+    "types": ["node", "jest"],
     "lib": [
       "ESNext"
     ],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "rootDir": "./src",
     "outDir": "./dist/esm",
     "sourceMap": true,
     "target": "ES6",

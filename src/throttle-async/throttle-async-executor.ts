@@ -1,36 +1,37 @@
-import { AsyncMethod } from '../common/model/common.model';
 import { Queue } from '../common/data-stractures/queue';
 
-export class ThrottleAsyncExecutor<D> {
+export class ThrottleAsyncExecutor<D, A extends unknown[], This = unknown> {
   private onGoingCallsCount = 0;
 
-  private callsToRun = new Queue<CallArgs<D>>();
+  private callsToRun = new Queue<CallArgs<D, A, This>>();
 
   constructor(
-    private readonly fun: AsyncMethod<D>,
+    private readonly fun: (this: This, ...args: A) => Promise<D>,
     private readonly parallelCalls: number,
   ) {
   }
 
-  exec(context: any, args: any[]): Promise<D> {
-    const callArgs: CallArgs<D> = { context, args, resolve: null, reject: null };
-    this.callsToRun.enqueue(callArgs);
-
+  exec(context: This, args: A): Promise<D> {
     const proms = new Promise<D>((resolve, reject) => {
-      callArgs.resolve = resolve;
-      callArgs.reject = reject;
+      this.callsToRun.enqueue({ context, args, resolve, reject });
     });
 
     this.tryCall();
 
-    (proms as any).hell = args[0];
+    Object.assign(proms, { hell: args[0] });
 
     return proms;
   }
 
   private tryCall(): void {
     if (this.callsToRun.getSize() > 0 && this.onGoingCallsCount < this.parallelCalls) {
-      const { context, args, resolve, reject } = this.callsToRun.dequeue();
+      const callArgs = this.callsToRun.dequeue();
+
+      if (!callArgs) {
+        return;
+      }
+
+      const { context, args, resolve, reject } = callArgs;
       this.onGoingCallsCount += 1;
       this.fun.apply(context, args)
         .then(resolve)
@@ -43,9 +44,9 @@ export class ThrottleAsyncExecutor<D> {
   }
 }
 
-interface CallArgs<T> {
-  context: any;
-  args: any[];
-  resolve: (value?: T) => void;
-  reject: (error?: Error) => void;
+interface CallArgs<T, A extends unknown[], This> {
+  context: This;
+  args: A;
+  resolve: (value: T) => void;
+  reject: (error: unknown) => void;
 }

@@ -1,10 +1,9 @@
-import { AsyncMethod } from '../common/model/common.model';
 import { CanceledPromise } from './canceled-promise';
 
-export function cancelPreviousify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>): AsyncMethod<D, A> {
+export function cancelPreviousify<D, A extends unknown[], T>(originalMethod: (this: T, ...args: A) => Promise<D>): (this: T, ...args: A) => Promise<D> {
   let rej: (e: CanceledPromise) => void;
 
-  return function (...args: A): Promise<D> {
+  return function (this: T, ...args: A): Promise<D> {
     if (rej) {
       rej(new CanceledPromise());
     }
@@ -13,7 +12,7 @@ export function cancelPreviousify<D = any, A extends any[] = any[]>(originalMeth
       rej = reject;
 
       originalMethod.apply(this, args)
-        .then((data: any) => resolve(data))
+        .then((data: D) => resolve(data))
         .catch((err) => reject(err));
     });
   };

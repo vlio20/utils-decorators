@@ -1,16 +1,27 @@
 import { debounce } from './debounce';
-import { sleep } from '../common/test-utils';
 
 describe('debounce', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidDebounce: any = debounce(50);
 
       class T {
         @nonValidDebounce
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@debounce is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -21,7 +32,7 @@ describe('debounce', () => {
 
   it('should verify method invocation is debounced', async () => {
     class T {
-      prop: number;
+      prop!: number;
 
       @debounce<T>(30)
       foo(): void {
@@ -36,22 +47,24 @@ describe('debounce', () => {
     const t = new T();
     t.prop = 3;
     const spy = jest.spyOn(T.prototype, 'goo');
-    t.foo(); // 15
+    t.foo();
 
     expect(spy).not.toHaveBeenCalled();
 
-    await sleep(10);
+    await jest.advanceTimersByTimeAsync(10);
     expect(spy).toHaveBeenCalledTimes(0);
-    t.foo(); // 20
+    t.foo();
 
-    await sleep(20);
+    await jest.advanceTimersByTimeAsync(20);
     expect(spy).toHaveBeenCalledTimes(0);
 
-    await sleep(40);
+    await jest.advanceTimersByTimeAsync(9);
+    expect(spy).not.toHaveBeenCalled();
+    await jest.advanceTimersByTimeAsync(1);
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it('should verify method params are passed', (done) => {
+  it('should verify method params are passed', async () => {
     class T {
       @debounce<T>(5)
       foo(x: number, y: number): void {
@@ -67,10 +80,10 @@ describe('debounce', () => {
     const spy = jest.spyOn(T.prototype, 'goo');
     t.foo(1, 2);
 
-    setTimeout(() => {
-      expect(spy).toHaveBeenCalledWith(1, 2);
-      done();
-    }, 10);
+    await jest.advanceTimersByTimeAsync(4);
+    expect(spy).not.toHaveBeenCalled();
+    await jest.advanceTimersByTimeAsync(1);
+    expect(spy).toHaveBeenCalledWith(1, 2);
   });
 
   it('should multi instances working', async () => {
@@ -88,20 +101,20 @@ describe('debounce', () => {
     const t1 = new T();
     const t2 = new T();
     const spy1 = jest.spyOn(t1, 'goo');
-    const spy2 = jest.spyOn(t1, 'goo');
+    const spy2 = jest.spyOn(t2, 'goo');
     t1.foo();
 
     expect(spy1).not.toHaveBeenCalled();
     expect(spy2).not.toHaveBeenCalled();
 
-    await sleep(10);
+    await jest.advanceTimersByTimeAsync(10);
     expect(spy1).not.toHaveBeenCalled();
-    t2.foo(); // 20
+    t2.foo();
 
-    await sleep(30); // 40
+    await jest.advanceTimersByTimeAsync(30); // 40
     expect(spy1).toHaveBeenCalledTimes(1);
 
-    await sleep(30); // 70
+    await jest.advanceTimersByTimeAsync(30); // 70
     expect(spy1).toHaveBeenCalledTimes(1);
     expect(spy2).toHaveBeenCalledTimes(1);
   });

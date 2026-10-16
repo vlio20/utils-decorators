@@ -17,3 +17,4 @@ export * from './multi-dispatch/multi-dispatch.index';
 export * from './delegate/delegate.index';
 export * from './rate-limit/rate-limit.index';
 export * from './throttle-async/throttle-async.index';
+export * from './leaky-bucket/leaky-bucket.index';

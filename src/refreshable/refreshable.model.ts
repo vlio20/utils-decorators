@@ -1,11 +1,11 @@
-import { AsyncMethod } from '../common/model/common.model';
-
-export type Refreshable<T = any> = (
-  target: T,
-  propertyName: keyof T
+export type Refreshable<T = object, D = unknown> = <Target extends T>(
+  target: Target,
+  propertyName: {
+    [K in keyof Target]-?: D | undefined extends Target[K] ? K : never;
+  }[keyof Target],
 ) => void;
 
 export interface RefreshableConfig<D> {
-  dataProvider: AsyncMethod<D>;
+  dataProvider: (this: void) => Promise<D>;
   intervalMs: number;
 }

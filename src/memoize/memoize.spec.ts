@@ -1,12 +1,19 @@
 import { memoize } from './memoize';
-import { sleep } from '../common/test-utils';
 
 declare const window: any;
 
 describe('memozie', () => {
-  it('should verify memoize caching original method', (done) => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
+  it('should verify memoize caching original method', async () => {
     class T {
-      prop: 3;
+      prop!: 3;
 
       @memoize<T, number>(10)
       foo(x: number, y: number): number {
@@ -33,16 +40,17 @@ describe('memozie', () => {
     expect(spy.mock.calls[1][0]).toBe(1);
     expect(spy.mock.calls[1][1]).toBe(3);
 
-    setTimeout(async () => {
-      const resp3 = t.foo(1, 2);
+    await jest.advanceTimersByTimeAsync(9);
+    expect(t.foo(1, 2)).toBe(3);
+    expect(spy).toHaveBeenCalledTimes(2);
+    await jest.advanceTimersByTimeAsync(1);
+    const resp3 = t.foo(1, 2);
 
-      expect(spy).toHaveBeenCalledTimes(3);
-      expect(resp1).toBe(3);
-      expect(resp2).toBe(3);
-      expect(resp3).toBe(3);
-      expect(resp4).toBe(4);
-      done();
-    }, 20);
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(resp1).toBe(3);
+    expect(resp2).toBe(3);
+    expect(resp3).toBe(3);
+    expect(resp4).toBe(4);
   });
 
   it('should make sure error thrown when decorator not set on method', () => {
@@ -51,9 +59,13 @@ describe('memozie', () => {
 
       class T {
         @nonValidMemoize
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@memoize is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -62,11 +74,11 @@ describe('memozie', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should use provided cache', (done) => {
+  it('should use provided cache', async () => {
     const cache = new Map<string, number>();
 
     class T {
-      @memoize<T, number>({ expirationTimeMs: 30, cache })
+      @memoize({ expirationTimeMs: 30, cache })
       foo(): number {
         return this.goo();
       }
@@ -81,22 +93,20 @@ describe('memozie', () => {
     const t = new T();
     t.foo();
 
-    setTimeout(() => {
-      t.foo();
-      expect(spy).toHaveBeenCalledTimes(1);
+    await jest.advanceTimersByTimeAsync(10);
+    t.foo();
+    expect(spy).toHaveBeenCalledTimes(1);
 
-      cache.delete('[]');
-      t.foo();
-      expect(spy).toHaveBeenCalledTimes(2);
-      done();
-    }, 10);
+    cache.delete('[]');
+    t.foo();
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 
   it('should verify memoize key foo as function', async () => {
     const mapper = jest.fn((x: string, y: string) => `${x}_${y}`);
 
     class T {
-      @memoize<T, string>({ expirationTimeMs: 10, keyResolver: mapper })
+      @memoize({ expirationTimeMs: 10, keyResolver: mapper })
       fooWithMapper(x: string, y: string): string {
         return this.goo(x, y);
       }
@@ -123,7 +133,7 @@ describe('memozie', () => {
         return `${x}_${y}`;
       }
 
-      @memoize<T, string>({ expirationTimeMs: 10, keyResolver: 'foo' })
+      @memoize({ expirationTimeMs: 10, keyResolver: 'foo' })
       fooWithInnerMapper(x: string, y: string): string {
         return this.goo(x, y);
       }
@@ -149,7 +159,7 @@ describe('memozie', () => {
     const cache = new Map();
 
     class T {
-      @memoize<T, number>({ cache })
+      @memoize({ cache })
       foo(): number {
         return 1;
       }
@@ -160,7 +170,7 @@ describe('memozie', () => {
     t.foo();
     expect(cache.size).toEqual(1);
 
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     expect(cache.size).toEqual(1);
   });
 });

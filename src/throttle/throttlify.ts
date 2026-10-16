@@ -1,8 +1,10 @@
-import { Method } from '../common/model/common.model';
-
-export function throttlify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, delayMs: number): Method<void, A> {
+export function throttlify<D, A extends unknown[], This = unknown>(
+  originalMethod: (this: This, ...args: A) => D,
+  delayMs: number,
+): (this: This, ...args: A) => void {
   let throttling = false;
-  return function (...args: A): void {
+
+  return function (this: This, ...args: A): void {
     if (!throttling) {
       throttling = true;
       originalMethod.apply(this, args);

@@ -1,9 +1,10 @@
-import { Method } from '../common/model/common.model';
+export function debouncify<D, A extends unknown[], This = unknown>(
+  originalMethod: (this: This, ...args: A) => D,
+  delayMs: number,
+): (this: This, ...args: A) => void {
+  let handler: ReturnType<typeof setTimeout> | undefined;
 
-export function debouncify<D = any, A extends any[] = any[]>(originalMethod: Method<D, A>, delayMs: number): Method<void, A> {
-  let handler: any;
-
-  return function (...args: A): void {
+  return function (this: This, ...args: A): void {
     clearTimeout(handler);
 
     handler = setTimeout(() => {

@@ -1,15 +1,21 @@
+import { onErrorify } from './on-errorify';
 import { onError } from './on-error';
 
 describe('onError', () => {
   it('should make sure error thrown when decorator not set on method', () => {
     try {
+      // @ts-expect-error Intentionally invalid input verifies runtime validation.
       const nonValidOnError: any = onError({ func: null });
 
       class T {
         @nonValidOnError
-          boo: string;
+          boo!: string;
       }
     } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e;
+      }
+
       expect('@onError is applicable only on a methods.').toBe(e.message);
 
       return;
@@ -18,12 +24,12 @@ describe('onError', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should verify onError called on exception, when as string', () => {
+  it('should verify onError called on exception, when as string', async () => {
     class T {
       prop = 3;
 
-      @onError<T>({ func: 'onError' })
-      foo(x: number): any {
+      @onError({ func: 'onError' })
+      async foo(x: number): Promise<void> {
         return this.goo(x);
       }
 
@@ -31,8 +37,8 @@ describe('onError', () => {
         throw new Error('arr');
       }
 
-      onError(e: Error, args: any[]): void {
-        expect(e.message).toBe('arr');
+      onError(e: unknown, args: any[]): void {
+        expect((e as Error).message).toBe('arr');
         expect(args).toEqual([1]);
         expect(this.prop).toBe(3);
       }
@@ -42,21 +48,21 @@ describe('onError', () => {
     const spyGoo = jest.spyOn(T.prototype, 'goo');
     const spyAfter = jest.spyOn(T.prototype, 'onError');
 
-    t.foo(1);
+    await t.foo(1);
     expect(spyGoo).toHaveBeenCalledTimes(1);
     expect(spyGoo).toHaveBeenCalledWith(1);
     expect(spyAfter).toHaveBeenCalledTimes(1);
   });
 
-  it('should verify onError called on exception, when as function', () => {
-    const onErrorFunc = jest.fn((e: Error, args: any[]): void => {
-      expect(e.message).toBe('arr');
+  it('should verify onError called on exception, when as function', async () => {
+    const onErrorFunc = jest.fn((e: unknown, args: any[]): void => {
+      expect((e as Error).message).toBe('arr');
       expect(args).toEqual([1]);
     });
 
     class T {
-      @onError<T>({ func: onErrorFunc })
-      foo(x: number): any {
+      @onError({ func: onErrorFunc })
+      async foo(x: number): Promise<void> {
         return this.goo(x);
       }
 
@@ -68,20 +74,20 @@ describe('onError', () => {
     const t = new T();
     const spyGoo = jest.spyOn(T.prototype, 'goo');
 
-    t.foo(1);
+    await t.foo(1);
     expect(spyGoo).toHaveBeenCalledTimes(1);
     expect(spyGoo).toHaveBeenCalledWith(1);
     expect(onErrorFunc).toHaveBeenCalledTimes(1);
   });
 
   it('should verify onError called on exception, when function is async', async () => {
-    const onErrorFunc = jest.fn(async (e: Error, args: any[]): Promise<void> => {
-      expect(e.message).toBe('error');
+    const onErrorFunc = jest.fn(async (e: unknown, args: any[]): Promise<void> => {
+      expect((e as Error).message).toBe('error');
       expect(args).toEqual([1]);
     });
 
     class T {
-      @onError<T>({ func: onErrorFunc })
+      @onError({ func: onErrorFunc })
       foo(x: number): Promise<void> {
         return Promise.reject(new Error('error'));
       }
@@ -98,7 +104,7 @@ describe('onError', () => {
     });
 
     class T {
-      @onError<T>({ func: onErrorFunc })
+      @onError({ func: onErrorFunc })
       foo(): Promise<void> {
         return Promise.resolve();
       }
@@ -110,22 +116,26 @@ describe('onError', () => {
     expect(onErrorFunc).not.toHaveBeenCalled();
   });
 
-  it('should verify onError called on exception, when function is sync', () => {
-    const onErrorFunc = jest.fn(async (e: Error, args: any[]): Promise<void> => {
-      expect(e.message).toBe('arr');
+  it('should verify onError called on exception, when function is sync', async () => {
+    const onErrorFunc = jest.fn(async (e: unknown, args: any[]): Promise<void> => {
+      expect((e as Error).message).toBe('arr');
       expect(args).toEqual([1]);
     });
 
     class T {
-      @onError<T>({ func: onErrorFunc })
-      foo(x: number): any {
+      @onError({ func: onErrorFunc })
+      async foo(x: number): Promise<void> {
         throw new Error('arr');
       }
     }
 
     const t = new T();
 
-    t.foo(1);
+    await t.foo(1);
     expect(onErrorFunc).toHaveBeenCalledTimes(1);
   });
+});
+
+it('returns the recovery result when the source rejects', async () => {
+  await expect(onErrorify(async () => { throw 'failure'; }, { func: () => 'recovered' })()).resolves.toBe('recovered');
 });

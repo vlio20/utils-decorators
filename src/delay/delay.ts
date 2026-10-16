@@ -1,17 +1,18 @@
-import { Decorator, Method } from '../common/model/common.model';
 import { delayfy } from './delayfy';
 
-export function delay<T = any>(delayMs: number): Decorator<T> {
-  return (
-    target: T,
-    propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<Method<any>>,
-  ): TypedPropertyDescriptor<Method<any>> => {
-    if (descriptor.value) {
-      descriptor.value = delayfy(descriptor.value, delayMs);
+export function delay<T extends object = object>(delayMs: number) {
+  return <This extends T, A extends unknown[], R>(
+    target: This,
+    propertyName: keyof This,
+    descriptor: TypedPropertyDescriptor<(this: This, ...args: A) => R>
+      & ([R] extends [never] ? never : [R] extends [void] ? unknown : never),
+  ): void => {
+    if (descriptor?.value) {
+      descriptor.value = delayfy(descriptor.value, delayMs) as (this: This, ...args: A) => R;
 
-      return descriptor;
+      return;
     }
+
     throw new Error('@delay is applicable only on a methods.');
   };
 }

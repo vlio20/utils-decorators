@@ -1,31 +1,27 @@
-import { AsyncMethod, Method } from '../common/model/common.model';
-import { isPromise } from '../common/utils/utils';
+import { Method, CompatibleKeys } from '../common/model/common.model';
 import { ExactTimeReportData, ReportFunction } from './exec-time.model';
 
-const reporter: ReportFunction = function (data: ExactTimeReportData): void {
+const reporter: ReportFunction = (data: ExactTimeReportData): void => {
   // eslint-disable-next-line no-console
   console.info(data.execTime);
 };
+export function execTimify<D, A extends unknown[], T>(
+  originalMethod: Method<D, A, T>,
+  arg?: ReportFunction<NoInfer<Awaited<D>>, NoInfer<A>> | CompatibleKeys<NoInfer<T>, [ExactTimeReportData<Awaited<D>, A>]>,
+): Method<D extends PromiseLike<unknown> ? Promise<Awaited<D>> : D, A, T>;
+export function execTimify(originalMethod: Method<any>, arg?: ReportFunction<any, any> | PropertyKey): Method<any> {
+  const input = arg ?? reporter;
 
-export function execTimify<D = any, A extends any[] = any[]>(
-  originalMethod: Method<D, A> | AsyncMethod<D, A>,
-  arg?: ReportFunction | string,
-): AsyncMethod<void, A> {
-  const input: ReportFunction | string = arg ?? reporter;
-
-  return async function (...args: A): Promise<void> {
-    const repFunc: ReportFunction = typeof input === 'string' ? this[input].bind(this) : input;
+  return function (this: any, ...args: any[]): any {
+    const report = typeof input === 'function' ? input : this[input].bind(this);
     const start = Date.now();
-    let result = originalMethod.apply(this, args);
+    const finish = (result: any) => {
+      report({ args, result, execTime: Date.now() - start });
 
-    if (isPromise(result)) {
-      result = await result;
-    }
+      return result;
+    };
+    const result = originalMethod.apply(this, args);
 
-    repFunc({
-      args,
-      result,
-      execTime: Date.now() - start,
-    });
+    return result != null && typeof result.then === 'function' ? Promise.resolve(result).then(finish) : finish(result);
   };
 }

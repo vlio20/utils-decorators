@@ -1,15 +1,9 @@
-import { Method } from '../common/model/common.model';
+import { Decorator } from '../common/model/common.model';
 
-export type ReportFunction = (data?: ExactTimeReportData) => any;
-
-export interface ExactTimeReportData {
-  args: any[];
-  result: any;
+export type ReportFunction<D = unknown, A extends unknown[] = unknown[]> = (data: ExactTimeReportData<D, A>) => void;
+export interface ExactTimeReportData<D = unknown, A extends unknown[] = unknown[]> {
+  args: A;
+  result: D;
   execTime: number;
 }
-
-export type ExactTimeReportable<T> = (
-  target: T,
-  propertyName: keyof T,
-  descriptor: TypedPropertyDescriptor<Method<any>>
-) => TypedPropertyDescriptor<Method<any>>;
+export type ExactTimeReportable<T = unknown> = Decorator<T>;

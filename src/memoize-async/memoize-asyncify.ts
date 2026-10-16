@@ -1,37 +1,29 @@
-import { AsyncMethod } from '../common/model/common.model';
 import { TaskExec } from '../common/tesk-exec/task-exec';
 import { AsyncMemoizeConfig } from './memoize-async.model';
 
-export function memoizeAsyncify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>): AsyncMethod<D, A>;
-export function memoizeAsyncify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, config: AsyncMemoizeConfig<any, D>): AsyncMethod<D, A>;
-export function memoizeAsyncify<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, expirationTimeMs: number): AsyncMethod<D, A>;
+export function memoizeAsyncify<D, A extends unknown[], T>(originalMethod: (this: T, ...args: A) => Promise<D>): (this: T, ...args: A) => Promise<D>;
+export function memoizeAsyncify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => Promise<D>,
+  config: NoInfer<AsyncMemoizeConfig<T, D, A>>
+): (this: T, ...args: A) => Promise<D>;
+export function memoizeAsyncify<D, A extends unknown[], T>(originalMethod: (this: T, ...args: A) => Promise<D>, expirationTimeMs: number): (this: T, ...args: A) => Promise<D>;
 
-export function memoizeAsyncify<D = any, A extends any[] = any[]>(
-  originalMethod: AsyncMethod<D, A>,
-  input?: AsyncMemoizeConfig<any, D> | number,
-): AsyncMethod<D, A> {
-  const defaultConfig: AsyncMemoizeConfig<any, D> = {
-    cache: new Map<string, D>(),
+export function memoizeAsyncify<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => Promise<D>,
+  input?: NoInfer<AsyncMemoizeConfig<T, D, A>> | number,
+): (this: T, ...args: A) => Promise<D> {
+  const config = typeof input === 'number' ? { expirationTimeMs: input } : input;
+  const resolvedConfig = {
+    ...config,
+    cache: config?.cache ?? new Map<string, D>(),
   };
   const runner = new TaskExec();
   const promCache = new Map<string, Promise<D>>();
-  let resolvedConfig = {
-    ...defaultConfig,
-  } as AsyncMemoizeConfig<any, D>;
 
-  if (typeof input === 'number') {
-    resolvedConfig.expirationTimeMs = input;
-  } else {
-    resolvedConfig = {
-      ...resolvedConfig,
-      ...input,
-    };
-  }
-
-  return async function (...args: A): Promise<D> {
-    const keyResolver = typeof resolvedConfig.keyResolver === 'string'
-      ? this[resolvedConfig.keyResolver].bind(this)
-      : resolvedConfig.keyResolver;
+  return async function (this: T, ...args: A): Promise<D> {
+    const keyResolver = typeof resolvedConfig.keyResolver === 'function' || resolvedConfig.keyResolver === undefined
+      ? resolvedConfig.keyResolver
+      : (this[resolvedConfig.keyResolver] as (...args: A) => string).bind(this);
 
     let key;
 
@@ -41,11 +33,13 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
       key = JSON.stringify(args);
     }
 
-    if (promCache.has(key)) {
-      return promCache.get(key);
+    const cachedPromise = promCache.get(key);
+
+    if (cachedPromise) {
+      return cachedPromise;
     }
 
-    const prom = new Promise<any>(async (resolve, reject) => {
+    const prom = new Promise<D>(async (resolve, reject) => {
       let inCache: boolean;
 
       try {
@@ -57,7 +51,8 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
       }
 
       if (inCache) {
-        let data: any;
+        let data: D | null | undefined;
+
         try {
           data = await resolvedConfig.cache.get(key);
         } catch (e) {
@@ -66,7 +61,8 @@ export function memoizeAsyncify<D = any, A extends any[] = any[]>(
           return;
         }
 
-        resolve(data);
+        // The cache has confirmed this key exists.
+        resolve(data as D);
       } else {
         try {
           const data = await originalMethod.apply(this, args);

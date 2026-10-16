@@ -1,10 +1,9 @@
-import { AsyncMethod } from '../common/model/common.model';
 import { sleep } from '../common/utils/utils';
 import { OnRetry, RetryInput, RetryInputConfig } from './retry.model';
 
 const DEFAULT_DELAY = 1000;
 
-function getRetriesArray(input: RetryInput): number[] {
+function getRetriesArray<T, A extends unknown[]>(input: RetryInput<T, A>): number[] {
   if (Array.isArray(input)) {
     return input;
   }
@@ -30,11 +29,12 @@ function getRetriesArray(input: RetryInput): number[] {
   throw new Error('invalid input');
 }
 
-function getOnRetry(input: RetryInput, context: any): OnRetry {
+function getOnRetry<T, A extends unknown[]>(input: RetryInput<T, A>, context: T): OnRetry<A> | undefined {
   if (typeof input === 'object') {
-    const { onRetry } = (input as RetryInputConfig);
-    if (typeof onRetry === 'string') {
-      return context[onRetry].bind(context);
+    const { onRetry } = (input as RetryInputConfig<T, A>);
+
+    if (onRetry !== undefined && typeof onRetry !== 'function') {
+      return (context[onRetry] as OnRetry<A>).bind(context);
     }
 
     return onRetry;
@@ -43,13 +43,14 @@ function getOnRetry(input: RetryInput, context: any): OnRetry {
   return undefined;
 }
 
-async function exec(
-  originalMethod: (...x: any[]) => any,
-  args: any[],
+async function exec<D, A extends unknown[]>(
+  this: unknown,
+  originalMethod: (...x: A) => Promise<D>,
+  args: A,
   retriesArr: number[],
   callsMadeSoFar: number,
-  onRetry: OnRetry,
-): Promise<any> {
+  onRetry: OnRetry<A> | undefined,
+): Promise<D> {
   try {
     const res = await originalMethod.apply(this, args);
 
@@ -57,7 +58,7 @@ async function exec(
   } catch (e) {
     if (callsMadeSoFar < retriesArr.length) {
       if (onRetry) {
-        onRetry(e, callsMadeSoFar);
+        onRetry(e, callsMadeSoFar, args);
       }
 
       await sleep(retriesArr[callsMadeSoFar]);
@@ -69,10 +70,12 @@ async function exec(
   }
 }
 
-export function retryfy<D = any, A extends any[] = any[]>(originalMethod: AsyncMethod<D, A>, input: RetryInput): AsyncMethod<D, A> {
+export function retryfy<D, A extends unknown[], T>(
+  originalMethod: (this: T, ...args: A) => Promise<D>, input: RetryInput<NoInfer<T>, NoInfer<A>>,
+): (this: T, ...args: A) => Promise<D> {
   const retriesArray = getRetriesArray(input);
 
-  return function (...args: A): Promise<D> {
+  return function (this: T, ...args: A): Promise<D> {
     const onRetry = getOnRetry(input, this);
 
     return exec(

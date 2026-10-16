@@ -1,15 +1,16 @@
-import { Delegatable } from './delegate.model';
-import { AsyncMethod } from '../common/model/common.model';
+import { perInstance } from '../common/utils/per-instance';
+import { AsyncMethod, PromiseReturnCompatible } from '../common/model/common.model';
 import { delegatify } from './delegatify';
 
-export function delegate<T = any, D = any>(keyResolver?: (...args: any[]) => string): Delegatable<T, D> {
-  return (
+export function delegate<T = unknown, A extends unknown[] = unknown[]>(keyResolver?: (...args: A) => string) {
+  return <F extends AsyncMethod<any, any[], any>>(
     target: T,
-    propertyName: keyof T,
-    descriptor: TypedPropertyDescriptor<AsyncMethod<D>>,
-  ): TypedPropertyDescriptor<AsyncMethod<any>> => {
-    if (descriptor.value) {
-      descriptor.value = delegatify(descriptor.value, keyResolver);
+    propertyName: string | symbol,
+    descriptor: TypedPropertyDescriptor<F> & PromiseReturnCompatible<F> & (Parameters<F> extends A ? unknown : never),
+  ): TypedPropertyDescriptor<F> => {
+    if (descriptor?.value) {
+      const originalMethod = descriptor.value;
+      descriptor.value = perInstance(() => delegatify(originalMethod, keyResolver as ((...args: any[]) => string) | undefined) as F);
 
       return descriptor;
     }

@@ -12,13 +12,54 @@ Also, note that this library can be used both as **functions and decorators**,
 ### installation:
 
 ```bash
-npm i utils-decorators
+npm install utils-decorators@3
 ```   
 
-Please note that the decorators are **working perfectly with plain JavaScript** code as well as with TypeScript.
+Use Node.js `^22.18.0 || >=24.11.0`. Function wrappers work in JavaScript and
+TypeScript; decorator syntax requires a compatible legacy decorator compiler.
+For TypeScript, use 5.4+ with `strict` and `experimentalDecorators` enabled.
+
+See [installation and TypeScript setup](https://vlio20.github.io/utils-decorators/#install)
+and [migration to 3.0.0, including breaking changes](https://vlio20.github.io/utils-decorators/#migration).
 
 # Docs 
 check the <a href="https://vlio20.github.io/utils-decorators/" target="_blank">documentation</a>
+
+### Local docs preview
+
+Open `site/index.html` directly in a browser; no install or build is needed. The new
+layout covers installation, migration to 3.0.0, and all 19 decorators. Each page
+is a native Web Component with an HTML template. The `after`
+component is `site/pages/after/after-page.js`; shared components live under
+`site/components/`. The entry point displays `<after-page>` inside `<docs-shell>`.
+Styling and navigation live in `site/docs.css` and `site/docs.js`.
+Syntax highlighting uses the existing local `site/libs/highlight.js`.
+
+See `site/README.md` for adding pages and serving the same files locally or on
+a static host.
+
+### Queue calls at a steady rate
+
+Use [`leakyBucket`](https://vlio20.github.io/utils-decorators/#leakyBucket) or
+`leakyBucketify` to queue bursts and pace call starts independently of completion:
+
+```ts
+import { leakyBucketify } from 'utils-decorators';
+
+const getItem = leakyBucketify(async (id: number) => fetch('/api/items/' + id), {
+  allowedCalls: 10,
+  timeSpanMs: 1000,
+  maxQueueSize: 500,
+});
+
+await Promise.all([1, 2, 3].map(id => getItem(id)));
+// First start is immediate; subsequent starts are at least 100 ms apart.
+```
+
+The default queue holds up to 1,000 waiting calls; excess calls reject. Decorators
+isolate buckets per instance and method. Supply an explicit `LeakyBucket` to share
+one quota, and use `signalResolver` to cancel queued calls with an `AbortSignal`.
+See the documentation for shared buckets, cancellation, and configuration details.
 
 # Feedback
 I will be more than happy to hear your feedback, don't hesitate to ask any question or open an issue. PRs are always welcomed :)  
