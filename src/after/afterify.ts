@@ -14,13 +14,17 @@ export function afterify(originalMethod: Method<any>, config: AfterConfig<any, a
   return function (this: any, ...args: any[]): any {
     const hook: AfterFunc<any, any> = typeof config.func === 'function' ? config.func : this[config.func].bind(this);
     const response = originalMethod.apply(this, args);
+
     if (config.wait && response != null && typeof response.then === 'function') {
       return Promise.resolve(response).then((result) => {
         hook({ args, response: result });
+
         return result;
       });
     }
+
     hook({ args, response });
+
     return response;
   };
 }

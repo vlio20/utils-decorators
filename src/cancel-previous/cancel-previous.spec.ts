@@ -52,6 +52,7 @@ describe('cancelPrevious', () => {
 
             return;
           }
+
           throw new Error('should\'t get here');
         });
     };

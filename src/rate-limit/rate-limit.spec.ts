@@ -9,11 +9,13 @@ export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
 
   async getCount(key: string): Promise<number> {
     await sleep(10);
+
     return this.counterMap.get(key) ?? 0;
   }
 
   async inc(key: string): Promise<void> {
     await sleep(10);
+
     if (!this.counterMap.has(key)) {
       await sleep(10);
       this.counterMap.set(key, 0);
@@ -28,6 +30,7 @@ export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
     const currentCount = this.counterMap.get(key) ?? 0;
 
     await sleep(10);
+
     if (currentCount === 1) {
       this.counterMap.delete(key);
     } else {
@@ -117,6 +120,7 @@ describe('rate-limit', () => {
 
     try {
       t.foo();
+
       throw new Error('should not get to this line');
     } catch (e) {
       if (!(e instanceof Error)) {
@@ -164,6 +168,7 @@ describe('rate-limit', () => {
 
     try {
       t.foo();
+
       throw new Error('should not get to this line');
     } catch (e) {
       if (!(e instanceof Error)) {
@@ -257,6 +262,7 @@ describe('rate-limit', () => {
 
     try {
       t.foo('a');
+
       throw new Error('should not get to this line');
     } catch (e) {
       if (!(e instanceof Error)) {
@@ -293,6 +299,7 @@ describe('rate-limit', () => {
 
     try {
       t.foo('a');
+
       throw new Error('should not get to this line');
     } catch (e) {
       if (!(e instanceof Error)) {
@@ -325,6 +332,7 @@ describe('rate-limit', () => {
 
     try {
       t.foo();
+
       throw new Error('should not get to this line');
     } catch (e) {
       if (!(e instanceof Error)) {

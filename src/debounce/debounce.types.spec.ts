@@ -22,7 +22,11 @@ function checkTypes(): void {
 
     // @ts-expect-error A legacy decorator cannot change a number return type to void.
     @debounce(10)
-    invalid(): number { void this; return 1; }
+    invalid(): number {
+      void this;
+
+      return 1;
+    }
 
     // @ts-expect-error Scheduled calls do not return the original promise.
     @debounce(10)
@@ -30,11 +34,19 @@ function checkTypes(): void {
 
     // @ts-expect-error A union containing a value is not a void return.
     @debounce(10)
-    invalidUnion(): number | void { void this; return 1; }
+    invalidUnion(): number | void {
+      void this;
+
+      return 1;
+    }
 
     // @ts-expect-error A scheduled method cannot preserve a never return.
     @debounce(10)
-    invalidNever(): never { void this; throw new Error('failure'); }
+    invalidNever(): never {
+      void this;
+
+      throw new Error('failure');
+    }
 
     // @ts-expect-error Only methods can be decorated.
     @debounce(10)

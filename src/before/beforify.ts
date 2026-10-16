@@ -13,13 +13,17 @@ export function beforify<D, A extends unknown[], T>(
 export function beforify(originalMethod: Method<any>, config: BeforeConfig<any>): Method<any> {
   return function (this: any, ...args: any[]): any {
     const hook = typeof config.func === 'function' ? config.func : this[config.func].bind(this);
+
     if (config.wait) {
       return (async () => {
         await hook(...args);
+
         return originalMethod.apply(this, args);
       })();
     }
+
     hook(...args);
+
     return originalMethod.apply(this, args);
   };
 }

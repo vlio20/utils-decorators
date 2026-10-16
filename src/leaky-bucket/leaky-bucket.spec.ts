@@ -33,6 +33,7 @@ describe('leaky-bucket', () => {
         @leakyBucket({ ...config, allowedCalls: 0 })
         async run(): Promise<void> { void this; }
       }
+
       return Service;
     }).toThrow(RangeError);
   });
@@ -48,6 +49,7 @@ describe('leaky-bucket', () => {
     let finishFirst!: (value: number) => void;
     const run = leakyBucketify((id: number) => {
       starts.push([id, performance.now()]);
+
       return id === 1 ? new Promise<number>(resolve => { finishFirst = resolve; }) : Promise.resolve(id);
     }, config);
     const first = run(1);
@@ -154,6 +156,7 @@ describe('leaky-bucket', () => {
       if (id === 1) {
         throw failure;
       }
+
       return id === 2 ? Promise.reject(failure) : Promise.resolve(id);
     }, config);
     await expect(run(1)).rejects.toBe(failure);
@@ -195,6 +198,7 @@ describe('leaky-bucket', () => {
     expect(jest.getTimerCount()).toBe(1);
     await jest.runAllTimersAsync();
     expect(await Promise.all([third, fourth])).toEqual([3, 4]);
+
     expect(task.mock.calls.map(([id]) => id)).toEqual([1, 3, 4]);
   });
 
@@ -237,6 +241,7 @@ describe('leaky-bucket', () => {
         if (id === 0) {
           throw failure;
         }
+
         return this.signal;
       },
     });
@@ -303,6 +308,7 @@ describe('leaky-bucket', () => {
     await bucket.exec(async () => 0);
     const calls = Array.from({ length: 20000 }, (_, id) => bucket.exec(() => {
       clock += 1;
+
       return Promise.resolve(id);
     }));
     clock = 1;
@@ -320,9 +326,11 @@ describe('leaky-bucket', () => {
     const run = (id: number): Promise<void> => bucket.exec(() => {
       starts.push(id);
       clock += 100;
+
       if (id < 10000) {
         nested.push(run(id + 1));
       }
+
       return Promise.resolve();
     });
     await run(0);

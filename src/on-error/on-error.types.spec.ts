@@ -10,6 +10,7 @@ function typeChecks(flag: boolean): void {
   const recovery: Promise<number | string> = onErrorify(async (id: number) => id, { func: (error, args) => {
     const unknownError: unknown = error;
     const tuple: [number] = args;
+
     return 'fallback';
   } })(1);
   const customPromise = Promise.resolve(1) as Promise<number> & { requiredTag: string };
@@ -27,6 +28,7 @@ function typeChecks(flag: boolean): void {
       error.message.toUpperCase();
       // @ts-expect-error Uninferred handler arguments must not silently become any.
       args[0].toFixed();
+
       return 1;
     } })
     async safeRecover(id: number): Promise<number> { return id; }

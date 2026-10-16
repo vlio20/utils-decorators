@@ -19,8 +19,10 @@ export function after<const C extends { func: ContextualHook | PropertyKey; wait
   ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
       descriptor.value = afterify(descriptor.value, config as any) as F;
+
       return descriptor;
     }
+
     throw new Error('@after is applicable only on a methods.');
   };
 }

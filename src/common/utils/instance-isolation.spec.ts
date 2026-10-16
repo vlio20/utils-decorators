@@ -10,6 +10,7 @@ import { throttleAsync } from '../../throttle-async/throttle-async';
 function deferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>(finish => { resolve = finish; });
+
   return { promise, resolve };
 }
 
@@ -52,6 +53,7 @@ describe('decorator instance isolation', () => {
       @delegate()
       foo(): Promise<string> {
         this.calls += 1;
+
         return this.pending.promise;
       }
     }
@@ -77,6 +79,7 @@ describe('decorator instance isolation', () => {
       @memoize()
       foo(id: number): string {
         this.calls += 1;
+
         return `${this.name}:${id}`;
       }
     }
@@ -98,6 +101,7 @@ describe('decorator instance isolation', () => {
       @memoizeAsync()
       foo(): Promise<string> {
         this.calls += 1;
+
         return this.pending.promise;
       }
     }
@@ -164,6 +168,7 @@ describe('decorator instance isolation', () => {
       @throttleAsync(1)
       foo(promise: Promise<string>): Promise<string> {
         this.calls += 1;
+
         return promise;
       }
     }

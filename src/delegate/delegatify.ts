@@ -11,6 +11,7 @@ export function delegatify<D, A extends unknown[], This>(
     const key = keyGenerator(...args);
 
     let promise = delegatedKeysMap.get(key);
+
     if (!promise) {
       promise = originalMethod.apply(this, args).finally(() => delegatedKeysMap.delete(key));
       delegatedKeysMap.set(key, promise);

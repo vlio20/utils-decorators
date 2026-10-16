@@ -12,6 +12,7 @@ export class TaskExec {
 
   private handleNext(): void {
     const task = this.tasks.peek();
+
     if (!task) {
       return;
     }
@@ -24,9 +25,11 @@ export class TaskExec {
     clearTimeout(this.handler);
     this.handler = setTimeout(() => {
       const task = this.tasks.pop();
+
       if (task) {
         task.func();
       }
+
       this.handleNext();
     }, ttl);
   }

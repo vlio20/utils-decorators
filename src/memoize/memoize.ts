@@ -18,6 +18,7 @@ export function memoize<T = unknown, D = unknown>(input?: MemoizeConfig<T, D> | 
 
       return descriptor;
     }
+
     throw new Error('@memoize is applicable only on a methods.');
   };
 }

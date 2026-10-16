@@ -29,12 +29,14 @@ export class Queue<T> {
 
   dequeue(): T | null {
     const item = this.firstItem;
+
     if (!item) {
       return null;
     }
 
     this.firstItem = item.next;
     this.size -= 1;
+
     if (!this.firstItem) {
       this.lastItem = null;
     }

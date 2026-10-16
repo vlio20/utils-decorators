@@ -19,17 +19,21 @@ export class LeakyBucket {
     if (!Number.isFinite(timeSpanMs) || timeSpanMs <= 0) {
       throw new RangeError('timeSpanMs must be a positive finite number.');
     }
+
     if (!Number.isSafeInteger(allowedCalls) || allowedCalls <= 0) {
       throw new RangeError('allowedCalls must be a positive safe integer.');
     }
+
     if (!Number.isSafeInteger(maxQueueSize) || maxQueueSize < 0) {
       throw new RangeError('maxQueueSize must be a non-negative safe integer.');
     }
 
     this.intervalMs = timeSpanMs / allowedCalls;
+
     if (this.intervalMs === 0) {
       throw new RangeError('timeSpanMs / allowedCalls must be greater than zero.');
     }
+
     this.maxQueueSize = maxQueueSize;
   }
 
@@ -37,12 +41,15 @@ export class LeakyBucket {
     return new Promise<D>((resolve, reject) => {
       if (signal?.aborted) {
         reject(signal.reason);
+
         return;
       }
 
       const canStart = this.callsToRun.size === 0 && performance.now() >= this.nextCallTime;
+
       if (!canStart && this.callsToRun.size >= this.maxQueueSize) {
         reject(new Error('Leaky bucket queue is full.'));
+
         return;
       }
 
@@ -51,6 +58,7 @@ export class LeakyBucket {
         this.callsToRun.delete(key);
         signal!.removeEventListener('abort', cancel);
         reject(signal!.reason);
+
         if (this.callsToRun.size === 0) {
           clearTimeout(this.timer);
           this.timer = undefined;
@@ -59,6 +67,7 @@ export class LeakyBucket {
 
       this.callsToRun.set(key, () => {
         signal?.removeEventListener('abort', cancel);
+
         try {
           resolve(task());
         } catch (error) {
@@ -76,14 +85,17 @@ export class LeakyBucket {
     }
 
     this.draining = true;
+
     try {
       while (this.callsToRun.size > 0) {
         const remainingMs = this.nextCallTime - performance.now();
+
         if (remainingMs > 0) {
           this.timer = setTimeout(() => {
             this.timer = undefined;
             this.tryCall();
           }, Math.min(Math.ceil(remainingMs), 2147483647));
+
           return;
         }
 

@@ -13,6 +13,7 @@ export function debounce<T extends object = object>(delayMs: number) {
 
       const wrapped = function (this: This, ...args: A): void {
         let method = methodsMap.get(this);
+
         if (!method) {
           method = debouncify(originalMethod, delayMs).bind(this);
           methodsMap.set(this, method);

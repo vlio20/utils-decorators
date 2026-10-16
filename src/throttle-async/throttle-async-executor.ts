@@ -26,9 +26,11 @@ export class ThrottleAsyncExecutor<D, A extends unknown[], This = unknown> {
   private tryCall(): void {
     if (this.callsToRun.getSize() > 0 && this.onGoingCallsCount < this.parallelCalls) {
       const callArgs = this.callsToRun.dequeue();
+
       if (!callArgs) {
         return;
       }
+
       const { context, args, resolve, reject } = callArgs;
       this.onGoingCallsCount += 1;
       this.fun.apply(context, args)

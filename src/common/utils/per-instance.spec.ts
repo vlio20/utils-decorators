@@ -4,8 +4,10 @@ describe('perInstance', () => {
   it('keeps closure state for repeated calls and isolates different instances', () => {
     const create = jest.fn(() => {
       let calls = 0;
+
       return function (this: { name: string }, amount: number): string {
         calls += amount;
+
         return `${this.name}:${calls}`;
       };
     });
@@ -29,6 +31,7 @@ describe('perInstance', () => {
   it('keeps separate members independent on the same receiver', () => {
     const create = () => {
       let calls = 0;
+
       return () => ++calls;
     };
     const receiver = { left: perInstance(create), right: perInstance(create) };
@@ -42,6 +45,7 @@ describe('perInstance', () => {
   it('supports function receivers with independent state', () => {
     const wrapped = perInstance(() => {
       let calls = 0;
+
       return () => ++calls;
     });
     const first = () => undefined;
@@ -55,6 +59,7 @@ describe('perInstance', () => {
   it('keeps detached calls separate from instance calls', () => {
     const wrapped = perInstance(() => {
       let calls = 0;
+
       return () => ++calls;
     });
     const receiver = { wrapped };

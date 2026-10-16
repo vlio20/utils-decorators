@@ -18,8 +18,10 @@ export function execTime<const C extends ContextualReporter | PropertyKey | unde
   return (target, propertyName, descriptor) => {
     if (descriptor?.value) {
       descriptor.value = execTimify(descriptor.value, arg as ReportFunction<any, any>) as typeof descriptor.value;
+
       return descriptor;
     }
+
     throw new Error('@execTime is applicable only on a methods.');
   };
 }

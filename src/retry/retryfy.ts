@@ -32,6 +32,7 @@ function getRetriesArray<T, A extends unknown[]>(input: RetryInput<T, A>): numbe
 function getOnRetry<T, A extends unknown[]>(input: RetryInput<T, A>, context: T): OnRetry<A> | undefined {
   if (typeof input === 'object') {
     const { onRetry } = (input as RetryInputConfig<T, A>);
+
     if (onRetry !== undefined && typeof onRetry !== 'function') {
       return (context[onRetry] as OnRetry<A>).bind(context);
     }

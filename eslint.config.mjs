@@ -7,6 +7,14 @@ import { importX } from 'eslint-plugin-import-x';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import globals from 'globals';
 
+// Separate statements containing array iteration calls, including assignments and chains.
+const arrayIterationStatement = {
+  selector: ':matches(ExpressionStatement, VariableDeclaration, ReturnStatement, ThrowStatement):has('
+    + 'CallExpression[callee.type="MemberExpression"]:matches('
+    + '[callee.computed=false][callee.property.name=/^(forEach|map|flatMap|filter|reduce|reduceRight|some|every|find|findIndex|findLast|findLastIndex|sort|toSorted)$/], '
+    + '[callee.computed=true][callee.property.value=/^(forEach|map|flatMap|filter|reduce|reduceRight|some|every|find|findIndex|findLast|findLastIndex|sort|toSorted)$/]))',
+};
+
 export default defineConfig([
   { ignores: ['dist/**', 'coverage/**', 'reports/**', '.stryker-tmp/**', 'site/**'] },
   {
@@ -28,6 +36,14 @@ export default defineConfig([
     },
     rules: {
       '@stylistic/indent': ['error', 2, { ignoredNodes: ['PropertyDefinition[decorators.length > 0]'] }],
+      '@stylistic/padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: '*', next: ['return', 'throw'] },
+        { blankLine: 'always', prev: '*', next: ['block', 'if', 'for', 'while', 'do', 'switch', 'try'] },
+        { blankLine: 'always', prev: ['block', 'if', 'for', 'while', 'do', 'switch', 'try'], next: '*' },
+        { blankLine: 'always', prev: '*', next: arrayIterationStatement },
+        { blankLine: 'always', prev: arrayIterationStatement, next: '*' },
+      ],
       'max-len': ['error', { code: 180 }],
       'no-param-reassign': ['error', { ignorePropertyModificationsForRegex: ['^descriptor$'] }],
       'max-classes-per-file': 'off',

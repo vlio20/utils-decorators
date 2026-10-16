@@ -22,16 +22,25 @@ function checkTypes(): void {
 
   class Service {
     @throttleAsync()
-    async valid(id: number): Promise<number> { void this; return id; }
+    async valid(id: number): Promise<number> {
+      void this;
+
+      return id;
+    }
 
     // @ts-expect-error A synchronous method cannot be decorated with an async wrapper.
     @throttleAsync()
-    invalid(): number { void this; return 1; }
+    invalid(): number {
+      void this;
+
+      return 1;
+    }
 
     // @ts-expect-error Queuing creates a native promise without custom promise properties.
     @throttleAsync()
     customPromise(): Promise<number> & { tag: string } {
       void this;
+
       return Object.assign(Promise.resolve(1), { tag: 'custom' });
     }
 
