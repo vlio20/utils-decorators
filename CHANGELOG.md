@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Replace Babel test compilation with TypeScript and V8 coverage, removing direct Babel dependencies; closes [#185](https://github.com/vlio20/utils-decorators/issues/185).
 
 ### Fixed
+- Isolate stateful decorators per class instance, including cancellation, pending work, default caches, throttling, and rate-limit counters; start `refreshable` independently on each instance’s first property read; closes [#188](https://github.com/vlio20/utils-decorators/issues/188).
 - Strengthen inferred types across all decorators and function wrappers: preserve argument tuples and receivers, validate callbacks, keys, caches, and exclusive options, and report accurate synchronous, asynchronous, and recovery results; closes [#183](https://github.com/vlio20/utils-decorators/issues/183).
 - Support TypeScript legacy field decorators in `@readonly` and preserve validation errors when method decorators are applied to fields; closes [#185](https://github.com/vlio20/utils-decorators/issues/185).
 - Fix argument forwarding in `@multiDispatch` and `multiDispatchify` [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#184](https://github.com/vlio20/utils-decorators/issues/184)

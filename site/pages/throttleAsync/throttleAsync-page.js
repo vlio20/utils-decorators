@@ -34,7 +34,7 @@ const results = await Promise.all([1, 2, 3].map((id) =&gt; worker.process(id)));
                 <docs-config-table><table><tbody>
                   <tr><td><code>parallelCalls</code><span class="optional">Optional</span></td><td><code>number</code></td><td>Maximum active calls; defaults to <code>1</code>. Pass a positive integer directly. This is a positional argument, not a configuration object.</td></tr>
                 </tbody></table></docs-config-table>
-                <p class="form-guidance">Use on promise-returning methods. One queue and concurrency counter are shared across all instances using this decorated method.</p>
+                <p class="form-guidance">Use on promise-returning methods. Each instance has its own queue and concurrency budget for this method. Calls on another instance do not use its slots.</p>
               </div>
             </template>
             <template data-variant="function" data-label="Function">
@@ -86,7 +86,7 @@ const results = await Promise.all([
               <li>Each invocation returns its own native promise. A source resolution or rejection settles that call's promise, and internal cleanup then releases the slot and starts the next call. One rejected source promise does not stop the queue.</li>
               <li>Use an <code>async</code> source or return rejected promises for failures. A source that throws synchronously before returning a promise bypasses cleanup, leaves its call promise pending, and consumes a slot permanently. If started immediately, that error throws from the wrapper call; if started from the queue, it rejects an internal cleanup chain.</li>
               <li>The limit is not validated. Zero, negative numbers, and <code>NaN</code> leave all calls pending. A positive fractional limit permits its rounded-up number of active calls; <code>Infinity</code> imposes no effective limit. Use positive integers.</li>
-              <li>Queues are shared per wrapper or decorated method, rather than per receiver. Create separate wrappers when workloads need independent limits.</li>
+              <li>The decorator isolates queues and concurrency budgets per instance and method. A function wrapper shares its queue across receivers; create separate wrappers when workloads need independent limits.</li>
               <li>There is no cancellation, queue-size limit, or built-in timeout. A source promise that never settles keeps its slot occupied. At limit one, awaiting another call through the same wrapper from inside the active source can deadlock.</li>
               <li>Queued object arguments and receivers are retained by reference. Mutations before execution can affect the source's result. Custom properties or identity of the source promise are not preserved.</li>
             </ul>

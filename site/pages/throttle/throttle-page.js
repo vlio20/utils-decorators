@@ -36,7 +36,7 @@ reporter.report(40); // Logs 40 immediately.</code></pre></docs-code>
                   <tr><td><code>delayMs</code><span class="required">Required</span></td><td><code>number</code></td><td>Timer delay before admitting another call. The timer is scheduled after the admitted method returns. There is no default or numeric validation.</td></tr>
                 </tbody></table></docs-config-table>
                 <p>The decorated method must declare a <code>void</code> return type. Value-returning and promise-returning methods cannot preserve their return contracts through this decorator.</p>
-                <docs-callout>The decorated method shares one cooldown across instances. Calling it on one instance can suppress a call on another instance.</docs-callout>
+                <docs-callout>Each instance has its own cooldown for this method. Calling it on one instance does not suppress calls on another instance.</docs-callout>
               </div>
             </template>
             <template data-variant="function" data-label="Function">
@@ -95,7 +95,7 @@ left.report(30); // Dropped.</code></pre></docs-code>
               <li>A synchronous source throw propagates to the caller. The gate was already closed and its reopening timer has not yet been scheduled, so that wrapper remains closed afterward.</li>
               <li>A function wrapper can accept an async source, but discards its promise and does not await it. Work can overlap when it lasts longer than the cooldown. Handle promise errors inside the source, or consider <a href="#throttleAsync">throttleAsync</a>.</li>
               <li>There is no cancel, flush, trailing option, or public reset method. A zero delay still uses an asynchronous timer, so immediate consecutive calls can be dropped.</li>
-              <li>A wrapper’s gate is shared across all receivers. Separate calls to <code>throttlify</code> create independent gates.</li>
+              <li>The decorator keeps a separate gate per instance and method. A function wrapper shares its gate across all receivers; separate calls to <code>throttlify</code> create independent gates.</li>
             </ul>
           </docs-section>
         </docs-page>

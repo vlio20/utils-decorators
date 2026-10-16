@@ -37,11 +37,11 @@ await service.getName(42); // Uses the resolved cached value until expiration.</
               <div data-configuration>
                 <p class="form-caption">Decorator · @memoizeAsync(config?)</p>
                 <docs-config-table><table><tbody>
-                  <tr><td><code>cache</code><span class="optional">Optional</span></td><td><code>Cache&lt;Result&gt; | AsyncCache&lt;Result&gt;</code></td><td>Storage for resolved values. Defaults to a new <code>Map</code> for this decorated method, shared across its instances.</td></tr>
+                  <tr><td><code>cache</code><span class="optional">Optional</span></td><td><code>Cache&lt;Result&gt; | AsyncCache&lt;Result&gt;</code></td><td>Storage for resolved values. Defaults to a separate <code>Map</code> per instance and decorated method. An explicitly supplied cache is reused across instances.</td></tr>
                   <tr><td><code>keyResolver</code><span class="optional">Optional</span></td><td><code>callback | method key</code></td><td>Receives all original arguments and returns a string. Defaults to <code>JSON.stringify(args)</code>. Named resolvers are bound to the receiver; callbacks are not.</td></tr>
                   <tr><td><code>expirationTimeMs</code><span class="optional">Optional</span></td><td><code>number</code></td><td>Schedules deletion after a newly computed value is stored. Omit for no automatic expiration. A number passed directly is shorthand for this option.</td></tr>
                 </tbody></table></docs-config-table>
-                <p class="form-guidance">Use on methods returning <code>Promise&lt;Result&gt;</code>. Cache keys do not automatically include the instance; include instance-specific state in a named resolver when results depend on it.</p>
+                <p class="form-guidance">Use on methods returning <code>Promise&lt;Result&gt;</code>. Default caches and pending work are isolated per instance. Include mutable result-affecting state in the key; include instance identity too when supplying a shared cache.</p>
               </div>
             </template>
             <template data-variant="function" data-label="Function">
@@ -90,7 +90,7 @@ await cache.delete('[2]'); // Remove the resolved entry explicitly.</code></pre>
                 </details>
               </div>
             </template>
-            <docs-callout>Keys must identify the complete result. The decorator shares its cache and pending work across instances, and a function wrapper shares them across all receivers using it.</docs-callout>
+            <docs-callout>Keys must identify the complete result. The decorator isolates default caches and pending work per instance and method. A supplied cache shares resolved values across instances, while pending work stays separate. A function wrapper shares both across all receivers using it.</docs-callout>
           </docs-tabs>
           <docs-section anchor="cache" heading="Cache contract">
             <p>Both cache interfaces provide <code>has(key)</code>, <code>get(key)</code>, <code>set(key, value)</code>, and <code>delete(key)</code>. <code>Cache</code> uses synchronous methods: <code>has</code> returns boolean, <code>get</code> returns a value, null, or undefined, and <code>set</code>/<code>delete</code> return void. <code>AsyncCache</code> returns promises of those same results. A standard <code>Map</code> satisfies the synchronous interface.</p>
@@ -101,7 +101,7 @@ await cache.delete('[2]'); // Remove the resolved entry explicitly.</code></pre>
             <ul class="behavior-list">
               <li>The key resolver runs on every call, before checking pending work. If it throws, that call rejects before any pending state is read or created. The default JSON key can collide for values JSON does not distinguish and rejects circular arguments. Use a resolver suited to your inputs.</li>
               <li>Matching concurrent calls share one cache lookup and source computation. The wrapper returns native promises, without guaranteeing promise identity. After completion, the in-flight entry is removed and subsequent calls consult the resolved-value cache.</li>
-              <li>The source receives the first call's arguments and receiver for a pending key. A cached result can therefore be returned to another receiver with that same key.</li>
+              <li>The source receives the first call's arguments and receiver for a pending key. Decorator pending keys are scoped to one instance. A shared function wrapper or explicitly shared cache can return a result to another receiver with that same key.</li>
               <li>Source throws, rejected source promises, and failed cache writes reject the call and remove the pending entry, allowing a retry. A failed write may still have changed a custom cache.</li>
               <li>If <code>cache.has</code> or <code>cache.get</code> fails, the rejected pending entry is retained. Later calls with that key keep rejecting through that entry; deleting the resolved cache value does not clear it.</li>
               <li>Expiration starts after a successful cache write, not when the source starts. Hits do not refresh it, and pre-existing entries do not receive a new timer. Timers delete by key, so replacing an entry externally does not cancel its previously scheduled deletion.</li>

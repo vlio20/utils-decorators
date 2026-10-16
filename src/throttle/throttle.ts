@@ -1,3 +1,4 @@
+import { perInstance } from '../common/utils/per-instance';
 import { throttlify } from './throttlify';
 
 export function throttle<T extends object = object>(delayMs: number) {
@@ -8,7 +9,8 @@ export function throttle<T extends object = object>(delayMs: number) {
       & ([R] extends [never] ? never : [R] extends [void] ? unknown : never),
   ): void => {
     if (descriptor?.value) {
-      descriptor.value = throttlify(descriptor.value, delayMs) as (this: This, ...args: A) => R;
+      const originalMethod = descriptor.value;
+      descriptor.value = perInstance(() => throttlify(originalMethod, delayMs) as (this: This, ...args: A) => R);
 
       return;
     }

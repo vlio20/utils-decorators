@@ -41,7 +41,7 @@ console.log(service.requests); // 2</code></pre></docs-code>
                 <docs-config-table><table><tbody>
                   <tr><td><code>keyResolver</code><span class="optional">Optional</span></td><td><code>(...args) =&gt; string</code></td><td>Receives the method’s arguments and returns the deduplication key. Defaults to <code>JSON.stringify(args)</code>. Pass the resolver directly, for example <code>@delegate((id: number) =&gt; String(id))</code>.</td></tr>
                 </tbody></table></docs-config-table>
-                <docs-callout>The decorated method shares its pending map across instances. Calls with the same key can share a result produced using the first instance’s state.</docs-callout>
+                <docs-callout>Each instance has its own pending map for this method. Matching calls on the same instance share a promise; calls on different instances run independently.</docs-callout>
               </div>
             </template>
             <template data-variant="function" data-label="Function">
@@ -95,7 +95,7 @@ console.log(await Promise.all([left.getName(42), right.getName(42)]));
           </docs-tabs>
           <docs-section anchor="keys" heading="Choose a key that represents the result">
             <p>The default key serializes the entire argument array. JSON serialization can collapse distinct values, depends on object property order, and throws for circular structures or unsupported values such as bigint. Supply a resolver when those rules do not fit your inputs.</p>
-            <p>The resolver receives only the call arguments. It is not bound to the receiver, and the default key does not include <code>this</code>. Pass relevant identity as an argument or use independent wrappers when results depend on instance state.</p>
+            <p>The resolver receives only the call arguments. It is not bound to the receiver, and the default key does not include <code>this</code>. The decorator isolates instances automatically. For a function wrapper shared across receivers, pass relevant identity as an argument or create independent wrappers.</p>
           </docs-section>
           <docs-section anchor="behavior" heading="How it works">
             <ol class="flow"><li><span>01</span>Compute key</li><li><span>02</span>Start or share promise</li><li><span>03</span>Remove settled entry</li></ol>

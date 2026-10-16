@@ -40,7 +40,7 @@ try {
               <div data-configuration>
                 <p class="form-caption">Decorator · @rateLimit(config)</p>
                 <p>With the default synchronous counter, methods keep their return type. An asynchronous counter requires a method declaring a compatible <code>Promise&lt;T&gt;</code> return type.</p>
-                <docs-callout>The decorated method shares its counter across instances. Its default key groups all arguments and instances together. A named resolver can include account or instance identity when separate budgets are needed.</docs-callout>
+                <docs-callout>Each instance has its own default counter for this method. The default key groups all arguments on that instance into one budget. An explicitly supplied counter shares storage across instances; use a named resolver to separate budgets when needed.</docs-callout>
               </div>
             </template>
             <template data-variant="function" data-label="Function">
@@ -104,7 +104,7 @@ try {
               <tr><td><code>timeSpanMs</code><span class="required">Required</span></td><td><code>number</code></td><td>Delay from each successful counter increment until its scheduled decrement. This delay is independent of the source’s completion.</td></tr>
               <tr><td><code>keyResolver</code><span class="optional">Optional</span></td><td><code>callback | method key</code></td><td>Receives the original arguments. Both a callback function and a named method are bound to the call’s receiver; arrow functions retain their lexical receiver. Defaults to the constant key <code>'__rateLimit__'</code>. For a function wrapper, a method key needs a compatible explicit source receiver.</td></tr>
               <tr><td><code>exceedHandler</code><span class="optional">Optional</span></td><td><code>() =&gt; void</code></td><td>Defaults to throwing <code>Error('You have acceded the amount of allowed calls')</code>. No instance binding is provided. Use a synchronous throw to block admission; an async handler is not awaited.</td></tr>
-              <tr><td><code>rateLimitCounter</code><span class="optional">Optional</span></td><td><code>RateLimitCounter</code></td><td>Synchronous counter storage. Defaults to an in-memory counter owned by this wrapper.</td></tr>
+              <tr><td><code>rateLimitCounter</code><span class="optional">Optional</span></td><td><code>RateLimitCounter</code></td><td>Synchronous counter storage. Defaults to an in-memory counter per instance and decorated method, or per function wrapper. An explicitly supplied counter is reused.</td></tr>
               <tr><td><code>rateLimitAsyncCounter</code><span class="optional">Optional</span></td><td><code>RateLimitAsyncCounter</code></td><td>Promise-based counter storage. Mutually exclusive with <code>rateLimitCounter</code>; providing both is rejected when creating the wrapper.</td></tr>
             </tbody></table></docs-config-table>
           </docs-section>
@@ -125,7 +125,7 @@ try {
               <li>The synchronous counter path preserves synchronous results and throws, including a limit error even when the source would return a promise.</li>
               <li>In async counter mode, counter failures, handler throws, and source errors reject the returned promise. The key resolver still runs before that promise is created, so a resolver error throws synchronously in both modes.</li>
               <li>Timers can run later when the event loop is busy. A zero delay still releases asynchronously; the counter is not reset at fixed clock boundaries.</li>
-              <li>Each call forwards its receiver and arguments to the source. A wrapper shares one counter across its receivers; separate wrappers get independent default counters. Reusing a custom counter also shares its key space.</li>
+              <li>Each call forwards its receiver and arguments to the source. The decorator isolates default counters per instance and method. A function wrapper shares one counter across its receivers; separate wrappers get independent default counters. Reusing a custom counter also shares its key space.</li>
             </ul>
           </docs-section>
         </docs-page>

@@ -38,9 +38,9 @@ console.log(prices.getPrice(42)); // Cached; returns 'USD 420'.</code></pre></do
                 <docs-config-table><table><tbody>
                   <tr><td><code>keyResolver</code><span class="optional">Optional</span></td><td><code>callback | method key</code></td><td>Receives the original arguments and returns a string. A named method is bound to the current instance. A callback is called without automatic instance binding. Defaults to <code>JSON.stringify(args)</code>.</td></tr>
                   <tr><td><code>expirationTimeMs</code><span class="optional">Optional</span></td><td><code>number</code></td><td>Schedules deletion after a cache miss computes its result. Omit it to keep entries indefinitely. Passing a number directly is shorthand for this field.</td></tr>
-                  <tr><td><code>cache</code><span class="optional">Optional</span></td><td><code>Cache&lt;ReturnValue&gt;</code></td><td>Synchronous storage, defaulting to a new <code>Map</code> for this decorated method. Its values must match the method’s return type.</td></tr>
+                  <tr><td><code>cache</code><span class="optional">Optional</span></td><td><code>Cache&lt;ReturnValue&gt;</code></td><td>Synchronous storage, defaulting to a separate <code>Map</code> for each instance and decorated method. Its values must match the method’s return type. An explicitly supplied cache is reused across instances.</td></tr>
                 </tbody></table></docs-config-table>
-                <docs-callout>The decorated method shares its cache across instances. Include relevant instance state in the key, as the currency example does, when that state changes the result.</docs-callout>
+                <docs-callout>Each instance has its own default cache for this method. Include mutable result-affecting state in the key, as the currency example does. If you supply a shared cache, include instance identity when needed to prevent collisions.</docs-callout>
               </div>
             </template>
             <template data-variant="function" data-label="Function">
@@ -115,7 +115,7 @@ console.log(cachedPrice.call(receiver, 42)); // 'EUR 420'</code></pre></docs-cod
               <li>Cached objects are returned by reference. Mutating one changes what later callers observe; no copy is made.</li>
               <li>Expiry uses a timer, not a timestamp check on access. A zero delay still deletes asynchronously, and a busy event loop can delay deletion. Hits do not reset the timer.</li>
               <li>Deleting an entry manually does not cancel its existing expiry timer. If you refill that key, the older timer can delete the replacement entry.</li>
-              <li>A wrapper’s cache is shared across its receivers. To isolate instances, create a separate wrapper per instance and avoid passing the same custom cache.</li>
+              <li>The decorator isolates default caches per instance and method. A function wrapper shares its cache across its receivers. Supplying the same custom cache to decorators or wrappers intentionally shares storage and key space.</li>
             </ul>
           </docs-section>
         </docs-page>
