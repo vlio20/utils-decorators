@@ -1,3 +1,4 @@
+import { perInstance } from '../common/utils/per-instance';
 import { AnyMethod } from '../common/model/common.model';
 import { CancelPreviousable } from './cancel-previous.model';
 import { cancelPreviousify } from './cancel-previousify';
@@ -9,7 +10,8 @@ export function cancelPrevious<T = unknown>(): CancelPreviousable<T> {
     descriptor: TypedPropertyDescriptor<F>,
   ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = cancelPreviousify(descriptor.value) as F;
+      const originalMethod = descriptor.value;
+      descriptor.value = perInstance(() => cancelPreviousify(originalMethod) as F);
 
       return descriptor;
     }

@@ -1,3 +1,4 @@
+import { perInstance } from '../common/utils/per-instance';
 import { ConfiguredMemoizable } from '../memoize/memoize.model';
 import { AsyncMemoizable, AsyncMemoizeConfig } from './memoize-async.model';
 import { AsyncMethod } from '../common/model/common.model';
@@ -13,7 +14,8 @@ export function memoizeAsync<T = unknown, D = unknown>(input?: AsyncMemoizeConfi
     descriptor: TypedPropertyDescriptor<F>,
   ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = memoizeAsyncify(descriptor.value, input as any) as F;
+      const originalMethod = descriptor.value;
+      descriptor.value = perInstance(() => memoizeAsyncify(originalMethod, input as any) as F);
 
       return descriptor;
     }

@@ -1,3 +1,4 @@
+import { perInstance } from '../common/utils/per-instance';
 import { throttleAsyncify } from './throttle-asyncify';
 
 export function throttleAsync<T extends object = object, D = unknown>(parallelCalls?: number) {
@@ -7,7 +8,8 @@ export function throttleAsync<T extends object = object, D = unknown>(parallelCa
     descriptor: TypedPropertyDescriptor<(this: This, ...args: A) => Promise<R>>,
   ): void => {
     if (descriptor?.value) {
-      descriptor.value = throttleAsyncify(descriptor.value, parallelCalls);
+      const originalMethod = descriptor.value;
+      descriptor.value = perInstance(() => throttleAsyncify(originalMethod, parallelCalls));
 
       return;
     }

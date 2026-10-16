@@ -36,7 +36,7 @@ console.log(await latest); // ['cats result']</code></pre></docs-code>
               <div data-configuration>
                 <p class="form-caption">Decorator · @cancelPrevious()</p>
                 <p>No configuration arguments. Apply it to a method returning <code>Promise&lt;T&gt;</code>. Each call forwards its arguments and receiver and returns a new native promise for that call’s result.</p>
-                <docs-callout>The decorated method shares one cancellation slot across all instances. Calling it on another instance can reject the first instance’s pending call.</docs-callout>
+                <docs-callout>Each instance has its own cancellation slot for this method. A new call rejects only the previous pending call on the same instance; calls on another instance are independent.</docs-callout>
               </div>
             </template>
             <template data-variant="function" data-label="Function">
@@ -98,7 +98,7 @@ console.log(await Promise.all([first, other, latest]));
               <li>A settled wrapper promise cannot be canceled. If the source has resolved but its result has not yet reached the wrapper, a new call can still win and reject that pending wrapper.</li>
               <li>The latest call forwards the source’s resolved value or rejection. A synchronous throw from the source becomes a rejection of the returned promise.</li>
               <li>Superseded work continues. Its eventual value or error cannot change the already rejected wrapper promise, but its side effects still happen.</li>
-              <li>Cancellation belongs to the wrapper, not the receiver or arguments. Reusing one wrapper with different receivers still shares its cancellation slot.</li>
+              <li>The decorator keeps cancellation separate for each instance and method. A function wrapper has one cancellation slot across all receivers using that wrapper; separate calls to <code>cancelPreviousify</code> create independent slots.</li>
             </ul>
           </docs-section>
         </docs-page>

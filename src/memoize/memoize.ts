@@ -1,3 +1,4 @@
+import { perInstance } from '../common/utils/per-instance';
 import { ConfiguredMemoizable, Memoizable, MemoizeConfig  } from '../memoize/memoize.model';
 import { Method } from '../common/model/common.model';
 import { memoizify } from './memoizify';
@@ -12,7 +13,8 @@ export function memoize<T = unknown, D = unknown>(input?: MemoizeConfig<T, D> | 
     descriptor: TypedPropertyDescriptor<F>,
   ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
-      descriptor.value = memoizify(descriptor.value, input as any) as F;
+      const originalMethod = descriptor.value;
+      descriptor.value = perInstance(() => memoizify(originalMethod, input as any) as F);
 
       return descriptor;
     }
