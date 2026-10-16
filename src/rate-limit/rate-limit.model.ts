@@ -4,7 +4,7 @@ export type RateLimitConfigs<T = unknown, A extends unknown[] = unknown[]> = {
   timeSpanMs: number;
   allowedCalls: number;
   keyResolver?: ((...args: A) => string) | CompatibleKeys<T, A, string>;
-  exceedHandler?: () => void;
+  exceedHandler?: (...args: A) => void;
 } & (
   | { rateLimitCounter?: RateLimitCounter; rateLimitAsyncCounter?: undefined }
   | { rateLimitCounter?: undefined; rateLimitAsyncCounter?: RateLimitAsyncCounter }
@@ -33,5 +33,6 @@ export type ConfiguredRateLimitable<C> = <T, F extends AnyMethod>(
   propertyName: string | symbol,
   descriptor: TypedPropertyDescriptor<F>
     & ResolverValidation<C, T, F>
+    & ([ConfigProperty<C, 'exceedHandler'>] extends [(...args: Parameters<F>) => void] ? unknown : never)
     & ([ConfigProperty<C, 'rateLimitAsyncCounter'>] extends [never] ? unknown : AsyncReturnValidation<F>)
 ) => TypedPropertyDescriptor<F>;

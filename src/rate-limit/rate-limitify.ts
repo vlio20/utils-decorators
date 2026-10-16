@@ -6,7 +6,7 @@ import { SimpleRateLimitCounter } from './simple-rate-limit-counter';
 type ResolvedRateLimitConfigs<T, A extends unknown[]> = Omit<RateLimitConfigs<T, A>, 'rateLimitCounter' | 'rateLimitAsyncCounter'> & {
   rateLimitCounter: RateLimitCounter;
   rateLimitAsyncCounter?: RateLimitAsyncCounter;
-  exceedHandler: () => void;
+  exceedHandler: (...args: A) => void;
 };
 
 async function handleAsyncRateLimit<T, D, A extends unknown[]>(
@@ -21,7 +21,7 @@ async function handleAsyncRateLimit<T, D, A extends unknown[]>(
   const currentCount = await rateLimitCounter.getCount(key);
 
   if (currentCount >= resolvedConfig.allowedCalls) {
-    resolvedConfig.exceedHandler();
+    resolvedConfig.exceedHandler(...args);
   }
 
   await rateLimitCounter.inc(key);
@@ -45,7 +45,7 @@ function handleRateLimit<T, D, A extends unknown[]>(
   const currentCount = rateLimitCounter.getCount(key);
 
   if (currentCount >= resolvedConfig.allowedCalls) {
-    resolvedConfig.exceedHandler();
+    resolvedConfig.exceedHandler(...args);
   }
 
   rateLimitCounter.inc(key);

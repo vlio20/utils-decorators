@@ -37,3 +37,34 @@ function typeChecks(flag: boolean): void {
 it('checks before public signatures at compile time', () => {
   expect(typeChecks).toBeDefined();
 });
+
+function checkHookArguments(): void {
+  beforify((id: number, suffix?: string, ...flags: boolean[]) => id, {
+    func: (id, suffix, ...flags) => {
+      const value: number = id;
+      const optional: string | undefined = suffix;
+      const rest: boolean[] = flags;
+    },
+  });
+  // @ts-expect-error Before callbacks must accept the source arguments.
+  beforify((id: number) => id, { func: (id: string) => {} });
+  class Service {
+    prepare(id: number): void {}
+    wrongPrepare(id: string): void {}
+
+    @before({ func: 'prepare' })
+    @before({ func: (id: number) => {} })
+    async valid(id: number): Promise<number> { return id; }
+
+    // @ts-expect-error Named before hooks must accept the method arguments.
+    @before({ func: 'wrongPrepare' })
+    async invalidBefore(id: number): Promise<number> { return id; }
+    // @ts-expect-error Callback before hooks must accept the method arguments.
+    @before({ func: (id: string) => {} })
+    async invalidBeforeCallback(id: number): Promise<number> { return id; }
+  }
+}
+
+it('validates hook argument types', () => {
+  expect(checkHookArguments).toBeDefined();
+});

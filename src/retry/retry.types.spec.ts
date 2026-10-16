@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { retryfy, retry } from '../index';
+import { retryfy, retry, RetryInputConfig } from '../index';
 
 function typeChecks() {
   // @ts-expect-error Retry counts and explicit delay arrays are mutually exclusive.
@@ -56,4 +56,44 @@ function checkPromiseCompatibility(): void {
 
 it('checks retry public signatures at compile time', () => {
   expect(checkPromiseCompatibility).toBeDefined();
+});
+
+function checkHookArguments(flag: boolean): void {
+  retryfy(async (id: number, suffix?: string, ...flags: boolean[]) => id, {
+    retries: 1,
+    onRetry: (error, index, args) => {
+      const [id, suffix, ...flags] = args;
+      const value: number = id;
+      const optional: string | undefined = suffix;
+      const rest: boolean[] = flags;
+      // @ts-expect-error Retry arguments retain their tuple types.
+      const wrong: string = args[0];
+    },
+  });
+  // @ts-expect-error Retry callbacks must accept the original argument tuple.
+  retryfy(async (id: number) => id, { retries: 1, onRetry: (error: unknown, index: number, args: [string]) => {} });
+  const retryOptions: RetryInputConfig<unknown, [string]> = { retries: 1, onRetry: (error, index, args) => {} };
+  const unionRetry = flag ? { retries: 1, onRetry: 'missing' as const } : { retries: 1 };
+  class Service {
+    retryHook(error: unknown, index: number, args: [number]): void {}
+    wrongRetry(error: unknown, index: number, args: [string]): void {}
+
+    @retry({ retries: 1, onRetry: 'retryHook' })
+    @retry({ retries: 1, onRetry: (error: unknown, index: number, args: [number]) => {} })
+    async valid(id: number): Promise<number> { return id; }
+
+    // @ts-expect-error Named retry hooks must accept the argument tuple.
+    @retry({ retries: 1, onRetry: 'wrongRetry' })
+    async invalidRetry(id: number): Promise<number> { return id; }
+    // @ts-expect-error Optional retry hooks must accept the argument tuple.
+    @retry(retryOptions)
+    async invalidRetryOptions(id: number): Promise<number> { return id; }
+    // @ts-expect-error Invalid hook keys in a union must be rejected.
+    @retry(unionRetry)
+    async invalidRetryUnion(id: number): Promise<number> { return id; }
+  }
+}
+
+it('validates hook argument types', () => {
+  expect(checkHookArguments).toBeDefined();
 });

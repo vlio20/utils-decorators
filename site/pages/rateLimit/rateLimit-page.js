@@ -54,7 +54,7 @@ const sendReport = rateLimitify((account: string): string =&gt; {
   allowedCalls: 1,
   timeSpanMs: 1000,
   keyResolver: account =&gt; account,
-  exceedHandler: () =&gt; { throw new Error('Please try again later'); },
+  exceedHandler: account =&gt; { throw new Error('Please try again later for ' + account); },
 });
 
 console.log(sendReport('team-a')); // 'Sent for team-a'
@@ -63,7 +63,7 @@ try {
   sendReport('team-a');
 } catch (error) {
   console.log(error instanceof Error ? error.message : error);
-  // 'Please try again later'
+  // 'Please try again later for team-a'
 }</code></pre></docs-code>
               </div>
               <div data-configuration>
@@ -96,14 +96,14 @@ try {
                 </details>
               </div>
             </template>
-            <docs-callout>An <code>exceedHandler</code> that returns normally allows the call through and consumes another count. Throw to block it. The handler receives no arguments and its return value is ignored.</docs-callout>
+            <docs-callout>An <code>exceedHandler</code> that returns normally allows the call through and consumes another count. Throw to block it. The handler receives the original arguments as <code>exceedHandler(...args)</code> in both counter modes; its return value is ignored. Existing handlers that ignore arguments remain supported.</docs-callout>
           </docs-tabs>
           <docs-section anchor="options" heading="Shared options">
             <docs-config-table><table><tbody>
               <tr><td><code>allowedCalls</code><span class="required">Required</span></td><td><code>number</code></td><td>The threshold for the current key. The handler runs when <code>getCount(key) &gt;= allowedCalls</code>, before incrementing. Use a positive integer; numeric values are not validated.</td></tr>
               <tr><td><code>timeSpanMs</code><span class="required">Required</span></td><td><code>number</code></td><td>Delay from each successful counter increment until its scheduled decrement. This delay is independent of the source’s completion.</td></tr>
               <tr><td><code>keyResolver</code><span class="optional">Optional</span></td><td><code>callback | method key</code></td><td>Receives the original arguments. Both a callback function and a named method are bound to the call’s receiver; arrow functions retain their lexical receiver. Defaults to the constant key <code>'__rateLimit__'</code>. For a function wrapper, a method key needs a compatible explicit source receiver.</td></tr>
-              <tr><td><code>exceedHandler</code><span class="optional">Optional</span></td><td><code>() =&gt; void</code></td><td>Defaults to throwing <code>Error('You have acceded the amount of allowed calls')</code>. No instance binding is provided. Use a synchronous throw to block admission; an async handler is not awaited.</td></tr>
+              <tr><td><code>exceedHandler</code><span class="optional">Optional</span></td><td><code>(...args) =&gt; void</code></td><td>Defaults to throwing <code>Error('You have acceded the amount of allowed calls')</code>. Receives the original call arguments. No instance binding is provided. Use a synchronous throw to block admission; an async handler is not awaited.</td></tr>
               <tr><td><code>rateLimitCounter</code><span class="optional">Optional</span></td><td><code>RateLimitCounter</code></td><td>Synchronous counter storage. Defaults to an in-memory counter per instance and decorated method, or per function wrapper. An explicitly supplied counter is reused.</td></tr>
               <tr><td><code>rateLimitAsyncCounter</code><span class="optional">Optional</span></td><td><code>RateLimitAsyncCounter</code></td><td>Promise-based counter storage. Mutually exclusive with <code>rateLimitCounter</code>; providing both is rejected when creating the wrapper.</td></tr>
             </tbody></table></docs-config-table>

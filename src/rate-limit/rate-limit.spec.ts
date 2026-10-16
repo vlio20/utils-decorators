@@ -1,7 +1,7 @@
 import { rateLimitify } from './rate-limitify';
 import { rateLimit } from './rate-limit';
 import { sleep } from '../common/test-utils';
-import { RateLimitAsyncCounter } from './rate-limit.model';
+import { RateLimitAsyncCounter, RateLimitCounter } from './rate-limit.model';
 import { SimpleRateLimitCounter } from './simple-rate-limit-counter';
 
 export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
@@ -351,4 +351,31 @@ it('returns a promise with an async counter even for a synchronous source', asyn
   const result = receiver.wrapped(2);
   expect(result).toBeInstanceOf(Promise);
   await expect(result).resolves.toBe(12);
+});
+
+describe('original arguments in rate-limit hooks', () => {
+  it.each([false, true])('forwards rate-limit arguments with async counter: %s', async (asyncCounter) => {
+    const counter: RateLimitCounter = { getCount: () => 1, inc: jest.fn(), dec: jest.fn() };
+    const asyncRateCounter: RateLimitAsyncCounter = {
+      getCount: async () => 1, inc: async () => {}, dec: async () => {},
+    };
+    const exceedHandler = jest.fn(() => { throw new Error('blocked'); });
+    const config = {
+      allowedCalls: 1, timeSpanMs: 1, exceedHandler,
+      ...(asyncCounter ? { rateLimitAsyncCounter: asyncRateCounter } : { rateLimitCounter: counter }),
+    };
+    const source = jest.fn(async (id: number, name: string) => [id, name]);
+    const wrapped = rateLimitify(source, config);
+    await expect(Promise.resolve().then(() => wrapped(172, 'name'))).rejects.toThrow('blocked');
+    expect(exceedHandler).toHaveBeenCalledWith(172, 'name');
+    expect(source).not.toHaveBeenCalled();
+
+    class Service {
+      // eslint-disable-next-line class-methods-use-this
+      @rateLimit(config)
+      async load(id: number, name: string): Promise<unknown[]> { return [id, name]; }
+    }
+    await expect(Promise.resolve().then(() => new Service().load(173, 'other'))).rejects.toThrow('blocked');
+    expect(exceedHandler).toHaveBeenLastCalledWith(173, 'other');
+  });
 });

@@ -1,8 +1,9 @@
 import { AnyMethod } from '../common/model/common.model';
-import { Retryable, RetryInput } from './retry.model';
+import { ConfiguredRetryable, RetryInput } from './retry.model';
 import { retryfy } from './retryfy';
 
-export function retry<T = unknown>(input: RetryInput<T>): Retryable<T> {
+export function retry<const C extends RetryInput<any, any>>(input: C): ConfiguredRetryable<C>;
+export function retry<T = unknown>(input: RetryInput<T, any[]>): any {
   return <F extends AnyMethod>(
     target: T,
     propertyName: string | symbol,
