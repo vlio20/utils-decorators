@@ -20,6 +20,19 @@ Please note that the decorators are **working perfectly with plain JavaScript** 
 # Docs 
 check the <a href="https://vlio20.github.io/utils-decorators/" target="_blank">documentation</a>
 
+### Local docs preview
+
+Open `site/index.html` directly in a browser; no install or build is needed. The new
+layout covers all 18 decorators. The original `reference.html` remains available
+for installation and TypeScript migration guidance. Each utility page is a native Web Component with an HTML template. The `after`
+component is `site/pages/after/after-page.js`; shared components live under
+`site/components/`. The entry point displays `<after-page>` inside `<docs-shell>`.
+Styling and navigation live in `site/docs.css` and `site/docs.js`.
+Syntax highlighting uses the existing local `site/libs/highlight.js`.
+
+See `site/README.md` for adding pages and serving the same files locally or on
+a static host.
+
 # Feedback
 I will be more than happy to hear your feedback, don't hesitate to ask any question or open an issue. PRs are always welcomed :)  
 Also, I will be happy to hear about new ideas for new decorators, if you have such, please open an issue and describe the requirements and features of your decorator. 
