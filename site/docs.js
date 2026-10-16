@@ -205,6 +205,8 @@
   // Native section anchors work over file:// and static HTTP hosting.
   // Accept earlier #after/configuration links for the current page too.
   const pageTags = new Map([
+    ["install", "install-page"],
+    ["migration", "migration-page"],
     ["after", "after-page"],
     ["before", "before-page"],
     ["cancelPrevious", "cancel-previous-page"],
@@ -224,15 +226,11 @@
     ["throttleAsync", "throttle-async-page"],
     ["timeout", "timeout-page"],
   ]);
-  const legacyIds = new Set(
-    entries
-      .filter((entry) =>
-        new URL(entry.href, location.href).pathname.endsWith("/reference.html"),
-      )
-      .map((entry) => entry.href.split("#")[1]),
-  );
   function followHash() {
-    const [requested, section] = location.hash.slice(1).split("/");
+    const [hashPage, hashSection] = location.hash.slice(1).split("/");
+    // Preserve the previous TypeScript guide URL within installation.
+    const requested = hashPage === "typescript" ? "install" : hashPage;
+    const section = hashPage === "typescript" ? "typescript" : hashSection;
     const pageTag = pageTags.get(requested);
     if (pageTag && $("docs-page").getAttribute("page-id") !== requested) {
       $("[data-page-slot]").replaceChildren(document.createElement(pageTag));
@@ -251,10 +249,6 @@
       if (selected) anchor.setAttribute("aria-current", "page");
       else anchor.removeAttribute("aria-current");
     });
-    if (legacyIds.has(requested) && !pageTag) {
-      location.replace(DocsComponents.referenceUrl(requested));
-      return;
-    }
     const targetId = requested === pageId ? section : requested;
     requestAnimationFrame(() => {
       if (targetId) {

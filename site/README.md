@@ -3,15 +3,16 @@
 Open `index.html` directly, or serve the repository with
 `python3 -m http.server 4173` and visit `http://localhost:4173/site/`.
 The same files run on static hosting with no build, install, module imports, or
-runtime fetch calls. Publish the repository root so the original `reference.html` remains available
-for installation and TypeScript migration guidance. All 18 utility pages use the
-shared components.
+runtime fetch calls. Publish the repository root to use its `index.html` redirect,
+which preserves guide and utility hashes when opening `site/`. Alternatively,
+publish `site/` directly. Installation, migration to 3.0.0, and all 18 utility
+pages use the shared components.
 
 ## Structure
 
 - `index.html`: shared entry point, styles, and ordered deferred scripts. Displays
   `<after-page>` inside `<docs-shell>`.
-- `pages/<utility>/<utility>-page.js`: one native page component per utility, with
+- `pages/<page>/<page>-page.js`: one native page component per guide or utility, with
   an HTML template using the shared sections and common components.
 - `components/common/`: base helpers, shell, code blocks, and callouts.
 - `components/sections/`: page layout, sections, tabs, signatures, and config tables.

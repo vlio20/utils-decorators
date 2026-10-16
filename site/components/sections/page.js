@@ -1,11 +1,11 @@
 (() => {
-  const { DocsElement, escape, icon, referenceUrl } = window.DocsComponents;
+  const { DocsElement, escape, icon, siteUrl } = window.DocsComponents;
   class DocsPage extends DocsElement {
     render() {
       const content = [...this.childNodes];
       const title = this.getAttribute("heading");
       const category = this.getAttribute("category");
-      this.innerHTML = `<main id="main" tabindex="-1"><div class="breadcrumb"><a href="${escape(referenceUrl(this.getAttribute("page-id")))}">Decorators</a><span>/</span>${escape(category)}</div><div class="page-title"><h1>${escape(title)}</h1><span class="badge">${escape(category)}</span></div></main>`;
+      this.innerHTML = `<main id="main" tabindex="-1"><div class="breadcrumb"><a href="${escape(siteUrl("index.html#install"))}">Docs</a><span>/</span>${escape(category)}</div><div class="page-title"><h1>${escape(title)}</h1><span class="badge">${escape(category)}</span></div></main>`;
       const main = this.querySelector("main");
       main.append(...content);
       const footer = document.createElement("footer");

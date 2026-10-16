@@ -1,5 +1,5 @@
 (() => {
-  const { DocsElement, siteUrl, referenceUrl } = window.DocsComponents;
+  const { DocsElement, siteUrl } = window.DocsComponents;
   class DocsShell extends DocsElement {
     render() {
       const content = [...this.childNodes];
@@ -105,7 +105,8 @@
     <aside class="sidebar" id="sidebar" aria-label="Documentation navigation">
       <nav>
         <p class="nav-heading">Get started</p>
-        <a href="${referenceUrl("install")}">Installation</a>
+        <a data-page="install" href="${siteUrl("index.html#install")}">Installation</a>
+        <a data-page="migration" href="${siteUrl("index.html#migration")}">Migration to 3.0.0</a>
         <div class="nav-rule"></div>
         <p class="nav-heading">Decorators</p>
         <details open>
