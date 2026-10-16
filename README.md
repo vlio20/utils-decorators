@@ -1,66 +1,50 @@
 # utils-decorators
-[![Build Status](https://travis-ci.org/vlio20/utils-decorators.svg?branch=master)](https://travis-ci.org/vlio20/utils-decorators)      
-[![Coverage Status](https://coveralls.io/repos/github/vlio20/utils-decorators/badge.svg?branch=master)](https://coveralls.io/repos/github/vlio20/utils-decorators/)   
-[![Mutation testing badge](https://badge.stryker-mutator.io/github.com/vlio20/utils-decorators/master)](https://stryker-mutator.github.io)      
-  
-This library was highly inspired by lodash but uses decorators to implement its util methods.   
-The lib can be used both in node and in web application, it is built to be **tree-shakable so you can use it even if you need a specific decorator**.  
-Also, note that this library can be used both as **functions and decorators**, 
 
-<a href="https://opencollective.com/utils-decorators#backers" target="_blank"><img src="https://opencollective.com/utils-decorators/backers.svg?width=890"></a> 
+`utils-decorators` is a tree-shakable collection of utility functions and TypeScript decorators for common tasks such as caching results, controlling call frequency, retrying failures, and handling asynchronous work. Use each utility as a decorator or as a standalone function wrapper.
 
-### installation:
+**[Read the documentation](https://vlio20.github.io/utils-decorators/)** for installation, TypeScript setup, all utilities, and the [3.0.0 migration guide](https://vlio20.github.io/utils-decorators/#migration).
+
+## Install
 
 ```bash
-npm install utils-decorators@3
-```   
-
-Use Node.js `^22.18.0 || >=24.11.0`. Function wrappers work in JavaScript and
-TypeScript; decorator syntax requires a compatible legacy decorator compiler.
-For TypeScript, use 5.4+ with `strict` and `experimentalDecorators` enabled.
-
-See [installation and TypeScript setup](https://vlio20.github.io/utils-decorators/#install)
-and [migration to 3.0.0, including breaking changes](https://vlio20.github.io/utils-decorators/#migration).
-
-# Docs 
-check the <a href="https://vlio20.github.io/utils-decorators/" target="_blank">documentation</a>
-
-### Local docs preview
-
-Open `site/index.html` directly in a browser; no install or build is needed. The new
-layout covers installation, migration to 3.0.0, and all 19 decorators. Each page
-is a native Web Component with an HTML template. The `after`
-component is `site/pages/after/after-page.js`; shared components live under
-`site/components/`. The entry point displays `<after-page>` inside `<docs-shell>`.
-Styling and navigation live in `site/docs.css` and `site/docs.js`.
-Syntax highlighting uses the existing local `site/libs/highlight.js`.
-
-See `site/README.md` for adding pages and serving the same files locally or on
-a static host.
-
-### Queue calls at a steady rate
-
-Use [`leakyBucket`](https://vlio20.github.io/utils-decorators/#leakyBucket) or
-`leakyBucketify` to queue bursts and pace call starts independently of completion:
-
-```ts
-import { leakyBucketify } from 'utils-decorators';
-
-const getItem = leakyBucketify(async (id: number) => fetch('/api/items/' + id), {
-  allowedCalls: 10,
-  timeSpanMs: 1000,
-  maxQueueSize: 500,
-});
-
-await Promise.all([1, 2, 3].map(id => getItem(id)));
-// First start is immediate; subsequent starts are at least 100 ms apart.
+npm install utils-decorators
 ```
 
-The default queue holds up to 1,000 waiting calls; excess calls reject. Decorators
-isolate buckets per instance and method. Supply an explicit `LeakyBucket` to share
-one quota, and use `signalResolver` to cancel queued calls with an `AbortSignal`.
-See the documentation for shared buckets, cancellation, and configuration details.
+The package requires Node.js `^22.18.0 || >=24.11.0`. For TypeScript decorators, enable `experimentalDecorators` and use strict type checking.
 
-# Feedback
-I will be more than happy to hear your feedback, don't hesitate to ask any question or open an issue. PRs are always welcomed :)  
-Also, I will be happy to hear about new ideas for new decorators, if you have such, please open an issue and describe the requirements and features of your decorator. 
+## Examples
+
+### Cache asynchronous results with `@memoizeAsync`
+
+Repeated calls with the same arguments reuse the cached promise result.
+
+```ts
+import { memoizeAsync } from 'utils-decorators';
+
+class UserService {
+  @memoizeAsync()
+  async getUser(id: string) {
+    const response = await fetch(`/api/users/${id}`);
+    return response.json();
+  }
+}
+```
+
+### Debounce calls with `@debounce`
+
+Run the method once after calls have stopped for the specified delay.
+
+```ts
+import { debounce } from 'utils-decorators';
+
+class SearchBox {
+  @debounce(300)
+  search(query: string): void {
+    console.log('Searching for:', query);
+  }
+}
+```
+
+## Feedback
+
+Questions, ideas, and bug reports are welcome in the [GitHub issues](https://github.com/vlio20/utils-decorators/issues).
