@@ -61,7 +61,7 @@
       >
         <svg><use href="#menu-icon" /></svg>
       </button>
-      <a class="brand" href="${siteUrl("index.html#after")}">
+      <a class="brand" href="${siteUrl("index.html#overview")}">
         <span class="brand-mark">@</span>
         <span>utils-decorators</span>
       </a>
@@ -105,6 +105,7 @@
     <aside class="sidebar" id="sidebar" aria-label="Documentation navigation">
       <nav>
         <p class="nav-heading">Get started</p>
+        <a data-page="overview" href="${siteUrl("index.html#overview")}">Overview</a>
         <a data-page="install" href="${siteUrl("index.html#install")}">Installation</a>
         <a data-page="migration" href="${siteUrl("index.html#migration")}">Migration to 3.0.0</a>
         <div class="nav-rule"></div>
@@ -112,7 +113,7 @@
         <details open>
           <summary>Lifecycle</summary>
           <div class="nav-group">
-            <a data-page="after" class="selected" aria-current="page" href="${siteUrl("index.html#after")}">
+            <a data-page="after" href="${siteUrl("index.html#after")}">
               after
             </a>
             <a data-page="before" href="${siteUrl("index.html#before")}">before</a>

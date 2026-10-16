@@ -277,6 +277,7 @@ a:hover {
   padding: 9px 16px;
   font-size: 13px;
 }
+.sidebar nav > a.selected,
 .nav-group a.selected {
   background: var(--tint);
   color: var(--accent);

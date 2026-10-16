@@ -205,6 +205,7 @@
   // Native section anchors work over file:// and static HTTP hosting.
   // Accept earlier #after/configuration links for the current page too.
   const pageTags = new Map([
+    ["overview", "overview-page"],
     ["install", "install-page"],
     ["migration", "migration-page"],
     ["after", "after-page"],
@@ -230,7 +231,7 @@
   function followHash() {
     const [hashPage, hashSection] = location.hash.slice(1).split("/");
     // Preserve the previous TypeScript guide URL within installation.
-    const requested = hashPage === "typescript" ? "install" : hashPage;
+    const requested = hashPage === "typescript" ? "install" : hashPage || "overview";
     const section = hashPage === "typescript" ? "typescript" : hashSection;
     const pageTag = pageTags.get(requested);
     if (pageTag && $("docs-page").getAttribute("page-id") !== requested) {
@@ -239,7 +240,8 @@
     const page = $("docs-page");
     const pageId = page.getAttribute("page-id");
     $(".skip-link").href = `#${pageId}/main`;
-    document.title = `${page.getAttribute("heading")} — utils-decorators`;
+    const title = pageId === "overview" ? "Overview" : page.getAttribute("heading");
+    document.title = `${title} — utils-decorators`;
     $("meta[name=description]").content = page
       .querySelector(".intro")
       .textContent.trim()
