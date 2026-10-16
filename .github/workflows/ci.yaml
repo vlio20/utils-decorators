@@ -9,15 +9,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        id: node
         with:
           node-version: 24.x
 
-      - name: Run build and tests
+      - name: Restore mutation results
+        id: mutation-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: reports/stryker-incremental.json
+          key: stryker-v1-${{ runner.os }}-${{ runner.arch }}-node-${{ steps.node.outputs.node-version }}-${{ hashFiles('package.json', 'package-lock.json', 'jest.config.*', 'jest.transform.*', 'stryker.conf.*', 'tsconfig*.json', '.github/workflows/ci.yaml') }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            stryker-v1-${{ runner.os }}-${{ runner.arch }}-node-${{ steps.node.outputs.node-version }}-${{ hashFiles('package.json', 'package-lock.json', 'jest.config.*', 'jest.transform.*', 'stryker.conf.*', 'tsconfig*.json', '.github/workflows/ci.yaml') }}-
+
+      - name: Run unit tests and checks
         run: |
           npm ci
-          npm run test
+          npm run clean
+          npm run test:types
+          npm run lint
+          npx jest --coverage
+
+      - name: Run mutation tests
+        run: npm run test:mutation
+
+      - name: Save mutation results
+        if: ${{ !cancelled() && hashFiles('reports/stryker-incremental.json') != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: reports/stryker-incremental.json
+          key: ${{ steps.mutation-cache.outputs.cache-primary-key }}
+
+      - name: Build
+        run: |
           npm run build
 
       - name: Archive mutation reports

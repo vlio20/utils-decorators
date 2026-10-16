@@ -37,6 +37,14 @@ export class AsyncSimpleRateLimitCounter implements RateLimitAsyncCounter {
 }
 
 describe('rate-limit', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   class T {
     counter = 0;
 
@@ -99,13 +107,13 @@ describe('rate-limit', () => {
   it('should verify sync limit is working as expected', async () => {
     const t = new T();
     t.foo();
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     expect(t.counter).toEqual(1);
     t.foo();
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     expect(t.counter).toEqual(2);
 
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
 
     try {
       t.foo();
@@ -118,7 +126,7 @@ describe('rate-limit', () => {
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
-    await sleep(80);
+    await jest.advanceTimersByTimeAsync(80);
     const resp = t.foo();
 
     expect(t.counter).toEqual(3);
@@ -144,15 +152,15 @@ describe('rate-limit', () => {
     const t = new TT();
     t.foo();
     expect(countMap.size).toEqual(1);
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     expect(t.counter).toEqual(1);
     t.foo();
     expect(countMap.size).toEqual(1);
     expect(countMap.get('__rateLimit__')).toEqual(2);
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     expect(t.counter).toEqual(2);
 
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
 
     try {
       t.foo();
@@ -165,14 +173,14 @@ describe('rate-limit', () => {
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
-    await sleep(80);
+    await jest.advanceTimersByTimeAsync(80);
     expect(countMap.get('__rateLimit__')).toEqual(1);
     t.foo();
     expect(countMap.get('__rateLimit__')).toEqual(2);
 
     expect(t.counter).toEqual(3);
 
-    await sleep(220);
+    await jest.advanceTimersByTimeAsync(220);
     expect(countMap.size).toEqual(0);
   });
 
@@ -197,30 +205,31 @@ describe('rate-limit', () => {
     const t1 = new TT();
     const t2 = new TT();
 
-    await t1.foo();
-    await sleep(50);
+    const first = t1.foo();
+    await jest.advanceTimersByTimeAsync(40);
+    await first;
+    await jest.advanceTimersByTimeAsync(50);
     expect(t1.counter).toEqual(1);
-    await t2.foo();
-    await sleep(50);
+    const second = t2.foo();
+    await jest.advanceTimersByTimeAsync(30);
+    await second;
+    await jest.advanceTimersByTimeAsync(50);
     expect(t1.counter).toEqual(1);
     expect(t2.counter).toEqual(1);
 
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
 
-    try {
-      await t1.foo();
-      throw new Error('should not get to this line');
-    } catch (e) {
-      if (!(e instanceof Error)) {
-        throw e;
-      }
+    const rejected = expect(t1.foo()).rejects.toThrow('You have acceded the amount of allowed calls');
+    await jest.advanceTimersByTimeAsync(10);
+    await rejected;
 
-      expect(e.message).toEqual('You have acceded the amount of allowed calls');
-    }
-
-    await sleep(80);
-    const resp1 = await t1.foo();
-    const resp2 = await t2.foo();
+    await jest.advanceTimersByTimeAsync(80);
+    const next1 = t1.foo();
+    await jest.advanceTimersByTimeAsync(30);
+    const resp1 = await next1;
+    const next2 = t2.foo();
+    await jest.advanceTimersByTimeAsync(30);
+    const resp2 = await next2;
 
     expect(t1.counter).toEqual(2);
     expect(resp1).toEqual(2);
@@ -242,9 +251,9 @@ describe('rate-limit', () => {
 
     const t = new TT();
     t.foo('a');
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     t.foo('b');
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
 
     try {
       t.foo('a');
@@ -257,7 +266,7 @@ describe('rate-limit', () => {
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
-    await sleep(120);
+    await jest.advanceTimersByTimeAsync(120);
     t.foo('a');
   });
 
@@ -278,9 +287,9 @@ describe('rate-limit', () => {
 
     const t = new TT();
     t.foo('a');
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     t.foo('b');
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
 
     try {
       t.foo('a');
@@ -293,7 +302,7 @@ describe('rate-limit', () => {
       expect(e.message).toEqual('You have acceded the amount of allowed calls');
     }
 
-    await sleep(120);
+    await jest.advanceTimersByTimeAsync(120);
     t.foo('a');
   });
 
@@ -312,7 +321,7 @@ describe('rate-limit', () => {
 
     const t = new TT();
     t.foo();
-    await sleep(20);
+    await jest.advanceTimersByTimeAsync(20);
 
     try {
       t.foo();

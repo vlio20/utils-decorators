@@ -1,7 +1,14 @@
 import { delay } from './delay';
-import { sleep } from '../common/test-utils';
 
 describe('delay', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidDelay: any = delay(50);
@@ -42,16 +49,18 @@ describe('delay', () => {
     const spy = jest.spyOn(T.prototype, 'goo');
     t.foo(1);
 
-    await sleep(20);
+    await jest.advanceTimersByTimeAsync(49);
     expect(spy).not.toHaveBeenCalled();
 
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(1);
 
     t.foo(2);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenLastCalledWith(1);
 
-    await sleep(75);
+    await jest.advanceTimersByTimeAsync(49);
+    expect(spy).toHaveBeenCalledTimes(1);
+    await jest.advanceTimersByTimeAsync(1);
 
     expect(spy).toHaveBeenCalledTimes(2);
   });

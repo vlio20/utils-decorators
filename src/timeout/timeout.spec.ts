@@ -3,6 +3,14 @@ import { sleep } from '../common/utils/utils';
 import { TimeoutError } from './timeout.index';
 
 describe('timeout', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidTimeout: any = timeout(50);
@@ -36,17 +44,16 @@ describe('timeout', () => {
 
     const t = new T();
 
-    try {
-      await t.foo();
-      throw new Error('should not reach here');
-    } catch (e) {
-      if (!(e instanceof Error)) {
-        throw e;
-      }
-
-      expect(e.message).toEqual(`timeout occurred after ${ms}`);
-      expect(e instanceof TimeoutError).toBeTruthy();
-    }
+    const pending = t.foo();
+    const rejected = expect(pending).rejects.toBeInstanceOf(TimeoutError);
+    const message = expect(pending).rejects.toThrow(`timeout occurred after ${ms}`);
+    const settled = jest.fn();
+    pending.then(settled, settled);
+    await jest.advanceTimersByTimeAsync(49);
+    expect(settled).not.toHaveBeenCalled();
+    await jest.advanceTimersByTimeAsync(1);
+    await rejected;
+    await message;
   });
 
   it('should no throw timeout exception after provided ms', async () => {
@@ -62,7 +69,9 @@ describe('timeout', () => {
     }
 
     const t = new T();
-    expect(await t.foo()).toEqual(1);
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(50);
+    expect(await pending).toEqual(1);
   });
 
   it('should catch original exception after the method throw an error within provided ms', async () => {
@@ -98,10 +107,10 @@ describe('timeout', () => {
 
     const t = new T();
 
-    try {
-      await t.foo();
-    } catch (e) {
-      expect(e).toBeInstanceOf(TimeoutError);
-    }
+    const rejected = expect(t.foo()).rejects.toBeInstanceOf(TimeoutError);
+    await jest.advanceTimersByTimeAsync(50);
+    await rejected;
+    // Allow the original operation to reject after the timeout as well.
+    await jest.advanceTimersByTimeAsync(50);
   });
 });

@@ -1,7 +1,14 @@
 import { throttle } from './throttle';
-import { sleep } from '../common/test-utils';
 
 describe('throttle', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidThrottle: any = throttle<T>(50);
@@ -44,13 +51,13 @@ describe('throttle', () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith(1);
 
-    await sleep(10);
+    await jest.advanceTimersByTimeAsync(19);
 
     t.foo(2);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenLastCalledWith(1);
 
-    await sleep(30);
+    await jest.advanceTimersByTimeAsync(1);
 
     t.foo(3);
 

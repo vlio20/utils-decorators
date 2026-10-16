@@ -1,10 +1,17 @@
 import { memoize } from './memoize';
-import { sleep } from '../common/test-utils';
 
 declare const window: any;
 
 describe('memozie', () => {
-  it('should verify memoize caching original method', (done) => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
+  it('should verify memoize caching original method', async () => {
     class T {
       prop!: 3;
 
@@ -33,16 +40,17 @@ describe('memozie', () => {
     expect(spy.mock.calls[1][0]).toBe(1);
     expect(spy.mock.calls[1][1]).toBe(3);
 
-    setTimeout(async () => {
-      const resp3 = t.foo(1, 2);
+    await jest.advanceTimersByTimeAsync(9);
+    expect(t.foo(1, 2)).toBe(3);
+    expect(spy).toHaveBeenCalledTimes(2);
+    await jest.advanceTimersByTimeAsync(1);
+    const resp3 = t.foo(1, 2);
 
-      expect(spy).toHaveBeenCalledTimes(3);
-      expect(resp1).toBe(3);
-      expect(resp2).toBe(3);
-      expect(resp3).toBe(3);
-      expect(resp4).toBe(4);
-      done();
-    }, 20);
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(resp1).toBe(3);
+    expect(resp2).toBe(3);
+    expect(resp3).toBe(3);
+    expect(resp4).toBe(4);
   });
 
   it('should make sure error thrown when decorator not set on method', () => {
@@ -66,7 +74,7 @@ describe('memozie', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should use provided cache', (done) => {
+  it('should use provided cache', async () => {
     const cache = new Map<string, number>();
 
     class T {
@@ -85,15 +93,13 @@ describe('memozie', () => {
     const t = new T();
     t.foo();
 
-    setTimeout(() => {
-      t.foo();
-      expect(spy).toHaveBeenCalledTimes(1);
+    await jest.advanceTimersByTimeAsync(10);
+    t.foo();
+    expect(spy).toHaveBeenCalledTimes(1);
 
-      cache.delete('[]');
-      t.foo();
-      expect(spy).toHaveBeenCalledTimes(2);
-      done();
-    }, 10);
+    cache.delete('[]');
+    t.foo();
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 
   it('should verify memoize key foo as function', async () => {
@@ -164,7 +170,7 @@ describe('memozie', () => {
     t.foo();
     expect(cache.size).toEqual(1);
 
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(50);
     expect(cache.size).toEqual(1);
   });
 });
