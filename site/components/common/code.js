@@ -10,8 +10,9 @@
       panel.className = "code-panel";
       const filename = this.getAttribute("filename");
       const language = this.getAttribute("language") || "typescript";
+      const label = { typescript: "TypeScript", javascript: "JavaScript" }[language] || language;
       if (filename) {
-        panel.innerHTML = `<div class="code-toolbar"><span>${escape(filename)}</span><div><span>${escape(language === "typescript" ? "TypeScript" : language)}</span><button>${icon("copy")}Copy</button></div></div>`;
+        panel.innerHTML = `<div class="code-toolbar"><span>${escape(filename)}</span><div><span>${escape(label)}</span><button>${icon("copy")}Copy</button></div></div>`;
         panel.querySelector("button").addEventListener("click", (event) => {
           this.dispatchEvent(
             new CustomEvent("docs-copy", {
