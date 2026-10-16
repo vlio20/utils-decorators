@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [3.0.0] - Unreleased
 
 ### Enchantments
+- Add `leakyBucket`, `leakyBucketify`, and shared `LeakyBucket` limiters for steady call pacing, bounded FIFO queues, and cancellation of waiting calls with `AbortSignal`; closes [#159](https://github.com/vlio20/utils-decorators/issues/159).
 - Provide original call arguments to `retry` / `retryfy` hooks as `onRetry(error, retryIndex, args)` and to `rateLimit` / `rateLimitify` handlers as `exceedHandler(...args)`, with matching callback validation; part of [#172](https://github.com/vlio20/utils-decorators/issues/172).
 - Modernize the documentation UI with searchable navigation, light and dark themes, mobile navigation, copyable examples, and decorator/function tabs for all 18 utilities. Add installation, TypeScript setup, and migration to 3.0.0 guides; remove the legacy documentation; closes [#182](https://github.com/vlio20/utils-decorators/issues/182).
 - Update dependencies [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#179](https://github.com/vlio20/utils-decorators/issues/179)

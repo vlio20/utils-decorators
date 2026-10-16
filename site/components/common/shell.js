@@ -126,6 +126,7 @@
             <a data-page="throttleAsync" href="${siteUrl("index.html#throttleAsync")}">throttleAsync</a>
             <a data-page="delay" href="${siteUrl("index.html#delay")}">delay</a>
             <a data-page="timeout" href="${siteUrl("index.html#timeout")}">timeout</a>
+            <a data-page="leakyBucket" href="${siteUrl("index.html#leakyBucket")}">leakyBucket</a>
             <a data-page="rateLimit" href="${siteUrl("index.html#rateLimit")}">rateLimit</a>
           </div>
         </details>
