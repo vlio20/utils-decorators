@@ -1,8 +1,15 @@
 import { retry } from './retry';
-import { sleep } from '../common/test-utils';
 import { retryfy } from './retryfy';
 
 describe('retry', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    // Discard remaining expiry, timeout, or scheduled work without executing it.
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidRetry: any = retry(50);
@@ -44,7 +51,9 @@ describe('retry', () => {
     }
 
     const t = new T();
-    const res = await t.foo();
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(10);
+    const res = await pending;
     expect(t.counter).toEqual(1);
     expect(res).toEqual('yes');
   });
@@ -64,17 +73,11 @@ describe('retry', () => {
     }
 
     const t = new T();
-    try {
-      await t.foo();
-      throw new Error('should not get hear');
-    } catch (e) {
-      if (!(e instanceof Error)) {
-        throw e;
-      }
-
-      expect(t.counter).toEqual(3);
-      expect(e.message).toEqual('no');
-    }
+    const pending = t.foo();
+    const rejected = expect(pending).rejects.toThrow('no');
+    await jest.advanceTimersByTimeAsync(20);
+    await rejected;
+    expect(t.counter).toEqual(3);
   });
 
   it('should wait according to configured delay', async () => {
@@ -97,13 +100,16 @@ describe('retry', () => {
     }
 
     const t = new T();
-    t.foo();
-    await sleep(25);
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(49);
     expect(t.counter).toEqual(1);
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(2);
-    await sleep(75);
+    await jest.advanceTimersByTimeAsync(49);
+    expect(t.counter).toEqual(2);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(3);
+    await expect(pending).resolves.toBe('yes');
   });
 
   it('should wait according to retries array', async () => {
@@ -123,13 +129,16 @@ describe('retry', () => {
     }
 
     const t = new T();
-    t.foo();
-    await sleep(25);
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(49);
     expect(t.counter).toEqual(1);
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(2);
-    await sleep(150);
+    await jest.advanceTimersByTimeAsync(99);
+    expect(t.counter).toEqual(2);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(3);
+    await expect(pending).resolves.toBe('yes');
   });
 
   it('should wait according to retries object with delaysArray', async () => {
@@ -151,13 +160,16 @@ describe('retry', () => {
     }
 
     const t = new T();
-    t.foo();
-    await sleep(25);
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(49);
     expect(t.counter).toEqual(1);
-    await sleep(50);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(2);
-    await sleep(150);
+    await jest.advanceTimersByTimeAsync(99);
+    expect(t.counter).toEqual(2);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(3);
+    await expect(pending).resolves.toBe('yes');
   });
 
   it('should wait 1 sec by default', async () => {
@@ -178,9 +190,9 @@ describe('retry', () => {
 
     const t = new T();
     const prom = t.foo();
-    await sleep(500);
+    await jest.advanceTimersByTimeAsync(999);
     expect(t.counter).toEqual(1);
-    await sleep(600);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(2);
 
     expect(await prom).toEqual('yes');
@@ -236,9 +248,12 @@ describe('retry', () => {
     }
 
     const t = new T();
-    await t.foo();
-    await t.goo();
-    await sleep(100);
+    const foo = t.foo();
+    await jest.advanceTimersByTimeAsync(20);
+    await foo;
+    const goo = t.goo();
+    await jest.advanceTimersByTimeAsync(30);
+    await goo;
 
     expect(onRetry).toHaveBeenCalledTimes(2);
     const argsFirstCall = onRetry.mock.calls[0];
@@ -299,10 +314,11 @@ describe('retry', () => {
 
     const t = new T();
 
-    t.foo();
-    await sleep(500);
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(999);
     expect(t.counter).toEqual(1);
-    await sleep(600);
+    await jest.advanceTimersByTimeAsync(1);
     expect(t.counter).toEqual(2);
+    await expect(pending).resolves.toBe('yes');
   });
 });
