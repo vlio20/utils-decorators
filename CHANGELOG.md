@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [3.0.0] - Unreleased
+## [3.0.0] - 2026-10-16
 
 ### Enchantments
 - Add `leakyBucket`, `leakyBucketify`, and shared `LeakyBucket` limiters for steady call pacing, bounded FIFO queues, and cancellation of waiting calls with `AbortSignal`; closes [#159](https://github.com/vlio20/utils-decorators/issues/159).
