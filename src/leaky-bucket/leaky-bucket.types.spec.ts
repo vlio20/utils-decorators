@@ -31,25 +31,42 @@ function checkTypes(): void {
 
   class Service {
     @leakyBucket(config)
-    async valid(id: number): Promise<number> { void this; return id; }
+    async valid(id: number): Promise<number> {
+      void this;
+
+      return id;
+    }
 
     @leakyBucket({ bucket, signalResolver: (_id: number, signal?: AbortSignal) => signal })
-    async cancellable(id: number, _signal?: AbortSignal): Promise<number> { void this; return id; }
+    async cancellable(id: number, _signal?: AbortSignal): Promise<number> {
+      void this;
+
+      return id;
+    }
 
     // @ts-expect-error A synchronous method cannot be queued by a decorator.
     @leakyBucket(config)
-    invalid(): number { void this; return 1; }
+    invalid(): number {
+      void this;
+
+      return 1;
+    }
 
     // @ts-expect-error Native wrapper promises cannot preserve custom promise properties.
     @leakyBucket(config)
     custom(): Promise<number> & { tag: string } {
       void this;
+
       return Object.assign(Promise.resolve(1), { tag: 'custom' });
     }
 
     // @ts-expect-error A resolver's arguments must match the decorated method.
     @leakyBucket({ ...config, signalResolver: (_id: string) => undefined })
-    incompatible(id: number): Promise<number> { void this; return Promise.resolve(id); }
+    incompatible(id: number): Promise<number> {
+      void this;
+
+      return Promise.resolve(id);
+    }
 
     // @ts-expect-error Only methods are supported.
     @leakyBucket(config)
@@ -60,7 +77,11 @@ function checkTypes(): void {
   class UnionService {
     // @ts-expect-error Every possible resolver must accept the method arguments.
     @leakyBucket(union)
-    run(id: number): Promise<number> { void this; return Promise.resolve(id); }
+    run(id: number): Promise<number> {
+      void this;
+
+      return Promise.resolve(id);
+    }
   }
   const decorated: Promise<number> = new Service().valid(1);
   void UnionService;

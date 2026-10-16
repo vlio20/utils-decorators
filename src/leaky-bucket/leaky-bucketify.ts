@@ -11,6 +11,7 @@ export function leakyBucketify<D, A extends unknown[], T>(
   return function (this: T, ...args: A): Promise<D> {
     try {
       const signal = signalResolver?.apply(this, args);
+
       return bucket.exec(() => originalMethod.apply(this, args), signal);
     } catch (error) {
       return Promise.reject(error);

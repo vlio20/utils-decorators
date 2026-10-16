@@ -14,8 +14,10 @@ export function onError<const C extends { func: ContextualHandler | PropertyKey 
   ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
       descriptor.value = onErrorify(descriptor.value, config as any) as F;
+
       return descriptor;
     }
+
     throw new Error('@onError is applicable only on a methods.');
   };
 }

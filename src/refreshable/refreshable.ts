@@ -14,18 +14,22 @@ export function refreshable<T extends object = object, D = unknown>(config: Refr
 
     const getState = (receiver: object): RefreshState<D> => {
       let state = states.get(receiver);
+
       if (!state) {
         state = { data: undefined, started: false, stopped: false };
         states.set(receiver, state);
       }
+
       return state;
     };
 
     const start = (receiver: object): RefreshState<D> => {
       const state = getState(receiver);
+
       if (state.started || state.stopped) {
         return state;
       }
+
       state.started = true;
       state.intervalHandler = setInterval(async () => {
         state.data = await config.dataProvider.call(undefined);
@@ -39,6 +43,7 @@ export function refreshable<T extends object = object, D = unknown>(config: Refr
       setTimeout(async () => {
         state.data = await config.dataProvider.call(undefined);
       }, 0);
+
       return state;
     };
 
@@ -50,6 +55,7 @@ export function refreshable<T extends object = object, D = unknown>(config: Refr
         if (value === null) {
           const state = getState(this);
           state.stopped = true;
+
           if (state.intervalHandler !== undefined) {
             clearInterval(state.intervalHandler);
           }

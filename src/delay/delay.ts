@@ -12,6 +12,7 @@ export function delay<T extends object = object>(delayMs: number) {
 
       return;
     }
+
     throw new Error('@delay is applicable only on a methods.');
   };
 }

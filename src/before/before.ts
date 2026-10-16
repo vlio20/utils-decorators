@@ -11,8 +11,10 @@ export function before<const C extends { func: ((...args: any[]) => unknown) | P
   ): TypedPropertyDescriptor<F> => {
     if (descriptor?.value) {
       descriptor.value = beforify(descriptor.value, config as any) as F;
+
       return descriptor;
     }
+
     throw new Error('@before is applicable only on a methods.');
   };
 }

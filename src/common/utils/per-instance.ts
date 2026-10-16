@@ -13,6 +13,7 @@ export function perInstance<F extends (this: any, ...args: any[]) => any>(create
     if (!method) {
       method = firstMethod ?? create();
       firstMethod = undefined;
+
       if (receiver) {
         methods.set(receiver, method);
       } else {

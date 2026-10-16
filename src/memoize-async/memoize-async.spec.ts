@@ -274,6 +274,7 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
+
     try {
       await t.foo();
     } catch (e) {
@@ -314,6 +315,7 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
+
     try {
       await t.foo();
     } catch (e) {
@@ -354,6 +356,7 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
+
     try {
       await t.foo();
     } catch (e) {
@@ -426,6 +429,7 @@ describe('memozie-async', () => {
     }
 
     const t = new T();
+
     try {
       await t.foo();
     } catch (e) {

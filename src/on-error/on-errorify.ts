@@ -13,6 +13,7 @@ export function onErrorify<D, A extends unknown[], T, H>(
 export function onErrorify(originalMethod: Method<any>, config: OnErrorConfig<any, any, any>): Method<Promise<any>> {
   return async function (this: any, ...args: any[]): Promise<any> {
     const hook = typeof config.func === 'function' ? config.func : this[config.func].bind(this);
+
     try {
       return await originalMethod.apply(this, args);
     } catch (e) {

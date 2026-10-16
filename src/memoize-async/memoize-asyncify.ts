@@ -34,6 +34,7 @@ export function memoizeAsyncify<D, A extends unknown[], T>(
     }
 
     const cachedPromise = promCache.get(key);
+
     if (cachedPromise) {
       return cachedPromise;
     }
@@ -51,6 +52,7 @@ export function memoizeAsyncify<D, A extends unknown[], T>(
 
       if (inCache) {
         let data: D | null | undefined;
+
         try {
           data = await resolvedConfig.cache.get(key);
         } catch (e) {

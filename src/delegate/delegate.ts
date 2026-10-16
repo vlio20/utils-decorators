@@ -11,8 +11,10 @@ export function delegate<T = unknown, A extends unknown[] = unknown[]>(keyResolv
     if (descriptor?.value) {
       const originalMethod = descriptor.value;
       descriptor.value = perInstance(() => delegatify(originalMethod, keyResolver as ((...args: any[]) => string) | undefined) as F);
+
       return descriptor;
     }
+
     throw new Error('@delegate is applicable only on a methods.');
   };
 }

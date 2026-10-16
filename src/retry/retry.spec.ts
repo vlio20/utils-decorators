@@ -68,6 +68,7 @@ describe('retry', () => {
       })
       foo(): Promise<string> {
         this.counter += 1;
+
         return Promise.reject(new Error('no'));
       }
     }
@@ -330,6 +331,7 @@ describe('original arguments in retry hooks', () => {
     const hook = jest.fn();
     const source = jest.fn(async (...args: unknown[]) => {
       if (source.mock.calls.length < 3) { throw failure; }
+
       return args;
     });
     const wrapped = retryfy(source, { retries: 2, delay: 0, onRetry: hook });
@@ -351,7 +353,9 @@ describe('original arguments in retry hooks', () => {
       @retry({ retries: 1, delay: 0, onRetry: 'onRetry' })
       async load(id: number): Promise<number> {
         this.attempts += 1;
+
         if (this.attempts === 1) { throw failure; }
+
         return id;
       }
     }
