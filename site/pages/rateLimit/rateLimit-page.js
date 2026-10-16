@@ -9,6 +9,7 @@
           next-title="readonly" next-href="#readonly">
           <p class="lead">Give each key a limited call budget.</p>
           <p class="intro">Count admitted calls and release each count after a configured delay. When a key reaches its allowance, a handler decides whether to stop the next call by throwing.</p>
+          <p>To queue excess calls and start them at a steady pace, use <a href="#leakyBucket">leakyBucket</a>.</p>
           <docs-tabs>
             <template data-variant="decorator" data-label="Decorator">
               <docs-signature label="Decorator"><code><span class="token-function">rateLimit</span>(config: RateLimitConfigs)</code></docs-signature>

@@ -218,6 +218,7 @@
     ["memoizeAsync", "memoize-async-page"],
     ["multiDispatch", "multi-dispatch-page"],
     ["onError", "on-error-page"],
+    ["leakyBucket", "leaky-bucket-page"],
     ["rateLimit", "rate-limit-page"],
     ["readonly", "readonly-page"],
     ["refreshable", "refreshable-page"],

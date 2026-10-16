@@ -9,6 +9,7 @@
           next-title="timeout" next-href="#timeout">
           <p class="lead">Keep asynchronous work within a concurrency limit.</p>
           <p class="intro">Run a limited number of asynchronous calls at once and queue the rest in arrival order. Each call keeps its own arguments, receiver, promise, and result.</p>
+          <p>To limit call starts per second independently of completion, use <a href="#leakyBucket">leakyBucket</a>.</p>
           <docs-tabs>
             <template data-variant="decorator" data-label="Decorator">
               <docs-signature label="Decorator"><code><span class="token-function">throttleAsync</span>(parallelCalls?: number)</code></docs-signature>

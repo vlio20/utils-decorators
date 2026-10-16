@@ -5,7 +5,7 @@ Open `index.html` directly, or serve the repository with
 The same files run on static hosting with no build, install, module imports, or
 runtime fetch calls. Publish the repository root to use its `index.html` redirect,
 which preserves guide and utility hashes when opening `site/`. Alternatively,
-publish `site/` directly. Installation, migration to 3.0.0, and all 18 utility
+publish `site/` directly. Installation, migration to 3.0.0, and all 19 utility
 pages use the shared components.
 
 ## Structure
