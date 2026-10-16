@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Fix argument forwarding in `@multiDispatch` and `multiDispatchify` [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#184](https://github.com/vlio20/utils-decorators/issues/184)
 
 ### Changed
+- Replace real-time waits in timer-based tests with Jest fake timers, enable per-test mutation coverage and incremental results, and cache compatible mutation results in CI while retaining the 95% score threshold. Add `npm run test:mutation:full` to force a full run; addresses [#186](https://github.com/vlio20/utils-decorators/issues/186). Baseline comparisons and periodic full mutation runs remain outstanding.
 - Before and rate-limit hooks now receive the original arguments; retry hooks receive the argument tuple as a third parameter. Existing callbacks may ignore the added arguments. Code inspecting callback argument counts will observe the new payloads.
 - Preserve synchronous results in `afterify` and default `beforify`, and return measured results from `execTimify`. Reject decorator declarations whose return types cannot be preserved, including value-returning scheduling methods and custom promise result properties.
 - Use safe `unknown` payload defaults and inferred configuration factories. Add strict public API type regressions and concise [TypeScript documentation](https://vlio20.github.io/utils-decorators/#typescript).
