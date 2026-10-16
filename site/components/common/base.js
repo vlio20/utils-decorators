@@ -26,7 +26,5 @@
 
   const siteRoot = new URL("../../", document.currentScript.src);
   const siteUrl = (path) => new URL(path, siteRoot).href;
-  const referenceUrl = (anchor = "") =>
-    new URL(`../reference.html${anchor ? `#${anchor}` : ""}`, siteRoot).href;
-  window.DocsComponents = { DocsElement, escape, icon, siteUrl, referenceUrl };
+  window.DocsComponents = { DocsElement, escape, icon, siteUrl };
 })();

@@ -12,10 +12,15 @@ Also, note that this library can be used both as **functions and decorators**,
 ### installation:
 
 ```bash
-npm i utils-decorators
+npm install utils-decorators@3
 ```   
 
-Please note that the decorators are **working perfectly with plain JavaScript** code as well as with TypeScript.
+Use Node.js `^22.18.0 || >=24.11.0`. Function wrappers work in JavaScript and
+TypeScript; decorator syntax requires a compatible legacy decorator compiler.
+For TypeScript, use 5.4+ with `strict` and `experimentalDecorators` enabled.
+
+See [installation and TypeScript setup](https://vlio20.github.io/utils-decorators/#install)
+and [migration to 3.0.0, including breaking changes](https://vlio20.github.io/utils-decorators/#migration).
 
 # Docs 
 check the <a href="https://vlio20.github.io/utils-decorators/" target="_blank">documentation</a>
@@ -23,8 +28,8 @@ check the <a href="https://vlio20.github.io/utils-decorators/" target="_blank">d
 ### Local docs preview
 
 Open `site/index.html` directly in a browser; no install or build is needed. The new
-layout covers all 18 decorators. The original `reference.html` remains available
-for installation and TypeScript migration guidance. Each utility page is a native Web Component with an HTML template. The `after`
+layout covers installation, migration to 3.0.0, and all 18 decorators. Each page
+is a native Web Component with an HTML template. The `after`
 component is `site/pages/after/after-page.js`; shared components live under
 `site/components/`. The entry point displays `<after-page>` inside `<docs-shell>`.
 Styling and navigation live in `site/docs.css` and `site/docs.js`.
