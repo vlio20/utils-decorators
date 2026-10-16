@@ -322,3 +322,41 @@ describe('retry', () => {
     await expect(pending).resolves.toBe('yes');
   });
 });
+
+describe('original arguments in retry hooks', () => {
+  it('forwards original arguments to retry callbacks on every retry', async () => {
+    const failure = new Error('retry');
+    const payload = { id: 172 };
+    const hook = jest.fn();
+    const source = jest.fn(async (...args: unknown[]) => {
+      if (source.mock.calls.length < 3) { throw failure; }
+      return args;
+    });
+    const wrapped = retryfy(source, { retries: 2, delay: 0, onRetry: hook });
+    await expect(wrapped(payload, 'name')).resolves.toEqual([payload, 'name']);
+    expect(hook).toHaveBeenNthCalledWith(1, failure, 0, [payload, 'name']);
+    expect(hook).toHaveBeenNthCalledWith(2, failure, 1, [payload, 'name']);
+    expect(hook.mock.calls[0][2][0]).toBe(payload);
+  });
+
+  it('forwards arguments to named retry hooks with the instance receiver', async () => {
+    const failure = new Error('retry');
+    class Service {
+      attempts = 0;
+      received: unknown;
+      onRetry(error: unknown, index: number, ...rest: unknown[]): void {
+        this.received = [error, index, ...rest];
+      }
+
+      @retry({ retries: 1, delay: 0, onRetry: 'onRetry' })
+      async load(id: number): Promise<number> {
+        this.attempts += 1;
+        if (this.attempts === 1) { throw failure; }
+        return id;
+      }
+    }
+    const service = new Service();
+    await expect(service.load(172)).resolves.toBe(172);
+    expect(service.received).toEqual([failure, 0, [172]]);
+  });
+});

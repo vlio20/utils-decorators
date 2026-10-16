@@ -4,17 +4,20 @@ All notable changes to this project will be documented in this file.
 ## [3.0.0] - Unreleased
 
 ### Enchantments
+- Provide original call arguments to `retry` / `retryfy` hooks as `onRetry(error, retryIndex, args)` and to `rateLimit` / `rateLimitify` handlers as `exceedHandler(...args)`, with matching callback validation; part of [#172](https://github.com/vlio20/utils-decorators/issues/172).
 - Modernize the documentation UI with searchable navigation, light and dark themes, mobile navigation, copyable examples, and decorator/function tabs for all 18 utilities. Add installation, TypeScript setup, and migration to 3.0.0 guides; remove the legacy documentation; closes [#182](https://github.com/vlio20/utils-decorators/issues/182).
 - Update dependencies [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#179](https://github.com/vlio20/utils-decorators/issues/179)
 - Replace Babel test compilation with TypeScript and V8 coverage, removing direct Babel dependencies; closes [#185](https://github.com/vlio20/utils-decorators/issues/185).
 
 ### Fixed
+- Forward original arguments to `before` / `beforify` hooks as `func(...args)`, including named hooks and waiting calls; closes [#172](https://github.com/vlio20/utils-decorators/issues/172).
 - Isolate stateful decorators per class instance, including cancellation, pending work, default caches, throttling, and rate-limit counters; start `refreshable` independently on each instance’s first property read; closes [#188](https://github.com/vlio20/utils-decorators/issues/188).
 - Strengthen inferred types across all decorators and function wrappers: preserve argument tuples and receivers, validate callbacks, keys, caches, and exclusive options, and report accurate synchronous, asynchronous, and recovery results; closes [#183](https://github.com/vlio20/utils-decorators/issues/183).
 - Support TypeScript legacy field decorators in `@readonly` and preserve validation errors when method decorators are applied to fields; closes [#185](https://github.com/vlio20/utils-decorators/issues/185).
 - Fix argument forwarding in `@multiDispatch` and `multiDispatchify` [181](https://github.com/vlio20/utils-decorators/pull/181) closes [#184](https://github.com/vlio20/utils-decorators/issues/184)
 
 ### Changed
+- Before and rate-limit hooks now receive the original arguments; retry hooks receive the argument tuple as a third parameter. Existing callbacks may ignore the added arguments. Code inspecting callback argument counts will observe the new payloads.
 - Preserve synchronous results in `afterify` and default `beforify`, and return measured results from `execTimify`. Reject decorator declarations whose return types cannot be preserved, including value-returning scheduling methods and custom promise result properties.
 - Use safe `unknown` payload defaults and inferred configuration factories. Add strict public API type regressions and concise [TypeScript documentation](https://vlio20.github.io/utils-decorators/#typescript).
 

@@ -205,3 +205,26 @@ it('preserves synchronous results without waiting for the before hook', () => {
   expect(beforify(() => 42, { func: hook })()).toBe(42);
   expect(hook).toHaveBeenCalledWith();
 });
+
+describe('original arguments in before hooks', () => {
+  it.each([false, true])('forwards arguments to before callbacks and named hooks (wait: %s)', async (wait) => {
+    const payload = { id: 172 };
+    const hook = jest.fn();
+    const source = jest.fn((...args: unknown[]) => args);
+    const wrapped = beforify(source, { func: hook, wait });
+    await expect(Promise.resolve(wrapped(payload, 'name'))).resolves.toEqual([payload, 'name']);
+    expect(hook).toHaveBeenCalledWith(payload, 'name');
+    expect(hook.mock.calls[0][0]).toBe(payload);
+
+    class Service {
+      hook = jest.fn();
+
+      // eslint-disable-next-line class-methods-use-this
+      @before({ func: 'hook', wait })
+      async load(...args: unknown[]): Promise<unknown[]> { return args; }
+    }
+    const service = new Service();
+    await expect(service.load(payload, 'name')).resolves.toEqual([payload, 'name']);
+    expect(service.hook).toHaveBeenCalledWith(payload, 'name');
+  });
+});

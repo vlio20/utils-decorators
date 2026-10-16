@@ -19,18 +19,18 @@ class Connection {
   private attempts = 0;
 
   @retry({ retries: 2, delay: 100, onRetry: 'reportRetry' })
-  async connect(): Promise&lt;string&gt; {
+  async connect(host: string): Promise&lt;string&gt; {
     this.attempts += 1;
     if (this.attempts &lt; 3) throw new Error('Not ready');
-    return 'Connected';
+    return 'Connected to ' + host;
   }
 
-  reportRetry(error: unknown, retryIndex: number): void {
-    console.warn('Retry', retryIndex + 1, error);
+  reportRetry(error: unknown, retryIndex: number, args: [host: string]): void {
+    console.warn('Retry', retryIndex + 1, 'for', args[0], error);
   }
 }
 
-const result = await new Connection().connect(); // 'Connected' on attempt 3</code></pre></docs-code>
+const result = await new Connection().connect('api.example.com'); // 'Connected to api.example.com' on attempt 3</code></pre></docs-code>
               </div>
               <div data-configuration>
                 <p class="form-caption">Decorator · @retry(input)</p>
@@ -39,7 +39,7 @@ const result = await new Connection().connect(); // 'Connected' on attempt 3</co
                   <tr><td><code>retries</code><span class="optional">Optional</span></td><td><code>number</code></td><td>Extra attempts after the first. Use a nonnegative integer. Mutually exclusive with <code>delaysArray</code>.</td></tr>
                   <tr><td><code>delaysArray</code><span class="optional">Optional</span></td><td><code>number[]</code></td><td>One delay in milliseconds for each retry. Its length is the number of extra attempts.</td></tr>
                   <tr><td><code>delay</code><span class="optional">Optional</span></td><td><code>number</code></td><td>Pause for each count-based retry; defaults to <code>1000</code> ms. Ignored with <code>delaysArray</code>.</td></tr>
-                  <tr><td><code>onRetry</code><span class="optional">Optional</span></td><td><code>callback | method key</code></td><td>Called as <code>(error, retryIndex)</code> before each retry's pause. A named method must exist on the receiver.</td></tr>
+                  <tr><td><code>onRetry</code><span class="optional">Optional</span></td><td><code>callback | method key</code></td><td>Called as <code>(error, retryIndex, args)</code> before each retry's pause. A named method must exist on the receiver.</td></tr>
                 </tbody></table></docs-config-table>
               </div>
             </template>
@@ -70,7 +70,7 @@ const message: string = await loadMessage(7);
 
 type Receiver = {
   ready: boolean;
-  prepare(error: unknown, retryIndex: number): void;
+  prepare(error: unknown, retryIndex: number, args: [id: number]): void;
 };
 
 async function load(this: Receiver, id: number): Promise&lt;number&gt; {
@@ -81,8 +81,8 @@ async function load(this: Receiver, id: number): Promise&lt;number&gt; {
 const loadWithRetry = retryfy(load, { retries: 1, delay: 10, onRetry: 'prepare' });
 const receiver: Receiver = {
   ready: false,
-  prepare(error, retryIndex) {
-    console.warn(error, retryIndex);
+  prepare(error, retryIndex, args) {
+    console.warn(error, retryIndex, args[0]);
     this.ready = true;
   },
 };
@@ -94,7 +94,7 @@ const result = await loadWithRetry.call(receiver, 42); // 42 on the second attem
             <docs-callout><code>retries: 2</code> permits up to three source calls: the initial attempt and two retries. A zero count or empty delay array makes only the initial attempt.</docs-callout>
           </docs-tabs>
           <docs-section anchor="hook" heading="Retry hook">
-            <p><code>onRetry(error, retryIndex)</code> receives the failure reason as <code>unknown</code> and a zero-based index: <code>0</code> before the first retry, <code>1</code> before the second. It receives no original arguments. Narrow the error before reading properties.</p>
+            <p><code>onRetry(error, retryIndex, args)</code> receives the failure reason as <code>unknown</code> and a zero-based index: <code>0</code> before the first retry, <code>1</code> before the second. The third parameter is the original argument tuple, with the same object references used on every attempt. Existing hooks accepting only the error and index remain supported. Narrow the error before reading properties.</p>
             <p>The hook is called only when another attempt remains, before waiting. Its result is ignored and async hooks are not awaited. A synchronous hook throw stops retrying and rejects the returned promise with that error; handle rejected async hook promises inside the hook.</p>
           </docs-section>
           <docs-section anchor="behavior" heading="How it works">

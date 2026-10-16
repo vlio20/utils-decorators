@@ -18,7 +18,8 @@
 class UserService {
   private ready = false;
 
-  async prepare(): Promise&lt;void&gt; {
+  async prepare(id: number): Promise&lt;void&gt; {
+    if (id &lt;= 0) throw new Error('Invalid user ID');
     this.ready = true;
   }
 
@@ -33,7 +34,7 @@ const name = await new UserService().getName(42); // 'User 42'</code></pre></doc
               <div data-configuration>
                 <p class="form-caption">Decorator · @before(config)</p>
                 <docs-config-table><table><tbody>
-                  <tr><td><code>func</code><span class="required">Required</span></td><td><code>callback | method key</code></td><td>A callback, or a key naming a compatible method on the same instance. The hook receives no arguments. Named hooks are bound to that instance.</td></tr>
+                  <tr><td><code>func</code><span class="required">Required</span></td><td><code>callback | method key</code></td><td>A callback, or a key naming a compatible method on the same instance. The hook receives the original arguments as <code>func(...args)</code>. Named hooks are bound to that instance.</td></tr>
                   <tr><td><code>wait</code><span class="optional">Optional</span></td><td><code>boolean</code></td><td>Defaults to <code>false</code>. Set <code>true</code> to await the hook before invoking the method. With <code>wait: true</code>, the decorated method must declare a compatible promise return type.</td></tr>
                 </tbody></table></docs-config-table>
               </div>
@@ -49,9 +50,9 @@ function getName(id: number): string {
 
 const getNameWithPreparation = beforify(getName, {
   wait: true,
-  func: async () =&gt; {
+  func: async (id) =&gt; {
     await Promise.resolve(); // Replace with your asynchronous setup.
-    console.log('Ready');
+    console.log('Ready to load user', id);
   },
 });
 
@@ -60,7 +61,7 @@ const name = await getNameWithPreparation(42); // 'User 42'</code></pre></docs-c
               <div data-configuration>
                 <p class="form-caption">Function · beforify(fn, config)</p>
                 <docs-config-table><table><tbody>
-                  <tr><td><code>func</code><span class="required">Required</span></td><td><code>callback</code></td><td>For standalone functions, pass a callback with no arguments. A method name needs an explicit receiver; see the advanced case below.</td></tr>
+                  <tr><td><code>func</code><span class="required">Required</span></td><td><code>callback</code></td><td>For standalone functions, pass a callback accepting the original arguments. A method name needs an explicit receiver; see the advanced case below.</td></tr>
                   <tr><td><code>wait</code><span class="optional">Optional</span></td><td><code>boolean</code></td><td>Defaults to <code>false</code>. Set <code>true</code> to await the hook before invoking the original function. The wrapper then always returns a promise, even for a synchronous source.</td></tr>
                 </tbody></table></docs-config-table>
                 <details class="api-detail"><summary>Synchronous calls with and without waiting</summary>
@@ -68,7 +69,7 @@ const name = await getNameWithPreparation(42); // 'User 42'</code></pre></docs-c
                   <docs-code language="typescript"><pre><code>import { beforify } from 'utils-decorators';
 
 const greet = (name: string): string =&gt; 'Hello ' + name;
-const log = () =&gt; console.log('Calling greet');
+const log = (name: string) =&gt; console.log('Calling greet for', name);
 
 const immediate = beforify(greet, { func: log });
 const waiting = beforify(greet, { func: log, wait: true });
@@ -81,14 +82,14 @@ console.log(first, await second); // 'Hello Ada', 'Hello Ada'</code></pre></docs
                   <p>Declare the original function’s <code>this</code> type, then call the wrapper with a receiver containing the named hook. <code>beforify</code> preserves the source function’s arguments and receiver requirement.</p>
                   <docs-code language="typescript"><pre><code>import { beforify } from 'utils-decorators';
 
-type Receiver = { prepare(): void };
+type Receiver = { prepare(id: number): void };
 function getName(this: Receiver, id: number): string {
   return 'User ' + id;
 }
 
 const wrapped = beforify(getName, { func: 'prepare' });
 const receiver: Receiver = {
-  prepare: () =&gt; console.log('Preparing'),
+  prepare: id =&gt; console.log('Preparing user', id),
 };
 
 const name = wrapped.call(receiver, 42); // 'User 42'</code></pre></docs-code>
@@ -98,8 +99,8 @@ const name = wrapped.call(receiver, 42); // 'User 42'</code></pre></docs-code>
             <docs-callout><code>wait</code> waits for the <strong>hook</strong> before calling the source. This differs from <a href="#after">after</a>, which can wait for the source’s result.</docs-callout>
           </docs-tabs>
           <docs-section anchor="hook" heading="Hook contract">
-            <p>The hook is called with <strong>no arguments</strong>. It receives neither the original arguments nor a response payload. Use a closure or a named instance method when preparation needs access to state.</p>
-            <div class="payload-grid"><div><code>Arguments</code><p>Original call arguments are forwarded unchanged to the source, after the hook runs.</p></div><div><code>Return value</code><p>The hook’s result is ignored. With <code>wait: true</code>, its completion is awaited; it does not replace the source’s result.</p></div></div>
+            <p>The hook is called as <code>func(...args)</code> with the original method arguments, in the same order. It can inspect or validate inputs before the source runs. It receives no response payload. Hooks that ignore arguments remain supported.</p>
+            <div class="payload-grid"><div><code>Arguments</code><p>The hook and source receive the same argument values; objects are shared references, so hook mutations are visible to the source.</p></div><div><code>Return value</code><p>The hook’s result is ignored. With <code>wait: true</code>, its completion is awaited; it does not replace the source’s result.</p></div></div>
           </docs-section>
           <docs-section anchor="behavior" heading="How it works">
             <p>With <code>wait: true</code>, the original function starts only after the hook completes successfully.</p>

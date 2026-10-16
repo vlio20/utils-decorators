@@ -88,6 +88,11 @@ function report(error: unknown): void {
   console.error(error instanceof Error ? error.message : String(error));
 }</code></pre></docs-code>
           </docs-section>
+          <docs-section anchor="hook-arguments" heading="Hook arguments">
+            <p><code>before</code> / <code>beforify</code> hooks and <code>rateLimit</code> / <code>rateLimitify</code> exceed handlers now receive the original arguments directly: <code>func(...args)</code> and <code>exceedHandler(...args)</code>. Retry hooks receive <code>onRetry(error, retryIndex, args)</code>, adding the argument tuple after the existing parameters.</p>
+            <p>Existing hooks that ignore the additional arguments remain supported. Update code that inspects callback argument counts or forwards every callback argument elsewhere. Hook parameter types must match the source; annotate decorator callbacks when needed. For explicit configuration types, use <code>BeforeConfig&lt;Receiver, Args&gt;</code>, <code>RetryInputConfig&lt;Receiver, Args&gt;</code>, <code>OnRetry&lt;Args&gt;</code>, or <code>RateLimitConfigs&lt;Receiver, Args&gt;</code>.</p>
+            <p>Argument objects keep their identity. Mutating an object in a hook affects the object seen by the source and subsequent retry attempts.</p>
+          </docs-section>
           <docs-section anchor="returns" heading="Breaking: wrapper return values">
             <p><code>afterify</code> and default <code>beforify</code> preserve synchronous results and synchronous throws. <code>execTimify</code> now returns the measured source result. Update callers that assumed an unconditional promise or discarded result.</p>
             <docs-code filename="wrapper-results.ts" language="typescript"><pre><code>import { afterify } from 'utils-decorators';

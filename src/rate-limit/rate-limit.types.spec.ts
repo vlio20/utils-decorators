@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { rateLimit, rateLimitify, RateLimitAsyncCounter, RateLimitConfigs, RateLimitCounter } from '../index';
 
 function typeChecks(
@@ -83,4 +84,31 @@ function typeChecks(
 
 it('checks the public signatures at compile time', () => {
   expect(typeChecks).toBeDefined();
+});
+
+function checkHookArguments(flag: boolean): void {
+  rateLimitify((id: number) => id, {
+    allowedCalls: 1, timeSpanMs: 1,
+    exceedHandler: (id) => { const value: number = id; },
+  });
+  // @ts-expect-error Exceed handlers must accept the source arguments.
+  rateLimitify((id: number) => id, { allowedCalls: 1, timeSpanMs: 1, exceedHandler: (id: string) => {} });
+
+  const rateOptions: RateLimitConfigs<unknown, [string]> = { allowedCalls: 1, timeSpanMs: 1, exceedHandler: (id) => {} };
+  const unionRate = flag ? { allowedCalls: 1, timeSpanMs: 1, exceedHandler: (id: string) => {} } : { allowedCalls: 1, timeSpanMs: 1 };
+  class Service {
+    @rateLimit({ allowedCalls: 1, timeSpanMs: 1, exceedHandler: (id: number) => {} })
+    async valid(id: number): Promise<number> { return id; }
+
+    // @ts-expect-error Optional exceed handlers must accept the method arguments.
+    @rateLimit(rateOptions)
+    async invalidRateOptions(id: number): Promise<number> { return id; }
+    // @ts-expect-error Invalid exceed handlers in a union must be rejected.
+    @rateLimit(unionRate)
+    async invalidRateUnion(id: number): Promise<number> { return id; }
+  }
+}
+
+it('validates hook argument types', () => {
+  expect(checkHookArguments).toBeDefined();
 });

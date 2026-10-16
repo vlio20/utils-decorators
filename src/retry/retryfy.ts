@@ -3,7 +3,7 @@ import { OnRetry, RetryInput, RetryInputConfig } from './retry.model';
 
 const DEFAULT_DELAY = 1000;
 
-function getRetriesArray<T>(input: RetryInput<T>): number[] {
+function getRetriesArray<T, A extends unknown[]>(input: RetryInput<T, A>): number[] {
   if (Array.isArray(input)) {
     return input;
   }
@@ -29,11 +29,11 @@ function getRetriesArray<T>(input: RetryInput<T>): number[] {
   throw new Error('invalid input');
 }
 
-function getOnRetry<T>(input: RetryInput<T>, context: T): OnRetry | undefined {
+function getOnRetry<T, A extends unknown[]>(input: RetryInput<T, A>, context: T): OnRetry<A> | undefined {
   if (typeof input === 'object') {
-    const { onRetry } = (input as RetryInputConfig<T>);
+    const { onRetry } = (input as RetryInputConfig<T, A>);
     if (onRetry !== undefined && typeof onRetry !== 'function') {
-      return (context[onRetry] as OnRetry).bind(context);
+      return (context[onRetry] as OnRetry<A>).bind(context);
     }
 
     return onRetry;
@@ -48,7 +48,7 @@ async function exec<D, A extends unknown[]>(
   args: A,
   retriesArr: number[],
   callsMadeSoFar: number,
-  onRetry: OnRetry | undefined,
+  onRetry: OnRetry<A> | undefined,
 ): Promise<D> {
   try {
     const res = await originalMethod.apply(this, args);
@@ -57,7 +57,7 @@ async function exec<D, A extends unknown[]>(
   } catch (e) {
     if (callsMadeSoFar < retriesArr.length) {
       if (onRetry) {
-        onRetry(e, callsMadeSoFar);
+        onRetry(e, callsMadeSoFar, args);
       }
 
       await sleep(retriesArr[callsMadeSoFar]);
@@ -70,7 +70,7 @@ async function exec<D, A extends unknown[]>(
 }
 
 export function retryfy<D, A extends unknown[], T>(
-  originalMethod: (this: T, ...args: A) => Promise<D>, input: RetryInput<NoInfer<T>>,
+  originalMethod: (this: T, ...args: A) => Promise<D>, input: RetryInput<NoInfer<T>, NoInfer<A>>,
 ): (this: T, ...args: A) => Promise<D> {
   const retriesArray = getRetriesArray(input);
 
