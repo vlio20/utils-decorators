@@ -2,6 +2,13 @@ import { before } from './before';
 import { beforify } from './beforify';
 
 describe('before', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('starts a waiting hook immediately and waits before calling the source', async () => {
     let release!: () => void;
     const pending = new Promise<void>((resolve) => { release = resolve; });
@@ -117,14 +124,13 @@ describe('before', () => {
     expect(beforeFunc.mock.calls.length).toBe(1);
   });
 
-  it('should verify before method invocation when method is provided without waiting for it to be resolved', (done) => {
+  it('should verify before method invocation when method is provided without waiting for it to be resolved', async () => {
     let counter = 0;
 
     const beforeFunc = jest.fn(() => new Promise((resolve) => {
       setTimeout(() => {
         expect(counter).toBe(1);
         resolve(null);
-        done();
       }, 0);
     }));
 
@@ -144,9 +150,12 @@ describe('before', () => {
 
     const t = new T();
     t.foo(1);
+    await jest.advanceTimersByTimeAsync(0);
+    await beforeFunc.mock.results[0].value;
+    expect(beforeFunc).toHaveBeenCalledTimes(1);
   });
 
-  it('should verify before method invocation when method is provided with waiting for it to be resolved', (done) => {
+  it('should verify before method invocation when method is provided with waiting for it to be resolved', async () => {
     let counter = 0;
 
     const beforeFunc = jest.fn(() => new Promise((resolve) => {
@@ -154,7 +163,6 @@ describe('before', () => {
         expect(counter).toBe(0);
         counter += 1;
         resolve(null);
-        done();
       }, 10);
     }));
 
@@ -173,7 +181,10 @@ describe('before', () => {
     }
 
     const t = new T();
-    t.foo(1);
+    const pending = t.foo(1);
+    await jest.advanceTimersByTimeAsync(10);
+    await pending;
+    expect(beforeFunc).toHaveBeenCalledTimes(1);
   });
 
   it('should returned result of method', async () => {

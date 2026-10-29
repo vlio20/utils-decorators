@@ -3,6 +3,13 @@ import { after } from './after';
 import { AfterFunc, AfterParams } from './after.model';
 
 describe('after', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       // @ts-expect-error Intentionally invalid input verifies runtime validation.
@@ -91,7 +98,7 @@ describe('after', () => {
     expect(afterFunc.mock.calls.length).toBe(1);
   });
 
-  it('should verify after method invocation when method is provided without waiting for it to be resolved', (done) => {
+  it('should verify after method invocation when method is provided without waiting for it to be resolved', async () => {
     let counter = 0;
 
     const afterFunc = jest.fn(() => {
@@ -111,22 +118,23 @@ describe('after', () => {
           setTimeout(() => {
             expect(counter).toBe(2);
             resolve();
-            done();
           }, 0);
         });
       }
     }
 
     const t = new T();
-    t.foo(1);
+    const pending = t.foo(1);
+    await jest.advanceTimersByTimeAsync(0);
+    await pending;
+    expect(afterFunc).toHaveBeenCalledTimes(1);
   });
 
-  it('should verify after method invocation when method is provided with waiting for it to be resolved', (done) => {
+  it('should verify after method invocation when method is provided with waiting for it to be resolved', async () => {
     let counter = 0;
 
     const afterFunc = jest.fn(() => {
       expect(counter).toBe(2);
-      done();
     });
 
     class T {
@@ -149,7 +157,10 @@ describe('after', () => {
     }
 
     const t = new T();
-    t.foo();
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(0);
+    await pending;
+    expect(afterFunc).toHaveBeenCalledTimes(1);
   });
 
   it('should provide args and response to after method - sync', (done) => {

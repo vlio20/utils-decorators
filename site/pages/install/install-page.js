@@ -11,7 +11,7 @@
           <p class="intro">Use utils-decorators in Node.js or browser applications. Import just the utilities you need; the package provides CommonJS, ES modules, and TypeScript declarations.</p>
           <docs-section anchor="install" heading="Install the package">
             <docs-code filename="terminal" language="bash"><pre><code>npm install utils-decorators@3</code></pre></docs-code>
-            <p>Version 3.0.0 requires Node.js <code>^22.18.0 || &gt;=24.11.0</code>. The package is tree-shakable when your bundler uses its ES module build.</p>
+            <p>Version 3.0.1 requires Node.js <code>^22.18.0 || &gt;=24.11.0</code>. The package is tree-shakable when your bundler uses its ES module build.</p>
             <docs-callout>Upgrading from 2.x? Read the <a href="#migration">migration to 3.0.0</a> guide before updating. It covers changes to instance state, refreshable loading, and public types.</docs-callout>
           </docs-section>
           <docs-section anchor="functions" heading="Use a function wrapper">
@@ -23,6 +23,7 @@ console.log(double(21)); // 42; later calls with 21 use the cache.</code></pre><
             <p>In CommonJS, use <code>const { memoizify } = require('utils-decorators');</code>. Each wrapper owns its state; create separate wrappers for independent caches, timers, or queues.</p>
           </docs-section>
           <docs-section anchor="typescript" heading="TypeScript setup">
+            <p>Since version 3.0.1, <code>@throttleAsync</code>, <code>@throttle</code>, <code>@debounce</code>, and <code>@delay</code> support TypeScript <code>private</code> and <code>protected</code> methods while preserving method type validation.</p>
             <p>Use TypeScript 5.4+ with <code>strict</code> enabled. Decorator syntax uses TypeScript's legacy decorators and requires <code>experimentalDecorators</code>; standard decorators are not supported.</p>
             <docs-code filename="tsconfig.json" language="json"><pre><code>{
   "compilerOptions": {

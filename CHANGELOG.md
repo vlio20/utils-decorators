@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.0.1] - 2026-10-28
+
+### Fixed
+- Allow `throttleAsync`, `throttle`, `debounce`, and `delay` to decorate private and protected methods while preserving method type validation; closes [#197](https://github.com/vlio20/utils-decorators/issues/197).
+
 ## [3.0.0] - 2026-10-16
 
 ### Enchantments

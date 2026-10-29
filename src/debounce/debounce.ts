@@ -3,7 +3,7 @@ import { debouncify } from './debouncify';
 export function debounce<T extends object = object>(delayMs: number) {
   return <This extends T, A extends unknown[], R>(
     target: This,
-    propertyName: keyof This,
+    propertyName: string | symbol,
     descriptor: TypedPropertyDescriptor<(this: This, ...args: A) => R>
       & ([R] extends [never] ? never : [R] extends [void] ? unknown : never),
   ): void => {

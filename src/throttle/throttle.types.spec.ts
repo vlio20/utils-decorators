@@ -18,6 +18,12 @@ function checkTypes(): void {
 
   class Service {
     @throttle(10)
+    private privateMethod(id: number): void { void this; void id; }
+
+    @throttle(10)
+    protected protectedMethod(id: number): void { void this; void id; }
+
+    @throttle(10)
     valid(id: number): void { void this; void id; }
 
     // @ts-expect-error A legacy decorator cannot change a number return type to void.
