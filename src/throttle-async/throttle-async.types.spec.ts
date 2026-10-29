@@ -21,6 +21,20 @@ function checkTypes(): void {
   throttleAsyncify((id: number) => id);
 
   class Service {
+    @throttleAsync(5)
+    private async privateMethod(id: number): Promise<number> {
+      void this;
+
+      return id;
+    }
+
+    @throttleAsync(5)
+    protected async protectedMethod(id: number): Promise<number> {
+      void this;
+
+      return id;
+    }
+
     @throttleAsync()
     async valid(id: number): Promise<number> {
       void this;

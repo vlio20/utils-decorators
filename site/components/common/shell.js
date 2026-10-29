@@ -67,7 +67,7 @@
       </a>
       <span class="header-label">
         Docs
-        <span class="version">3.0</span>
+        <span class="version">3.0.1</span>
       </span>
       <button
         class="search-trigger"

@@ -2,6 +2,13 @@ import { multiDispatch } from './multi-dispatch';
 import { sleep } from '../common/utils/utils';
 
 describe('retry', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should forward every argument and the receiver to each dispatch', async () => {
     const calls: number[][] = [];
     class T {
@@ -84,18 +91,10 @@ describe('retry', () => {
 
     const t = new T();
 
-    try {
-      await t.foo();
-
-      throw new Error('should not reach here');
-    } catch (e) {
-      if (!(e instanceof Error)) {
-        throw e;
-      }
-
-      expect(t.counter).toEqual(2);
-      expect(e.message).toEqual('slowest');
-    }
+    const rejected = expect(t.foo()).rejects.toThrow('slowest');
+    await jest.advanceTimersByTimeAsync(100);
+    await rejected;
+    expect(t.counter).toEqual(2);
   });
 
   it('should dispatch twice return faster', async () => {
@@ -119,7 +118,9 @@ describe('retry', () => {
     }
 
     const t = new T();
-    const res = await t.foo();
+    const pending = t.foo();
+    await jest.advanceTimersByTimeAsync(50);
+    const res = await pending;
     expect(t.counter).toEqual(2);
     expect(res).toEqual('fast');
   });

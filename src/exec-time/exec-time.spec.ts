@@ -4,6 +4,13 @@ import { ExactTimeReportData } from './exec-time.model';
 import { sleep } from '../common/test-utils';
 
 describe('exec-time', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidExecTime: any = execTime();
@@ -42,8 +49,7 @@ describe('exec-time', () => {
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(0);
-    expect(args.execTime).toBeLessThan(10);
+    expect(args.execTime).toBe(0);
   });
 
   it('should make sure that the reporter is called with the correct data when decorated method is async', async () => {
@@ -59,14 +65,16 @@ describe('exec-time', () => {
     }
 
     const t = new T();
-    await t.foo('a');
+    const pending = t.foo('a');
+    expect(reporter).not.toHaveBeenCalled();
+    await jest.advanceTimersByTimeAsync(10);
+    await expect(pending).resolves.toBe('ab');
 
     expect(reporter).toHaveBeenCalledTimes(1);
     const args: ExactTimeReportData = reporter.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(8);
-    expect(args.execTime).toBeLessThan(20);
+    expect(args.execTime).toBe(10);
   });
 
   it('should make sure that the console.log is being called by default', async () => {
@@ -100,14 +108,16 @@ describe('exec-time', () => {
     }
 
     const t = new T();
-    await t.foo('a');
+    const pending = t.foo('a');
+    expect(t.goo).not.toHaveBeenCalled();
+    await jest.advanceTimersByTimeAsync(10);
+    await expect(pending).resolves.toBe('ab');
 
     expect(t.goo).toHaveBeenCalledTimes(1);
     const args: ExactTimeReportData = t.goo.mock.calls[0][0];
     expect(args.args).toEqual(['a']);
     expect(args.result).toEqual('ab');
-    expect(args.execTime).toBeGreaterThanOrEqual(8);
-    expect(args.execTime).toBeLessThan(20);
+    expect(args.execTime).toBe(10);
   });
 });
 

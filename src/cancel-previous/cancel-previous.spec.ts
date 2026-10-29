@@ -2,6 +2,13 @@ import { cancelPrevious } from './cancel-previous';
 import { CanceledPromise } from './canceled-promise';
 
 describe('cancelPrevious', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidCancelPrevious: any = cancelPrevious<T>();
@@ -23,7 +30,7 @@ describe('cancelPrevious', () => {
     throw new Error('should not reach this line');
   });
 
-  it('should cancel prev invocation', (done) => {
+  it('should cancel prev invocation', async () => {
     class T {
       @cancelPrevious<T>()
       foo(x: number): Promise<number> {
@@ -36,35 +43,18 @@ describe('cancelPrevious', () => {
     }
 
     const t = new T();
-    let cancelHappened = 0;
-
-    const func = (x: number) => {
-      t.foo(x)
-        .then((data) => {
-          expect(data).toBe(100);
-          expect(cancelHappened).toBe(1);
-          done();
-        })
-        .catch((e) => {
-          if (e instanceof CanceledPromise) {
-            expect(e.message).toBe('canceled');
-            cancelHappened += 1;
-
-            return;
-          }
-
-          throw new Error('should\'t get here');
-        });
-    };
-
-    func(10);
-
-    setTimeout(() => {
-      func(100);
-    }, 5);
+    const first = t.foo(10);
+    const canceled = expect(first).rejects.toBeInstanceOf(CanceledPromise);
+    const canceledMessage = expect(first).rejects.toThrow('canceled');
+    await jest.advanceTimersByTimeAsync(5);
+    const second = t.foo(100);
+    await canceled;
+    await canceledMessage;
+    await jest.advanceTimersByTimeAsync(10);
+    await expect(second).resolves.toBe(100);
   });
 
-  it('should invoke original method id was resolved before second call', (done) => {
+  it('should invoke original method id was resolved before second call', async () => {
     class T {
       @cancelPrevious()
       foo(x: number): Promise<number> {
@@ -77,39 +67,16 @@ describe('cancelPrevious', () => {
     }
 
     const t = new T();
-    let cancelHappened = 0;
-    let round = 1;
+    const first = t.foo(10);
+    await jest.advanceTimersByTimeAsync(15);
+    await expect(first).resolves.toBe(10);
 
-    const func = (x: number) => {
-      t.foo(x)
-        .then((data) => {
-          if (round === 1) {
-            round += 1;
-            expect(data).toBe(10);
-          } else {
-            expect(data).toBe(100);
-          }
-
-          expect(cancelHappened).toBe(0);
-          done();
-        })
-        .catch((e) => {
-          if (e instanceof CanceledPromise) {
-            cancelHappened += 1;
-          } else {
-            throw new Error('should\'t get here');
-          }
-        });
-    };
-
-    func(10);
-
-    setTimeout(() => {
-      func(100);
-    }, 15);
+    const second = t.foo(100);
+    await jest.advanceTimersByTimeAsync(10);
+    await expect(second).resolves.toBe(100);
   });
 
-  it('should invoke rejection if original method got an error', (done) => {
+  it('should invoke rejection if original method got an error', async () => {
     class T {
       @cancelPrevious<T>()
       foo(x: number): Promise<number> {
@@ -122,22 +89,8 @@ describe('cancelPrevious', () => {
     }
 
     const t = new T();
-
-    const func = (x: number) => {
-      t.foo(x)
-        .then(() => {
-          throw new Error('should\'t get here');
-        })
-        .catch((e) => {
-          if (e instanceof CanceledPromise) {
-            throw new Error('should\'t get here');
-          } else {
-            expect(e.message).toBe('server error');
-            done();
-          }
-        });
-    };
-
-    func(10);
+    const rejected = expect(t.foo(10)).rejects.toThrow('server error');
+    await jest.advanceTimersByTimeAsync(10);
+    await rejected;
   });
 });

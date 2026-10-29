@@ -2,6 +2,13 @@ import { delegate } from './delegate';
 import { sleep } from '../common/test-utils';
 
 describe('delegate', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
   it('should make sure error thrown when decorator not set on method', () => {
     try {
       const nonValidDelegate: any = delegate();
@@ -40,7 +47,9 @@ describe('delegate', () => {
     t.foo();
     t.foo();
 
-    const res = await Promise.all([t.foo(), t.foo()]);
+    const pending = Promise.all([t.foo(), t.foo()]);
+    await jest.advanceTimersByTimeAsync(20);
+    const res = await pending;
     expect(res).toEqual([1, 1]);
     expect(counter).toEqual(1);
   });
@@ -63,19 +72,23 @@ describe('delegate', () => {
     t.foo();
     t.foo();
 
-    const res0 = await Promise.all([t.foo(), t.foo()]);
+    const firstBatch = Promise.all([t.foo(), t.foo()]);
+    await jest.advanceTimersByTimeAsync(20);
+    const res0 = await firstBatch;
     expect(res0[0]).toEqual(res0[1]);
-    expect(res0[0]).toBeGreaterThan(timestampBeforeTest);
+    expect(res0[0]).toBe(timestampBeforeTest + 20);
     expect(counter).toEqual(1);
 
     t.foo();
     t.foo();
 
-    const res1 = await Promise.all([t.foo(), t.foo()]);
+    const secondBatch = Promise.all([t.foo(), t.foo()]);
+    await jest.advanceTimersByTimeAsync(20);
+    const res1 = await secondBatch;
     expect(res1).not.toEqual(res0);
 
     expect(res1[0]).toEqual(res1[1]);
-    expect(res1[0]).toBeGreaterThan(res0[0]);
+    expect(res1[0]).toBe(timestampBeforeTest + 40);
     expect(counter).toEqual(2);
   });
 
@@ -94,7 +107,9 @@ describe('delegate', () => {
 
     const t = new T();
 
-    const res = await Promise.all([t.foo('a'), t.foo('a'), t.foo('b')]);
+    const pending = Promise.all([t.foo('a'), t.foo('a'), t.foo('b')]);
+    await jest.advanceTimersByTimeAsync(20);
+    const res = await pending;
     expect(res).toEqual(['a', 'a', 'b']);
     expect(counter).toEqual(2);
   });
@@ -114,11 +129,13 @@ describe('delegate', () => {
 
     const t = new T();
 
-    const res = await Promise.all([
+    const pending = Promise.all([
       t.foo(1, 1, 1, 1),
       t.foo(1, 1, 1, 2),
       t.foo(1, 1, 1, 1),
     ]);
+    await jest.advanceTimersByTimeAsync(20);
+    const res = await pending;
     expect(res).toEqual([4, 5, 4]);
     expect(counter).toEqual(2);
   });
@@ -138,7 +155,9 @@ describe('delegate', () => {
 
     const t = new T();
 
-    const res = await Promise.all([t.foo(1, 1), t.foo(2, 1), t.foo(1, 1)]);
+    const pending = Promise.all([t.foo(1, 1), t.foo(2, 1), t.foo(1, 1)]);
+    await jest.advanceTimersByTimeAsync(20);
+    const res = await pending;
     expect(res).toEqual([2, 3, 2]);
     expect(counter).toEqual(2);
   });
